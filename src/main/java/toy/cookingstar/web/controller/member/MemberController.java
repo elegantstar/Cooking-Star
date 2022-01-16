@@ -55,14 +55,4 @@ public class MemberController {
         return "member/welcome";
     }
 
-    public Member save() {
-        return Member.builder()
-                     .name("spring")
-                     .email("spring@naver.com")
-                     .nickname("ym")
-                     .password("dsfsdf")
-                     .salt("sdfsdf")
-                     .build();
-    }
-
 }
