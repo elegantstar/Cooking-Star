@@ -4,6 +4,5 @@ import toy.cookingstar.domain.Member;
 
 public interface MemberService {
 
-    public Member saveMember();
-
+    Member saveMember(String userId, String password, String name, String email);
 }
