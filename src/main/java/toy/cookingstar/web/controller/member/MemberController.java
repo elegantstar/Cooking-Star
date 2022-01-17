@@ -26,12 +26,12 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/join")
-    public String joinForm(@ModelAttribute MemberSaveForm form) {
+    public String joinForm(@ModelAttribute("member") MemberSaveForm form) {
         return "member/joinForm";
     }
 
     @PostMapping("/join")
-    public String join(@Validated @ModelAttribute MemberSaveForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
+    public String join(@Validated @ModelAttribute("member") MemberSaveForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (form.getPassword1() != null && form.getPassword2() != null) {
 
@@ -47,7 +47,13 @@ public class MemberController {
 
         Member member = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
 
-        return (member != null) ? "member/welcome" : "member/joinForm";
+        redirectAttributes.addFlashAttribute("member", member);
+        return (member != null) ? "redirect:/member/welcome" : "member/joinForm";
+    }
+
+    @GetMapping("/welcome")
+    public String welcome(@ModelAttribute("member") Member member) {
+        return "member/welcome";
     }
 
 }
