@@ -51,19 +51,11 @@ public class MemberServiceImpl implements MemberService {
     }
 
     private boolean emailAlreadyExist(String email) {
-        Member foundUserByEmail = memberRepository.findByEmail(email);
-        if (foundUserByEmail != null) {
-            return true;
-        }
-        return false;
+        return memberRepository.findByEmail(email) != null;
     }
 
     private boolean idAlreadyExist(String userId) {
-        Member foundUserById = memberRepository.findByUserId(userId);
-        if (foundUserById != null) {
-            return true;
-        }
-        return false;
+        return memberRepository.findByUserId(userId) != null;
     }
 
 }

@@ -9,8 +9,8 @@ CREATE TABLE `Member`(
     `introduction` varchar(200) NULL,
     `gender` varchar(10) NULL,
     `profile_image` varchar(300) NULL,
-    `created_date` DATE NOT NULL,
-    `updated_date` DATE NOT NULL,
+    `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`)
 );
 
