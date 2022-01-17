@@ -17,29 +17,27 @@ public class MemberServiceImpl implements MemberService {
 
     @Override
     public Member saveMember(String userId, String password, String name, String email) {
+
         //1. 아이디 중복 검증
-        Member foundUserById = memberRepository.findByUserId(userId);
-        if (foundUserById != null) {
+        if (idAlreadyExist(userId)) {
             return null;
         }
 
         //2. 이메일 중복 검증
-        Member foundUserByEmail = memberRepository.findByEmail(email);
-        if (foundUserByEmail != null) {
+        if (emailAlreadyExist(email)) {
             return null;
         }
 
         //3. salt 생성
-        String uuid = UUID.randomUUID().toString();
-        String salt = uuid.substring(0, 16);
+        String salt = UUID.randomUUID().toString().substring(0, 16);
 
         //4. hashing - sha-256
-        String encryptPw = HashUtil.encrypt(password + salt);
+        String encryptedPwd = HashUtil.encrypt(password + salt);
 
         //5. member 생성
         Member member = Member.builder()
                               .userId(userId)
-                              .password(encryptPw)
+                              .password(encryptedPwd)
                               .name(name)
                               .email(email)
                               .nickname(name)
@@ -50,6 +48,22 @@ public class MemberServiceImpl implements MemberService {
         memberRepository.save(member);
 
         return member;
+    }
+
+    private boolean emailAlreadyExist(String email) {
+        Member foundUserByEmail = memberRepository.findByEmail(email);
+        if (foundUserByEmail != null) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean idAlreadyExist(String userId) {
+        Member foundUserById = memberRepository.findByUserId(userId);
+        if (foundUserById != null) {
+            return true;
+        }
+        return false;
     }
 
 }

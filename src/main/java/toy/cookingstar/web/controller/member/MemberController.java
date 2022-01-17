@@ -1,7 +1,6 @@
 package toy.cookingstar.web.controller.member;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,8 +34,9 @@ public class MemberController {
     public String join(@Validated @ModelAttribute MemberSaveForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
         if (form.getPassword1() != null && form.getPassword2() != null) {
+
             if (!form.getPassword1().equals(form.getPassword2())) {
-                bindingResult.reject("pwInconsistency");
+                bindingResult.reject("member.pwd.inconsistency");
             }
         }
 
@@ -45,14 +45,9 @@ public class MemberController {
             return "member/joinForm";
         }
 
-        Member member = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(),
-                                                 form.getEmail());
+        Member member = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
 
-        if (member == null) {
-            return "member/joinForm";
-        }
-
-        return "member/welcome";
+        return (member != null) ? "member/welcome" : "member/joinForm";
     }
 
 }

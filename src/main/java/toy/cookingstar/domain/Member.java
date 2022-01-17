@@ -1,7 +1,6 @@
 package toy.cookingstar.domain;
 
-import java.math.BigInteger;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import lombok.Setter;
 @Setter
 public class Member {
 
-    private BigInteger id;
+    private Long id;
     private String userId;
     private String password;
     private String name;
@@ -21,8 +20,8 @@ public class Member {
     private String introduction;
     private String gender;
     private String profileImage;
-    private LocalDate created_date;
-    private LocalDate updated_date;
+    private LocalDateTime createdDate;
+    private LocalDateTime updatedDate;
 
     @Builder
     public Member(String userId, String password, String name, String email, String salt, String nickname) {

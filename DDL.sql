@@ -9,7 +9,7 @@ CREATE TABLE `Member`(
     `introduction` varchar(200) NULL,
     `gender` varchar(10) NULL,
     `profile_image` varchar(300) NULL,
-    `create_date` DATE NOT NULL,
+    `created_date` DATE NOT NULL,
     `updated_date` DATE NOT NULL,
     PRIMARY KEY(`id`)
 );
