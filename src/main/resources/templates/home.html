@@ -5,6 +5,13 @@
   <title>Cooking Star</title>
 
   <link th:replace="fragment :: bootstrapCss">
+  <style>
+    .img-standard {
+      width: 30%;
+      height: 30%;
+      margin: 10px;
+    }
+  </style>
 
 </head>
 <body>
@@ -41,6 +48,17 @@
 </nav>
 
 <hr class="my-1">
+
+<div class="container-fluid my-5" style="float: none; margin: 0 auto;">
+  <div class="col-8 mb-4" style="float: none; margin: 0 auto;">
+    <img th:src="@{images/home/sample1.jpg}" class="img-standard" alt="샘플 이미지1" />
+    <img th:src="@{images/home/sample2.jpg}" class="img-standard" alt="샘플 이미지2" />
+    <img th:src="@{images/home/sample3.jpg}" class="img-standard" alt="샘플 이미지3" />
+    <img th:src="@{images/home/sample4.jpg}" class="img-standard" alt="샘플 이미지4" />
+    <img th:src="@{images/home/sample5.jpg}" class="img-standard" alt="샘플 이미지5" />
+    <img th:src="@{images/home/sample6.jpg}" class="img-standard" alt="샘플 이미지6" />
+  </div>
+</div>
 
 <script th:replace="fragment :: bootstrapBundle"></script>
 
