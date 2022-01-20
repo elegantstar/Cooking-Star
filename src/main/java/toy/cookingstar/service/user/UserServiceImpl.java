@@ -4,33 +4,19 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.dto.UserPageDto;
-import toy.cookingstar.repository.UserPageRepository;
+import toy.cookingstar.repository.MemberRepository;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
-    private final UserPageRepository userPageRepository;
+    private final MemberRepository memberRepository;
 
     @Override
-    public UserPageDto getUserPageInfo(String userId) {
+    public Member getUserInfo(String userId) {
 
-        // 존재하는 userId인지 확인
-        if (isNull(userId)) {
-            return null;
-        }
-
-        return userPageRepository.findUserPageInfoByUserId(userId);
+        return memberRepository.findByUserId(userId);
 
     }
 
-    private boolean isNull(String userId) {
-        return !userPageRepository.findUserByUserId(userId);
-    }
-
-    @Override
-    public UserPageDto getMyPageInfo(String userId) {
-        return userPageRepository.findUserPageInfoByUserId(userId);
-    }
 }

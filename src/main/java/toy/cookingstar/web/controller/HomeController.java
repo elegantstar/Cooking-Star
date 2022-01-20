@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.dto.UserPageDto;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 
@@ -24,7 +23,7 @@ public class HomeController {
             return "home";
         }
 
-        UserPageDto userPageInfo = userService.getMyPageInfo(loginMember.getUserId());
+        Member userPageInfo = userService.getUserInfo(loginMember.getUserId());
         model.addAttribute("userPageInfo", userPageInfo);
         return "user/myPage";
     }
