@@ -1,4 +1,4 @@
-package toy.cookingstar.service;
+package toy.cookingstar.service.member;
 
 import toy.cookingstar.domain.Member;
 

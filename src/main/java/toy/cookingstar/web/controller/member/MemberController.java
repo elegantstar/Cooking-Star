@@ -12,8 +12,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.repository.MemberRepository;
-import toy.cookingstar.service.MemberService;
+import toy.cookingstar.service.member.MemberService;
 import toy.cookingstar.web.controller.member.form.MemberSaveForm;
 
 @Slf4j
@@ -22,7 +21,6 @@ import toy.cookingstar.web.controller.member.form.MemberSaveForm;
 @RequiredArgsConstructor
 public class MemberController {
 
-    private final MemberRepository memberRepository;
     private final MemberService memberService;
 
     @GetMapping("/join")
