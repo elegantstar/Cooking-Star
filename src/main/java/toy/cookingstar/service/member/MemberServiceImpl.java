@@ -3,6 +3,7 @@ package toy.cookingstar.service.member;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
@@ -11,11 +12,13 @@ import toy.cookingstar.utils.HashUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MemberServiceImpl implements MemberService {
 
     private final MemberRepository memberRepository;
 
     @Override
+    @Transactional
     public Member saveMember(String userId, String password, String name, String email) {
 
         //1. 아이디 중복 검증

@@ -13,6 +13,7 @@ import toy.cookingstar.utils.HashUtil;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
 
     private final MemberRepository memberRepository;
@@ -53,6 +54,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public Member updatePwd(PwdUpdateParam pwdUpdateParam) {
 
         String userId = pwdUpdateParam.getUserId();
