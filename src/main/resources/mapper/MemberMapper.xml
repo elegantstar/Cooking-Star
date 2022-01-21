@@ -23,4 +23,16 @@
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});
   </insert>
 
+  <update id="updateInfo" parameterType="toy.cookingstar.service.user.UserUpdateParam">
+    UPDATE member
+    SET nickname = #{nickname}, introduction = #{introduction}, email = #{email}, gender = #{gender}, profile_image = #{profileImage}
+    WHERE user_id = #{userId};
+  </update>
+
+  <update id="updatePwd">
+    UPDATE member
+    SET password = #{newPassword}, salt = #{newSalt}
+    WHERE user_id = #{userId};
+  </update>
+
 </mapper>
