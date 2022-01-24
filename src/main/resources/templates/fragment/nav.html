@@ -34,7 +34,7 @@
              href="#" id="postingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#" th:text="#{label.nav.posting}">포스팅</a></li>
+            <li><a class="dropdown-item" th:href="@{/post/create}" th:text="#{label.nav.posting}">포스팅</a></li>
             <li><a class="dropdown-item" href="#" th:text="#{label.nav.outbox}">임시 보관함</a></li>
           </ul>
         </li>

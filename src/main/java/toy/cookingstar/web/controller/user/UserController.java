@@ -92,9 +92,13 @@ public class UserController {
         UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
                                                               form.getIntroduction(),
                                                               form.getEmail(), form.getGender(),
-                                                              form.getProfileImage(), null);
+                                                              form.getProfileImage());
 
-        userService.updateInfo(userUpdateParam);
+        Member updatedUser = userService.updateInfo(userUpdateParam);
+
+        if (updatedUser == null) {
+            return "error-page/404";
+        }
 
         // Session update
         updateSession(loginUser, request);
@@ -103,10 +107,7 @@ public class UserController {
     }
 
     @GetMapping("/myPage/password/change")
-    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser) {
-
-        Member userInfo = userService.getUserInfo(loginUser.getUserId());
-
+    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form) {
         return "user/pwdForm";
     }
 
@@ -126,10 +127,13 @@ public class UserController {
         }
 
         PwdUpdateParam pwdUpdateParam = new PwdUpdateParam(loginUser.getUserId(), form.getCurrentPwd(),
-                                                           form.getNewPassword1(), form.getNewPassword2(),
-                                                           null);
+                                                           form.getNewPassword1(), form.getNewPassword2());
 
-        userService.updatePwd(pwdUpdateParam);
+        Member updatedUser = userService.updatePwd(pwdUpdateParam);
+
+        if (updatedUser == null) {
+            return "error-page/404";
+        }
 
         // Session update
         updateSession(loginUser, request);
