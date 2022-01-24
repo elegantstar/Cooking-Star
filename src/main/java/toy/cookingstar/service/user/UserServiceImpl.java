@@ -41,15 +41,17 @@ public class UserServiceImpl implements UserService {
     @Transactional
     public Member updateInfo(UserUpdateParam userUpdateParam) {
 
+        String userId = userUpdateParam.getUserId();
+
         // userId가 DB에 존재하는지 검증
-        if (isNotJoinedUser(userUpdateParam.getUserId())) {
+        if (isNotJoinedUser(userId)) {
             return null;
         }
 
         // 회원 정보 업데이트
         memberRepository.updateInfo(userUpdateParam);
 
-        return null;
+        return getUserInfo(userId);
     }
 
     @Override
@@ -72,7 +74,7 @@ public class UserServiceImpl implements UserService {
         // 회원 비밀번호 업데이트
         memberRepository.updatePwd(userId, newPassword, newSalt);
 
-        return null;
+        return getUserInfo(userId);
     }
 
     private boolean isNotJoinedUser(String userId) {
