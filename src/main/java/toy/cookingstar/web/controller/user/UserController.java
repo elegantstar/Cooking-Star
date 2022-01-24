@@ -1,5 +1,8 @@
 package toy.cookingstar.web.controller.user;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -9,10 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.java.Log;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.user.GenderType;
@@ -21,8 +22,10 @@ import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.service.user.UserUpdateParam;
 import toy.cookingstar.utils.HashUtil;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.login.SessionConst;
 import toy.cookingstar.web.controller.user.form.InfoUpdateForm;
 import toy.cookingstar.web.controller.user.form.PwdUpdateForm;
+import toy.cookingstar.web.controller.validator.PwdValidator;
 
 @Slf4j
 @Controller
@@ -31,6 +34,7 @@ import toy.cookingstar.web.controller.user.form.PwdUpdateForm;
 public class UserController {
 
     private final UserService userService;
+    private final PwdValidator pwdValidator;
 
     @GetMapping("/{userId}")
     public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) {
@@ -74,9 +78,7 @@ public class UserController {
 
     @PostMapping("/myPage/edit")
     public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form,
-                           BindingResult bindingResult, @Login Member loginUser) {
-
-        form.setUserId(loginUser.getUserId());
+                           BindingResult bindingResult, @Login Member loginUser, HttpServletRequest request) {
 
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
             bindingResult.reject("edit.email.notAvailable");
@@ -87,12 +89,15 @@ public class UserController {
             return "user/editForm";
         }
 
-        UserUpdateParam userUpdateParam = new UserUpdateParam(form.getUserId(), form.getNickname(),
+        UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
                                                               form.getIntroduction(),
                                                               form.getEmail(), form.getGender(),
-                                                              form.getProfileImage());
+                                                              form.getProfileImage(), null);
 
         userService.updateInfo(userUpdateParam);
+
+        // Session update
+        updateSession(loginUser, request);
 
         return "redirect:/user/myPage/edit";
     }
@@ -101,61 +106,53 @@ public class UserController {
     public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser) {
 
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
-        form.setUserId(userInfo.getUserId());
-        form.setProfileImage(userInfo.getProfileImage());
 
         return "user/pwdForm";
     }
 
     @PostMapping("/myPage/password/change")
     public String updatePwd(@Validated @ModelAttribute("userPwdInfo") PwdUpdateForm form,
-                            BindingResult bindingResult, @Login Member loginUser) {
-
-        form.setUserId(loginUser.getUserId());
-        form.setProfileImage(userService.getProfileImage(form.getUserId()));
+                            BindingResult bindingResult, @Login Member loginUser, HttpServletRequest request) {
 
         if (isWrongPwd(form, loginUser)) {
             bindingResult.reject("error.wrong.password");
         }
 
-        if (form.getNewPassword1() != null && form.getNewPassword2() != null) {
-
-            if (!form.getNewPassword1().equals(form.getNewPassword2())) {
-                bindingResult.reject("update.pwd.inconsistency");
-            }
-        }
+        pwdValidator.validEquality(form.getNewPassword1(), form.getNewPassword2(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             log.error("errors={}", bindingResult);
             return "user/pwdForm";
         }
 
-        PwdUpdateParam pwdUpdateParam = new PwdUpdateParam(form.getUserId(), form.getProfileImage(),
-                                                           form.getCurrentPwd(), form.getNewPassword1(),
-                                                           form.getNewPassword2());
+        PwdUpdateParam pwdUpdateParam = new PwdUpdateParam(loginUser.getUserId(), form.getCurrentPwd(),
+                                                           form.getNewPassword1(), form.getNewPassword2(),
+                                                           null);
 
         userService.updatePwd(pwdUpdateParam);
 
-
+        // Session update
+        updateSession(loginUser, request);
 
         return "redirect:/user/myPage/password/updated";
     }
 
-    private boolean isWrongPwd(@ModelAttribute("userPwdInfo") @Validated PwdUpdateForm form, @Login Member loginUser) {
+    private boolean isWrongPwd(@ModelAttribute("userPwdInfo") @Validated PwdUpdateForm form,
+                               @Login Member loginUser) {
         return !loginUser.getPassword().equals(HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
     }
 
     @GetMapping("/myPage/password/updated")
     public String updatedPwd(@Login Member loginUser, Model model) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
-        String profileImage = userInfo.getProfileImage();
-        String userId = userInfo.getUserId();
-        String name = userInfo.getName();
-
-        model.addAttribute("profileImage", profileImage);
-        model.addAttribute("userId", userId);
-        model.addAttribute("name", name);
+        model.addAttribute("userInfo", userInfo);
 
         return "user/pwdUpdatedPage";
+    }
+
+    private void updateSession(@Login Member loginUser, HttpServletRequest request) {
+        Member loginMember = userService.getUserInfo(loginUser.getUserId());
+        HttpSession session = request.getSession();
+        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
     }
 }

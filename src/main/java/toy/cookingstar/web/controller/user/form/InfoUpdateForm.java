@@ -10,8 +10,6 @@ import lombok.Data;
 @Data
 public class InfoUpdateForm {
 
-    private String userId;
-
     @Length(min = 1, max = 20)
     private String nickname;
 

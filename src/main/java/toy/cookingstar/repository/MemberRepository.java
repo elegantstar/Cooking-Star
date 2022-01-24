@@ -1,12 +1,9 @@
 package toy.cookingstar.repository;
 
-import java.util.HashMap;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.service.user.PwdUpdateParam;
 import toy.cookingstar.service.user.UserUpdateParam;
 
 @Mapper

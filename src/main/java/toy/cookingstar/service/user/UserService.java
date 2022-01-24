@@ -12,5 +12,4 @@ public interface UserService {
 
     Member updatePwd(PwdUpdateParam pwdUpdateParam);
 
-    String getProfileImage(String userId);
 }

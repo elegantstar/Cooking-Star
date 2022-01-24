@@ -6,10 +6,6 @@ import lombok.Data;
 @Data
 public class PwdUpdateForm {
 
-    private String userId;
-
-    private String profileImage;
-
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[a-zA-Z\\d~!@#$%^&*()+|=]{12,20}$")
     private String currentPwd;
 

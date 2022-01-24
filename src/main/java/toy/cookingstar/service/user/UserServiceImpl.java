@@ -1,6 +1,5 @@
 package toy.cookingstar.service.user;
 
-import java.util.HashMap;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -74,11 +73,6 @@ public class UserServiceImpl implements UserService {
         memberRepository.updatePwd(userId, newPassword, newSalt);
 
         return null;
-    }
-
-    @Override
-    public String getProfileImage(String userId) {
-        return memberRepository.findByUserId(userId).getProfileImage();
     }
 
     private boolean isNotJoinedUser(String userId) {

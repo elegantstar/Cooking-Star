@@ -55,7 +55,7 @@
 
 <div class="container" id="content-box">
 
-  <form class="mb-5" th:action th:object="${userPwdInfo}" method="post">
+  <div>
 
     <!--  프로필 편집 / 비밀번호 변경 탭 영역  -->
     <ul class="nav nav-tabs mb-3">
@@ -74,10 +74,14 @@
           <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="샘플 이미지5" />
         </div>
         <div style="padding-top: 1.5%">
-          <span class="user-id mt-3" style="font-size: 35px;" th:text="${userPwdInfo.userId}">유저 아이디</span><br/>
+          <span class="user-id mt-3" style="font-size: 35px;" th:text="${session.loginMember.userId}">유저 아이디</span><br/>
         </div>
       </div>
     </div>
+
+  </div>
+
+  <form class="mb-5" th:action th:object="${userPwdInfo}" method="post">
 
     <!--  글로벌 오류 메시지  -->
     <div th:if="${#fields.hasGlobalErrors()}">
