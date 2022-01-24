@@ -92,7 +92,7 @@ public class UserController {
         UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
                                                               form.getIntroduction(),
                                                               form.getEmail(), form.getGender(),
-                                                              form.getProfileImage(), null);
+                                                              form.getProfileImage());
 
         userService.updateInfo(userUpdateParam);
 
@@ -126,8 +126,7 @@ public class UserController {
         }
 
         PwdUpdateParam pwdUpdateParam = new PwdUpdateParam(loginUser.getUserId(), form.getCurrentPwd(),
-                                                           form.getNewPassword1(), form.getNewPassword2(),
-                                                           null);
+                                                           form.getNewPassword1(), form.getNewPassword2());
 
         userService.updatePwd(pwdUpdateParam);
 

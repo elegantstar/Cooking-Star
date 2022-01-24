@@ -1,7 +1,5 @@
 package toy.cookingstar.service.user;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
@@ -15,6 +13,5 @@ public class UserUpdateParam {
     private String email;
     private String gender;
     private String profileImage;
-    private LocalDateTime updatedDate;
 
 }
