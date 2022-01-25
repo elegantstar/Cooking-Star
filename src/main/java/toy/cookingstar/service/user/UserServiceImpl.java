@@ -2,6 +2,7 @@ package toy.cookingstar.service.user;
 
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,15 +27,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isNotAvailableEmail(String userId, String email) {
-
-        Member foundMember = memberRepository.findByEmail(email);
-
-        if (foundMember != null) {
-            if (!userId.equals(foundMember.getUserId())) {
-                return true;
-            }
-        }
-        return false;
+        return !StringUtils.equals(memberRepository.findByEmail(email).getUserId(), userId);
     }
 
     @Override

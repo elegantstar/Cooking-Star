@@ -21,8 +21,8 @@ import toy.cookingstar.service.user.PwdUpdateParam;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.service.user.UserUpdateParam;
 import toy.cookingstar.utils.HashUtil;
+import toy.cookingstar.utils.SessionUtils;
 import toy.cookingstar.web.argumentresolver.Login;
-import toy.cookingstar.web.controller.login.SessionConst;
 import toy.cookingstar.web.controller.user.form.InfoUpdateForm;
 import toy.cookingstar.web.controller.user.form.PwdUpdateForm;
 import toy.cookingstar.web.controller.validator.PwdValidator;
@@ -101,7 +101,7 @@ public class UserController {
         }
 
         // Session update
-        updateSession(loginUser, request);
+        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/user/myPage/edit";
     }
@@ -136,7 +136,7 @@ public class UserController {
         }
 
         // Session update
-        updateSession(loginUser, request);
+        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/user/myPage/password/updated";
     }
@@ -152,11 +152,5 @@ public class UserController {
         model.addAttribute("userInfo", userInfo);
 
         return "user/pwdUpdatedPage";
-    }
-
-    private void updateSession(@Login Member loginUser, HttpServletRequest request) {
-        Member loginMember = userService.getUserInfo(loginUser.getUserId());
-        HttpSession session = request.getSession();
-        session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
     }
 }
