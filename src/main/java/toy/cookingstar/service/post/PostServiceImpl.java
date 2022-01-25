@@ -2,6 +2,7 @@ package toy.cookingstar.service.post;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -26,12 +27,18 @@ public class PostServiceImpl implements PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    @Value("${file.dir}")
-    private String fileDir;
+    @Value("${image.dir}")
+    private String imageDir;
 
     // 이미지 저장 경로 찾기
     public String getFullPath(String imageName) {
-        return fileDir + imageName;
+        return imageDir + getCurrentDate() + "/" + imageName;
+    }
+
+    // 현재 날짜 로직
+    public String getCurrentDate() {
+        return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
+
     }
 
     // 이미지 다건 등록
@@ -56,11 +63,13 @@ public class PostServiceImpl implements PostService {
         // 업로드한 이미지 파일명 추출
         String originalFilename = multipartFile.getOriginalFilename();
         // UUID를 이용하여 이미지 파일명 변경 + 확장자 추가
-        String storeImageName = createStoreImageName(originalFilename);
+        String storedImageName = createStoreImageName(originalFilename);
+        // 저장 폴더가 없으면 생성
+        makeDir();
         // 이미지 파일 저장
-        multipartFile.transferTo(new File(getFullPath(storeImageName)));
+        multipartFile.transferTo(new File(getFullPath(storedImageName)));
 
-        return getFullPath(storeImageName);
+        return storedImageName;
     }
 
     @Override
@@ -102,14 +111,22 @@ public class PostServiceImpl implements PostService {
     // 저장할 이미지 이름 생성(중복 방지)
     private String createStoreImageName(String originalFilename) {
         String ext = extractExt(originalFilename);
-        String uuid = UUID.randomUUID().toString();
-        return uuid + "." + ext;
+        String uuid = UUID.randomUUID().toString().substring(0, 13);
+        return getCurrentDate() + uuid + "." + ext;
     }
 
     // 이미지 확장자 추출
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    private void makeDir() {
+        File imageFolder = new File(imageDir + getCurrentDate() + "/");
+
+        if (!imageFolder.exists()) {
+            imageFolder.mkdir();
+        }
     }
 
 }

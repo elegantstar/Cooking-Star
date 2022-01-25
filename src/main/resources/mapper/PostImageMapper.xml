@@ -7,8 +7,8 @@
 <mapper namespace="toy.cookingstar.repository.PostRepository">
 
   <insert id="saveImage" useGeneratedKeys="true" keyProperty="id" parameterType="PostImage">
-    INSERT INTO postimage (post_id, url)
-    VALUES (#{postId}, #{url});
+    INSERT INTO postimage (post_id, url, priority)
+    VALUES (#{postId}, #{url}, #{priority});
   </insert>
 
 </mapper>
