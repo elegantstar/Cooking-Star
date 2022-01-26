@@ -1,8 +1,12 @@
 package toy.cookingstar.web.controller.user;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
+import java.net.MalformedURLException;
+import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -11,11 +15,13 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.service.post.PostImageParam;
+import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.user.GenderType;
 import toy.cookingstar.service.user.PwdUpdateParam;
 import toy.cookingstar.service.user.UserService;
@@ -30,13 +36,13 @@ import toy.cookingstar.web.controller.validator.PwdValidator;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/user")
 public class UserController {
 
     private final UserService userService;
     private final PwdValidator pwdValidator;
+    private final PostService postService;
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}")
     public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) {
 
         // 요청 받은 userId와 일치하는 회원이 있는지 확인 후 데이터 가져오기 -> 일치하는 회원이 없을 경우 exception 처리 필요함.
@@ -50,8 +56,16 @@ public class UserController {
 
         // 요청 받은 userId가 로그인 유저의 userId와 같으면 myPage로
         if (userId.equals(loginUser.getUserId())) {
-            return "user/myPage";
+            return "redirect:/myPage";
         }
+
+        model.addAttribute("userPageInfo", userPageInfo);
+
+        int totalPost = postService.countPosts(userPageInfo.getId());
+        model.addAttribute("totalPost", totalPost);
+
+        List<String> postImageUrls = getPostImageUrls(userPageInfo);
+        model.addAttribute("postImageUrls", postImageUrls);
 
         // userPage로
         return "user/userPage";
@@ -59,9 +73,37 @@ public class UserController {
 
     @GetMapping("/myPage")
     public String myPage(@Login Member loginUser, Model model) {
+
         Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
         model.addAttribute("userPageInfo", userPageInfo);
+
+        int totalPost = postService.countPosts(userPageInfo.getId());
+        model.addAttribute("totalPost", totalPost);
+
+        //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
+        //지금은 단순히 1페이지만 보여주는 것으로 작업
+
+        List<String> postImageUrls = getPostImageUrls(userPageInfo);
+        model.addAttribute("postImageUrls", postImageUrls);
+
         return "user/myPage";
+    }
+
+    // 페이지 구성 이미지 조회
+    private List<String> getPostImageUrls(Member userPageInfo) {
+        int currentPageNo = 1;
+        int postsPerPage = 12;
+        int countPages = 1;
+
+        PostImageParam postImageParam = new PostImageParam(userPageInfo.getUserId(), currentPageNo,
+                                                           postsPerPage, countPages);
+        return postService.getUserPagePostImages(postImageParam);
+    }
+
+    @ResponseBody
+    @GetMapping("/image/{imageUrl}")
+    public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
+        return new UrlResource("file:" + postService.getFullPath(imageUrl));
     }
 
     @ModelAttribute("genderTypes")
@@ -103,7 +145,7 @@ public class UserController {
         // Session update
         SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
 
-        return "redirect:/user/myPage/edit";
+        return "redirect:/myPage/edit";
     }
 
     @GetMapping("/myPage/password/change")
@@ -138,7 +180,7 @@ public class UserController {
         // Session update
         SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
 
-        return "redirect:/user/myPage/password/updated";
+        return "redirect:/myPage/password/updated";
     }
 
     private boolean isWrongPwd(@ModelAttribute("userPwdInfo") @Validated PwdUpdateForm form,

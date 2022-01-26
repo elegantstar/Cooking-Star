@@ -1,11 +1,15 @@
 package toy.cookingstar.service.post;
 
-import lombok.Getter;
+import org.apache.ibatis.type.MappedTypes;
 
-@Getter
-public enum StatusType {
+import toy.cookingstar.handler.StatusEnum;
+import toy.cookingstar.handler.StatusEnumTypeHandler;
 
-    POSTING("posting"), TEMPORARY_STORAGE("temporaryStorage"), PRIVATE("private");
+public enum StatusType implements StatusEnum {
+
+    POSTING("posting"),
+    TEMPORARY_STORAGE("temporaryStorage"),
+    PRIVATE("private");
 
     private final String status;
 
@@ -13,5 +17,15 @@ public enum StatusType {
         this.status = status;
     }
 
+    @MappedTypes(StatusType.class)
+    public static class TypeHandler extends StatusEnumTypeHandler<StatusType> {
+        public TypeHandler() {
+            super(StatusType.class);
+        }
+    }
 
+    @Override
+    public String getStatus() {
+        return status;
+    }
 }

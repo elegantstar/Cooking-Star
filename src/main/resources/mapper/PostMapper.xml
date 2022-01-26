@@ -11,4 +11,56 @@
     VALUES (#{memberId}, #{content}, #{status});
   </insert>
 
+  <insert id="saveImage" useGeneratedKeys="true" keyProperty="id" parameterType="PostImage">
+    INSERT INTO postimage (post_id, url, priority)
+    VALUES (#{postId}, #{url}, #{priority});
+  </insert>
+
+  <select id="countPosts" resultType="int">
+    SELECT COUNT(*)
+    FROM post
+    WHERE member_id = #{memberId};
+  </select>
+
+  <select id="findUserPagePostImage" parameterType="hashmap" resultMap="postWithImage">
+    SELECT <include refid="post_base_column"></include>,
+    <include refid="postimage_base_column"></include>
+    FROM postimage AS i
+    INNER JOIN post AS p
+    ON p.id = i.post_id
+    WHERE p.member_id = #{memberId} AND i.priority = 1 AND p.status = 'POSTING'
+    ORDER BY p.id DESC
+    LIMIT #{pagingVO.start}, #{pagingVO.end};
+  </select>
+
+  <resultMap id="postWithImage" type="toy.cookingstar.domain.PostWithImage">
+    <id column="p_id" property="id" javaType="long" />
+    <result column="p_member_id" property="memberId" javaType="long" />
+    <result column="p_content" property="content" javaType="java.lang.String" />
+    <result column="p_created_date" property="createdDate" javaType="java.time.LocalDateTime" />
+    <result column="p_updated_date" property="updatedDate" javaType="java.time.LocalDateTime" />
+    <result column="p_status" property="status" />
+    <collection property="images" javaType="java.util.List" ofType="toy.cookingstar.domain.PostImage">
+      <id column="i_id" property="id" javaType="long" />
+      <result column="i_post_id" property="postId" javaType="long" />
+      <result column="i_url" property="url" javaType="string" />
+      <result column="i_priority" property="priority" javaType="int" />
+    </collection>
+  </resultMap>
+
+  <sql id="post_base_column">
+    p.id AS p_id,
+    p.member_id AS p_member_id,
+    p.content AS p_content,
+    p.created_date AS p_created_date,
+    p.updated_date AS p_updated_date,
+    p.status AS p_status
+  </sql>
+  <sql id="postimage_base_column">
+    i.id AS i_id,
+    i.url as i_url,
+    i.priority as i_priority,
+    i.post_id as i_post_id
+  </sql>
+
 </mapper>

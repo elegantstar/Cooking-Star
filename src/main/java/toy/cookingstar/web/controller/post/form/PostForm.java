@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 import lombok.NonNull;
+import toy.cookingstar.service.post.StatusType;
 
 @Data
 public class PostForm {

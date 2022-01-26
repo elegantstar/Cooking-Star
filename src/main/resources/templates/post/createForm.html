@@ -71,9 +71,12 @@
       </div>
 
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn" style="background: #4c9ed9; color: white;" th:href="@{/}" th:text="#{button.post.cancel}">취소</button>
-          <button class="btn" style="background: #0c9bfc; color: white;" th:href="@{/}" th:text="#{button.post.storage}">임시저장</button>
-          <button class="btn btn-primary" type="submit" th:text="#{button.post.upload}">등록</button>
+          <button class="btn" type="submit" formmethod="GET" formaction="/user/myPage"
+                  style="background: #4c9ed9; color: white;" th:text="#{button.post.cancel}">취소</button>
+          <button class="btn" type="submit" formmethod="POST" formaction="/post/create?status=temporaryStorage"
+                  style="background: #0c9bfc; color: white;" th:text="#{button.post.storage}">임시저장</button>
+          <button class="btn btn-primary" type="submit" formmethod="POST" formaction="/post/create?status=posting"
+                  th:text="#{button.post.upload}">등록</button>
       </div>
     </div>
 

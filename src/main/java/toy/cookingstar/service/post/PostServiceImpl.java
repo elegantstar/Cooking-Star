@@ -4,20 +4,25 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostImage;
+import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
+import toy.cookingstar.utils.PagingVO;
 
 @Service
 @RequiredArgsConstructor
@@ -31,14 +36,13 @@ public class PostServiceImpl implements PostService {
     private String imageDir;
 
     // 이미지 저장 경로 찾기
-    public String getFullPath(String imageName) {
-        return imageDir + getCurrentDate() + "/" + imageName;
+    public String getFullPath(String url) {
+        return imageDir + url.substring(0, 10) + "/" + url;
     }
 
     // 현재 날짜 로직
     public String getCurrentDate() {
         return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
-
     }
 
     // 이미지 다건 등록
@@ -67,7 +71,7 @@ public class PostServiceImpl implements PostService {
         // 저장 폴더가 없으면 생성
         makeDir();
         // 이미지 파일 저장
-        multipartFile.transferTo(new File(getFullPath(storedImageName)));
+        multipartFile.transferTo(new File(imageDir + getCurrentDate() + "/" + storedImageName));
 
         return storedImageName;
     }
@@ -106,6 +110,46 @@ public class PostServiceImpl implements PostService {
         }
 
         return user;
+    }
+
+    @Override
+    public List<String> getUserPagePostImages(PostImageParam postImageParam) {
+
+        Member user = memberRepository.findByUserId(postImageParam.getUserId());
+
+        if (user == null) {
+            return null;
+        }
+
+        int totalPost = countPosts(user.getId());
+        PagingVO pagingVO = new PagingVO(totalPost, postImageParam.getCurrentPageNo(),
+                                         postImageParam.getCountPages(), postImageParam.getPostsPerPage());
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("memberId", user.getId());
+        map.put("pagingVO", pagingVO);
+
+        List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(map);
+
+        if (CollectionUtils.isEmpty(postWithImages)) {
+            return null;
+        }
+
+        ArrayList<String> postImages = new ArrayList<>();
+        for (PostWithImage postWithImage : postWithImages) {
+            for (PostImage image : postWithImage.getImages()) {
+                if (!StringUtils.isEmpty(image.getUrl())) {
+                    postImages.add(image.getUrl());
+                }
+            }
+        }
+
+        return postImages;
+    }
+
+    @Override
+    public int countPosts(Long memberId) {
+        return postRepository.countPosts(memberId);
     }
 
     // 저장할 이미지 이름 생성(중복 방지)

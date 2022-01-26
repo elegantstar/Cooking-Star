@@ -25,6 +25,6 @@ public class HomeController {
 
         Member userPageInfo = userService.getUserInfo(loginMember.getUserId());
         model.addAttribute("userPageInfo", userPageInfo);
-        return "user/myPage";
+        return "redirect:/myPage";
     }
 }
