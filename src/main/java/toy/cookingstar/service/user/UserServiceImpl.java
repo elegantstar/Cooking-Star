@@ -27,7 +27,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean isNotAvailableEmail(String userId, String email) {
-        return !StringUtils.equals(memberRepository.findByEmail(email).getUserId(), userId);
+        Member foundMember = memberRepository.findByEmail(email);
+
+        if (foundMember != null) {
+            return !StringUtils.equals(foundMember.getUserId(), userId);
+        }
+        return false;
     }
 
     @Override

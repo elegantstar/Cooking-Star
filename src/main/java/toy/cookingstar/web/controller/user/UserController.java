@@ -1,7 +1,6 @@
 package toy.cookingstar.web.controller.user;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -101,7 +100,7 @@ public class UserController {
         }
 
         // Session update
-        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
+        SessionUtils.refreshMember(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/user/myPage/edit";
     }
@@ -136,7 +135,7 @@ public class UserController {
         }
 
         // Session update
-        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
+        SessionUtils.refreshMember(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/user/myPage/password/updated";
     }

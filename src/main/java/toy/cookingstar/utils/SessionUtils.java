@@ -8,7 +8,7 @@ import toy.cookingstar.web.controller.login.SessionConst;
 
 public class SessionUtils {
 
-    public static void updateSession(Member loginMember, HttpServletRequest request) {
+    public static void refreshMember(Member loginMember, HttpServletRequest request) {
         HttpSession session = request.getSession();
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
     }
