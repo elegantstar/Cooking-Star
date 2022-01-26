@@ -143,7 +143,7 @@ public class UserController {
         }
 
         // Session update
-        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
+        SessionUtils.refreshMember(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/myPage/edit";
     }
@@ -178,7 +178,7 @@ public class UserController {
         }
 
         // Session update
-        SessionUtils.updateSession(userService.getUserInfo(loginUser.getUserId()), request);
+        SessionUtils.refreshMember(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/myPage/password/updated";
     }
