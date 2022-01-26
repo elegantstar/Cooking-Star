@@ -13,4 +13,5 @@ public class UserUpdateParam {
     private String email;
     private String gender;
     private String profileImage;
+
 }

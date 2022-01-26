@@ -173,6 +173,7 @@ public class UserController {
 
         Member updatedUser = userService.updatePwd(pwdUpdateParam);
 
+
         if (updatedUser == null) {
             return "error-page/404";
         }
