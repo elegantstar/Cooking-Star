@@ -1,8 +1,5 @@
 package toy.cookingstar.config;
 
-
-import java.util.Properties;
-
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;

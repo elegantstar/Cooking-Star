@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.member.MemberService;
 import toy.cookingstar.web.controller.member.form.MemberSaveForm;
+import toy.cookingstar.web.controller.validator.PwdValidator;
 
 @Slf4j
 @Controller
@@ -22,6 +23,7 @@ import toy.cookingstar.web.controller.member.form.MemberSaveForm;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PwdValidator pwdValidator;
 
     @GetMapping("/join")
     public String joinForm(@ModelAttribute("member") MemberSaveForm form) {
@@ -31,12 +33,7 @@ public class MemberController {
     @PostMapping("/join")
     public String join(@Validated @ModelAttribute("member") MemberSaveForm form, BindingResult bindingResult, RedirectAttributes redirectAttributes) {
 
-        if (form.getPassword1() != null && form.getPassword2() != null) {
-
-            if (!form.getPassword1().equals(form.getPassword2())) {
-                bindingResult.reject("member.pwd.inconsistency");
-            }
-        }
+        pwdValidator.validEquality(form.getPassword1(), form.getPassword2(), bindingResult);
 
         if (bindingResult.hasErrors()) {
             log.error("errors={}", bindingResult);
