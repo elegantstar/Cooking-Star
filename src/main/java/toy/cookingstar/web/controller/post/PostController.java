@@ -3,8 +3,6 @@ package toy.cookingstar.web.controller.post;
 import java.io.IOException;
 import java.util.List;
 
-import javax.validation.constraints.Size;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.CollectionUtils;
@@ -15,12 +13,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostCreateParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
@@ -34,6 +32,7 @@ import toy.cookingstar.web.controller.post.form.PostForm;
 public class PostController {
 
     private final PostService postService;
+    private final ImageStoreService imageStoreService;
 
     @GetMapping("/create")
     public String createForm(@ModelAttribute("post") PostForm form) {
@@ -60,7 +59,7 @@ public class PostController {
         }
 
         // 서버에 이미지 업로드
-        List<String> storedImages = postService.storeImages(form.getImages());
+        List<String> storedImages = imageStoreService.storeImages(form.getImages());
 
         // StatusType 결정
         StatusType statusType = null;

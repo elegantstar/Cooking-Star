@@ -11,12 +11,6 @@ import toy.cookingstar.domain.PostWithImage;
 
 public interface PostService {
 
-    String getFullPath(String url);
-
-    List<String> storeImages(List<MultipartFile> multipartFiles) throws IOException;
-
-    String storeImage(MultipartFile multipartFile) throws IOException;
-
     Member createPost(PostCreateParam postCreateParam);
 
     List<String> getUserPagePostImages(PostImageParam postImageParam);

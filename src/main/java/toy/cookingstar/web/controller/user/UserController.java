@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.service.imagestore.ImageStoreService;
+import toy.cookingstar.service.imagestore.ImageType;
 import toy.cookingstar.service.post.PostImageParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.user.GenderType;
@@ -41,6 +43,8 @@ public class UserController {
     private final UserService userService;
     private final PwdValidator pwdValidator;
     private final PostService postService;
+
+    private final ImageStoreService imageStoreService;
 
     @GetMapping("/user/{userId}")
     public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) {
@@ -103,7 +107,7 @@ public class UserController {
     @ResponseBody
     @GetMapping("/image/{imageUrl}")
     public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + postService.getFullPath(imageUrl));
+        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
     }
 
     @ModelAttribute("genderTypes")
