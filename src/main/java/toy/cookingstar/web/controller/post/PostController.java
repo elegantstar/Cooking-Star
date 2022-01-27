@@ -20,6 +20,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.domain.Post;
+import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostCreateParam;
 import toy.cookingstar.service.post.PostService;
@@ -90,11 +92,31 @@ public class PostController {
     public String postPage(@PathVariable String userId, @PathVariable String postUrl, @Login Member loginUser, Model model) {
 
         Member userInfo = userService.getUserInfo(userId);
+        Member loginMember = userService.getUserInfo(loginUser.getUserId());
 
-        if (userInfo == null) {
+        if (userInfo == null || loginMember == null) {
             return "error-page/404";
         }
 
-        return null;
+        // user의 memberId와 postUrl을 통해 해당 post의 data를 가져온다.
+        PostWithImage postInfo = postService.getPostInfo(userInfo.getId(), postUrl);
+
+        if (postInfo == null) {
+            return "error-page/404";
+        }
+
+        //TODO: userId가 loginUser의 userId와 같으면 수정이 가능한 페이지로, 같지 않으면 조회만 가능한 페이지로 이동
+        if (StringUtils.equals(userInfo.getUserId(), loginUser.getUserId())) {
+            model.addAttribute("postInfo", postInfo);
+            return "post/myPost";
+        }
+
+        if (postInfo.getStatus() != StatusType.POSTING) {
+            return "error-page/404";
+        }
+
+        model.addAttribute(postInfo);
+
+        return "post/userPost";
     }
 }

@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import toy.cookingstar.domain.Member;
-
+import toy.cookingstar.domain.Post;
+import toy.cookingstar.domain.PostWithImage;
 
 public interface PostService {
 
@@ -13,4 +14,6 @@ public interface PostService {
     List<HashMap<String, String>> getUserPagePostImages(PostImageParam postImageParam);
 
     int countPosts(Long memberId);
+
+    PostWithImage getPostInfo(Long memberId, String postUrl);
 }

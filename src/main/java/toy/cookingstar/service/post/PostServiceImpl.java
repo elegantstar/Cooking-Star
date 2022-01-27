@@ -1,5 +1,7 @@
 package toy.cookingstar.service.post;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,6 +105,22 @@ public class PostServiceImpl implements PostService {
         return postImages;
     }
 
+    @Override
+    public PostWithImage getPostInfo(Long memberId, String postUrl) {
+
+        LocalDateTime createdDate = postUrlToCreatedDate(postUrl);
+
+        PostWithImage postInfo = postRepository.findPostInfo(memberId, createdDate);
+
+        if (postInfo == null) {
+            return null;
+        } else if (CollectionUtils.isEmpty(postInfo.getImages())) {
+            return null;
+        }
+
+        return postInfo;
+    }
+
     //createdDate를 Post Page의 Url로 사용하기 위해 숫자만 추출
     private String extractPostUrl(PostWithImage postWithImage) {
         return postWithImage.getCreatedDate()
@@ -111,6 +129,23 @@ public class PostServiceImpl implements PostService {
                             .replace(" ", "")
                             .replace("-", "")
                             .replace(":", "");
+    }
+
+    //String 타입인 postUrl을 LocalDateTime 타입의 createdDate로 변환
+    private LocalDateTime postUrlToCreatedDate(String postUrl) {
+        String stringDate = postUrl.substring(0, 3)
+                            + "-"
+                            + postUrl.substring(4, 5)
+                            + "-"
+                            + postUrl.substring(6, 7)
+                            + " "
+                            + postUrl.substring(8, 9)
+                            + ":"
+                            + postUrl.substring(10, 11)
+                            + ":"
+                            + postUrl.substring(12, 13);
+
+        return LocalDateTime.parse(stringDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
     }
 
     @Override

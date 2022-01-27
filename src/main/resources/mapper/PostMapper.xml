@@ -33,6 +33,16 @@
     LIMIT #{pagingVO.start}, #{pagingVO.end};
   </select>
 
+  <select id="findPostInfo" resultMap="postWithImage">
+    SELECT <include refid="post_base_column"></include>
+    <include refid="postimage_base_column"></include>
+    FROM post AS p
+    INNER JOIN postimage AS i
+    ON p.id = i.post_id
+    WHERE member_id = #{memberId} AND created_date = #{createdDate} AND p.status = 'POSTING'
+    ORDER BY i.priority ASC;
+  </select>
+
   <resultMap id="postWithImage" type="toy.cookingstar.domain.PostWithImage">
     <id column="p_id" property="id" javaType="long" />
     <result column="p_member_id" property="memberId" javaType="long" />

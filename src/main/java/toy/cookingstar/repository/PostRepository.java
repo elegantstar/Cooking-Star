@@ -1,9 +1,11 @@
 package toy.cookingstar.repository;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostImage;
@@ -19,4 +21,5 @@ public interface PostRepository {
 
     List<PostWithImage> findUserPagePostImage(HashMap<String, Object> map);
 
+    PostWithImage findPostInfo(@Param("memberId") Long memberId, @Param("createdDate") LocalDateTime createdDate);
 }
