@@ -2,6 +2,7 @@ package toy.cookingstar.web.controller.user;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -70,7 +71,7 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        List<String> postImageUrls = getPostImageUrls(userPageInfo);
+        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo);
         model.addAttribute("postImageUrls", postImageUrls);
 
         // userPage로
@@ -93,14 +94,15 @@ public class UserController {
         //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
-        List<String> postImageUrls = getPostImageUrls(userPageInfo);
+        //TODO: getPostImageUrls로 ImageUrl과 PostUrl을 받음
+        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo);
         model.addAttribute("postImageUrls", postImageUrls);
 
         return "user/myPage";
     }
 
     // 페이지 구성 이미지 조회
-    private List<String> getPostImageUrls(Member userPageInfo) {
+    private List<HashMap<String, String>> getPostImageUrls(Member userPageInfo) {
         int currentPageNo = 1;
         int postsPerPage = 12;
         int countPages = 1;

@@ -1,19 +1,13 @@
 package toy.cookingstar.service.post;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
@@ -69,7 +63,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<String> getUserPagePostImages(PostImageParam postImageParam) {
+    public List<HashMap<String, String>> getUserPagePostImages(PostImageParam postImageParam) {
 
         Member user = memberRepository.findByUserId(postImageParam.getUserId());
 
@@ -91,16 +85,32 @@ public class PostServiceImpl implements PostService {
             return null;
         }
 
-        ArrayList<String> postImages = new ArrayList<>();
+        ArrayList<HashMap<String, String>> postImages = new ArrayList<>();
+
         for (PostWithImage postWithImage : postWithImages) {
             for (PostImage image : postWithImage.getImages()) {
                 if (!StringUtils.isEmpty(image.getUrl())) {
-                    postImages.add(image.getUrl());
+
+                    //HashMap을 이용해 imageUrl과 PostUrl을 넣어준다.
+                    HashMap<String, String> postImageUrls = new HashMap<>();
+                    postImageUrls.put("imageUrl", image.getUrl());
+                    postImageUrls.put("postUrl", extractPostUrl(postWithImage));
+
+                    postImages.add(postImageUrls);
                 }
             }
         }
-
         return postImages;
+    }
+
+    //createdDate를 Post Page의 Url로 사용하기 위해 숫자만 추출
+    private String extractPostUrl(PostWithImage postWithImage) {
+        return postWithImage.getCreatedDate()
+                            .toString()
+                            .replace("T", "")
+                            .replace(" ", "")
+                            .replace("-", "")
+                            .replace(":", "");
     }
 
     @Override

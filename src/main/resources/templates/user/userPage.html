@@ -85,7 +85,9 @@
 <div class="container" id="content-box">
   <hr class="mt-2 mb-5">
   <div class="img-layer" style="text-align: center">
-    <img th:each="postImageUrl : ${postImageUrls}" th:src="|/image/${postImageUrl}|" class="img-standard" alt="포스트 이미지" />
+    <a th:each="postImageUrl : ${postImageUrls}" th:href="@{'/user/' + ${userPageInfo.userId} + '/' + ${postImageUrl['postUrl']}}" style="text-decoration: none">
+      <img th:src="|/image/${postImageUrl['imageUrl']}|" class="img-standard" alt="포스트 이미지" />
+    </a>
   </div>
 </div>
 
