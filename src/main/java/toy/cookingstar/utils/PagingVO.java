@@ -8,7 +8,15 @@ import lombok.Setter;
 public class PagingVO {
 
     // 현재 페이지 번호, 시작 페이지 번호, 끝 페이지 번호, 총 포스트 수, 페이지 당 포스트 수, 한 번에 노출할 페이지 수, 마지막 페이지, 쿼리에 사용할 변수(start, end)
-    private int currentPageNo, startPageNo, endPageNo, totalPost, postsPerPage, countPages, lastPage, start, end;
+    private int currentPageNo;
+    private int startPageNo;
+    private int endPageNo;
+    private int totalPost;
+    private int postsPerPage;
+    private int countPages;
+    private int lastPage;
+    private int start;
+    private int end;
 
     public PagingVO(int totalPost, int currentPageNo, int countPages, int postsPerPage) {
         setTotalPost(totalPost);

@@ -17,7 +17,7 @@ public interface PostService {
 
     String storeImage(MultipartFile multipartFile) throws IOException;
 
-    Member createPost(PostCreateParam postCreateParam);
+    void createPost(PostCreateParam postCreateParam);
 
     List<String> getUserPagePostImages(PostImageParam postImageParam);
 

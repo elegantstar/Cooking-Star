@@ -78,15 +78,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     @Transactional
-    public Member createPost(PostCreateParam postCreateParam) {
+    public void createPost(PostCreateParam postCreateParam) {
 
         String userId = postCreateParam.getUserId();
         Member user = memberRepository.findByUserId(userId);
-
-        // 존재하는 유저인지 확인
-        if (user == null) {
-            return null;
-        }
 
         Post post = Post.builder()
                         .memberId(user.getId())
@@ -108,8 +103,6 @@ public class PostServiceImpl implements PostService {
 
             postRepository.saveImage(postImage);
         }
-
-        return user;
     }
 
     @Override

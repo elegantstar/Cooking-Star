@@ -24,6 +24,7 @@ import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.post.PostCreateParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
+import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.form.PostForm;
 
@@ -34,6 +35,7 @@ import toy.cookingstar.web.controller.post.form.PostForm;
 public class PostController {
 
     private final PostService postService;
+    private final UserService userService;
 
     @GetMapping("/create")
     public String createForm(@ModelAttribute("post") PostForm form) {
@@ -44,7 +46,7 @@ public class PostController {
      * @param status : view에서 임시저장, 등록 두 개의 button submit에 따라 status enum 값을 달리 주기 위한 요청 파라미터
      */
     @PostMapping("/create")
-    public String create(@Validated @ModelAttribute("post") PostForm form, @RequestParam String status,
+    public String create(@Validated @ModelAttribute("post") PostForm form, @RequestParam StatusType status,
                          BindingResult bindingResult, @Login Member loginUser,
                          RedirectAttributes redirectAttributes) throws IOException {
 
@@ -59,26 +61,19 @@ public class PostController {
             return "post/createForm";
         }
 
+        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userInfo == null) {
+            return "error-page/404";
+        }
+
         // 서버에 이미지 업로드
         List<String> storedImages = postService.storeImages(form.getImages());
 
-        // StatusType 결정
-        StatusType statusType = null;
-
-        if (StringUtils.equals(status, "posting")) {
-            statusType = StatusType.POSTING;
-        } else if (StringUtils.equals(status, "temporaryStorage")) {
-            statusType = StatusType.TEMPORARY_STORAGE;
-        }
-
-        PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), statusType, storedImages);
+        PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), status, storedImages);
 
         // DB에 post 데이터 저장 + postImage 데이터 저장
-        Member updatedUser = postService.createPost(postCreateParam);
-
-        if (updatedUser == null) {
-            return "error-page/404";
-        }
+        postService.createPost(postCreateParam);
 
         redirectAttributes.addFlashAttribute("userPageInfo", loginUser);
         return "redirect:/myPage";

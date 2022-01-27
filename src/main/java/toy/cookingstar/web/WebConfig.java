@@ -3,10 +3,12 @@ package toy.cookingstar.web;
 import java.util.List;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.format.FormatterRegistry;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import toy.cookingstar.converter.StringToStatusTypeConverter;
 import toy.cookingstar.web.argumentresolver.LoginMemberArgumentResolver;
 import toy.cookingstar.web.interceptor.LogInterceptor;
 import toy.cookingstar.web.interceptor.LoginCheckInterceptor;
@@ -33,4 +35,8 @@ public class WebConfig implements WebMvcConfigurer {
                                      "/images/**", "/css/**", "/*.ico", "/error");
     }
 
+    @Override
+    public void addFormatters(FormatterRegistry registry) {
+        registry.addConverter(new StringToStatusTypeConverter());
+    }
 }
