@@ -31,7 +31,7 @@ public class ImageStoreService {
     }
 
     //현재 날짜 로직
-    public String getCurrentDate() {
+    private String getCurrentDate() {
         return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
     }
 

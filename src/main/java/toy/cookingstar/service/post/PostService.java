@@ -9,7 +9,7 @@ import toy.cookingstar.domain.PostWithImage;
 
 public interface PostService {
 
-    Member createPost(PostCreateParam postCreateParam);
+    void createPost(PostCreateParam postCreateParam);
 
     List<HashMap<String, String>> getUserPagePostImages(PostImageParam postImageParam);
 
