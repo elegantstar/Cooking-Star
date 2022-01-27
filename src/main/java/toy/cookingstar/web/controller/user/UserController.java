@@ -1,14 +1,17 @@
 package toy.cookingstar.web.controller.user;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,7 +46,6 @@ public class UserController {
     private final UserService userService;
     private final PwdValidator pwdValidator;
     private final PostService postService;
-
     private final ImageStoreService imageStoreService;
 
     @GetMapping("/user/{userId}")
@@ -79,6 +81,10 @@ public class UserController {
     public String myPage(@Login Member loginUser, Model model) {
 
         Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userPageInfo == null) {
+            return "error-page/404";
+        }
         model.addAttribute("userPageInfo", userPageInfo);
 
         int totalPost = postService.countPosts(userPageInfo.getId());
@@ -105,6 +111,12 @@ public class UserController {
     }
 
     @ResponseBody
+    @GetMapping("/profile/{imageUrl}")
+    public Resource userProfileImage(@PathVariable String imageUrl) throws MalformedURLException {
+        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.PROFILE, imageUrl));
+    }
+
+    @ResponseBody
     @GetMapping("/image/{imageUrl}")
     public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
         return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
@@ -123,8 +135,8 @@ public class UserController {
     }
 
     @PostMapping("/myPage/edit")
-    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form,
-                           BindingResult bindingResult, @Login Member loginUser, HttpServletRequest request) {
+    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form, BindingResult bindingResult,
+                           @Login Member loginUser, HttpServletRequest request) throws IOException {
 
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
             bindingResult.reject("edit.email.notAvailable");
@@ -135,10 +147,18 @@ public class UserController {
             return "user/editForm";
         }
 
+        //프로필 이미지 업로드
+        String storedProfileImage;
+
+        if (form.getProfileImage() == null) {
+            storedProfileImage = null;
+        } else {
+            storedProfileImage = imageStoreService.storeImage(ImageType.PROFILE, form.getProfileImage());
+        }
+
         UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
-                                                              form.getIntroduction(),
-                                                              form.getEmail(), form.getGender(),
-                                                              form.getProfileImage());
+                                                              form.getIntroduction(), form.getEmail(),
+                                                              form.getGender(), storedProfileImage);
 
         Member updatedUser = userService.updateInfo(userUpdateParam);
 
@@ -146,14 +166,16 @@ public class UserController {
             return "error-page/404";
         }
 
-        // Session update
+        // Session member update
         SessionUtils.refreshMember(userService.getUserInfo(loginUser.getUserId()), request);
 
         return "redirect:/myPage/edit";
     }
 
     @GetMapping("/myPage/password/change")
-    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form) {
+    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser, Model model) {
+        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+        model.addAttribute("userInfo", userInfo);
         return "user/pwdForm";
     }
 

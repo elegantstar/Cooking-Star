@@ -69,22 +69,31 @@
       </li>
     </ul>
 
+  </div>
+
+  <form class="mb-5" th:action th:object="${userInfo}" method="post" enctype="multipart/form-data">
+
     <div class="profile-head">
       <!--  프로필 이미지 영역  -->
       <div id="profile-box mb-5">
         <div class="profile-img-box">
-          <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="샘플 이미지5" />
+          <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+          </div>
+          <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+          </div>
         </div>
 
         <div class="mt-3 mb-1">
           <span class="user-id" style="font-size: 25px;" th:text="${session.loginMember.userId}">유저 아이디</span><br/>
-          <span class="img-change-btn" href="#" th:text="#{label.edit.profile}">프로필 사진 교체</span>
+          <div class="img-change-btn" th:text="#{label.edit.profile}" style="color: #3097fc; font-weight: bold;">
+            프로필 사진 교체
+          </div>
+          <input type="file" name="profileImage" />
         </div>
       </div>
     </div>
-  </div>
-
-  <form class="mb-5" th:action th:object="${userInfo}" method="post">
 
     <!--  글로벌 오류 메시지  -->
     <div th:if="${#fields.hasGlobalErrors()}">
