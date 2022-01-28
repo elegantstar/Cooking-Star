@@ -1,7 +1,6 @@
 package toy.cookingstar.repository;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
@@ -19,7 +18,7 @@ public interface PostRepository {
 
     int countPosts(Long memberId);
 
-    List<PostWithImage> findUserPagePostImage(HashMap<String, Object> map);
+    List<PostWithImage> findUserPagePostImage(@Param("memberId") Long memberId, @Param("start") int start, @Param("end") int end);
 
     PostWithImage findPostInfo(@Param("memberId") Long memberId, @Param("createdDate") LocalDateTime createdDate);
 }

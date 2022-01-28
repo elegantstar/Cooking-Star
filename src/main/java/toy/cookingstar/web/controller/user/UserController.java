@@ -33,6 +33,7 @@ import toy.cookingstar.service.user.PwdUpdateParam;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.service.user.UserUpdateParam;
 import toy.cookingstar.utils.HashUtil;
+import toy.cookingstar.utils.PagingVO;
 import toy.cookingstar.utils.SessionUtils;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.user.form.InfoUpdateForm;
@@ -62,7 +63,7 @@ public class UserController {
         model.addAttribute("userPageInfo", userPageInfo);
 
         // 요청 받은 userId가 로그인 유저의 userId와 같으면 myPage로
-        if (userId.equals(loginUser.getUserId())) {
+        if (StringUtils.equals(userId, loginUser.getUserId())) {
             return "redirect:/myPage";
         }
 
@@ -71,7 +72,7 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo);
+        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo, totalPost);
         model.addAttribute("postImageUrls", postImageUrls);
 
         // userPage로
@@ -95,21 +96,21 @@ public class UserController {
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
         //TODO: getPostImageUrls로 ImageUrl과 PostUrl을 받음
-        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo);
+        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo, totalPost);
         model.addAttribute("postImageUrls", postImageUrls);
 
         return "user/myPage";
     }
 
     // 페이지 구성 이미지 조회
-    private List<HashMap<String, String>> getPostImageUrls(Member userPageInfo) {
+    private List<HashMap<String, String>> getPostImageUrls(Member userPageInfo, int totalPost) {
         int currentPageNo = 1;
         int postsPerPage = 12;
         int countPages = 1;
 
-        PostImageParam postImageParam = new PostImageParam(userPageInfo.getUserId(), currentPageNo,
-                                                           postsPerPage, countPages);
-        return postService.getUserPagePostImages(postImageParam);
+        PagingVO pagingVO = new PagingVO(totalPost, currentPageNo, countPages, postsPerPage);
+
+        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(), pagingVO.getEnd());
     }
 
     @ResponseBody

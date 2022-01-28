@@ -1,6 +1,8 @@
 package toy.cookingstar.web.controller.post;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,14 +15,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostCreateParam;
@@ -91,25 +91,44 @@ public class PostController {
             return "error-page/404";
         }
 
-        // user의 memberId와 postUrl을 통해 해당 post의 data를 가져온다.
+        model.addAttribute("userInfo", userInfo);
+
+        //user의 memberId와 postUrl을 통해 해당 post의 data를 가져온다.
         PostWithImage postInfo = postService.getPostInfo(userInfo.getId(), postUrl);
 
         if (postInfo == null) {
             return "error-page/404";
         }
 
+        String createdDateDiff = getDayDiff(postInfo.getCreatedDate());
+        String updatedDateDiff = getDayDiff(postInfo.getUpdatedDate());
+
         //TODO: userId가 loginUser의 userId와 같으면 수정이 가능한 페이지로, 같지 않으면 조회만 가능한 페이지로 이동
         if (StringUtils.equals(userInfo.getUserId(), loginUser.getUserId())) {
             model.addAttribute("postInfo", postInfo);
+            model.addAttribute("createdDateDiff", createdDateDiff);
+            model.addAttribute("updatedDateDiff", updatedDateDiff);
             return "post/myPost";
         }
 
+        //loginUser의 게시물이 아닌 경우, 임시보관 또는 비공개 상태인 게시물에 접근할 수 없음.
         if (postInfo.getStatus() != StatusType.POSTING) {
             return "error-page/404";
         }
 
-        model.addAttribute(postInfo);
+        model.addAttribute("postInfo", postInfo);
+        model.addAttribute("createdDateDiff", createdDateDiff);
+        model.addAttribute("updatedDateDiff", updatedDateDiff);
 
         return "post/userPost";
+    }
+
+    private String getDayDiff(LocalDateTime localDateTime) {
+        LocalDateTime targetDay = localDateTime.truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime nowDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+
+        int compareResult = nowDay.compareTo(targetDay);
+
+        return compareResult + "일";
     }
 }
