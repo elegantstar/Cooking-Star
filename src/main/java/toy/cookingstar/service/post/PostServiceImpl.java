@@ -4,9 +4,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +23,6 @@ import toy.cookingstar.domain.PostImage;
 import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
-import toy.cookingstar.utils.PagingVO;
 
 @Service
 @RequiredArgsConstructor
@@ -106,38 +106,23 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<String> getUserPagePostImages(PostImageParam postImageParam) {
+    public List<String> getUserPagePostImages(String userId, int start, int end) {
 
-        Member user = memberRepository.findByUserId(postImageParam.getUserId());
+        Member user = memberRepository.findByUserId(userId);
 
         if (user == null) {
             return null;
         }
 
-        int totalPost = countPosts(user.getId());
-        PagingVO pagingVO = new PagingVO(totalPost, postImageParam.getCurrentPageNo(),
-                                         postImageParam.getCountPages(), postImageParam.getPostsPerPage());
-
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("memberId", user.getId());
-        map.put("pagingVO", pagingVO);
-
-        List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(map);
+        List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
 
         if (CollectionUtils.isEmpty(postWithImages)) {
             return null;
         }
 
-        ArrayList<String> postImages = new ArrayList<>();
-        for (PostWithImage postWithImage : postWithImages) {
-            for (PostImage image : postWithImage.getImages()) {
-                if (!StringUtils.isEmpty(image.getUrl())) {
-                    postImages.add(image.getUrl());
-                }
-            }
-        }
-
-        return postImages;
+        return postWithImages.stream().map(PostWithImage::getImages)
+                             .flatMap(Collection::stream).collect(Collectors.toList())
+                             .stream().map(PostImage::getUrl).collect(Collectors.toList());
     }
 
     @Override

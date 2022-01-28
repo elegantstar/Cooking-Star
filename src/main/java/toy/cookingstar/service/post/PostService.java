@@ -5,10 +5,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.PostImage;
-import toy.cookingstar.domain.PostWithImage;
-
 public interface PostService {
 
     String getFullPath(String url);
@@ -19,7 +15,7 @@ public interface PostService {
 
     void createPost(PostCreateParam postCreateParam);
 
-    List<String> getUserPagePostImages(PostImageParam postImageParam);
+    List<String> getUserPagePostImages(String userId, int start, int end);
 
     int countPosts(Long memberId);
 }
