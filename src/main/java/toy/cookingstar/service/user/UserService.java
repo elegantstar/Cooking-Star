@@ -16,4 +16,6 @@ public interface UserService {
 
     Member updatePwd(PwdUpdateParam pwdUpdateParam);
 
+    Member getUserInfo(Long memberId);
+
 }

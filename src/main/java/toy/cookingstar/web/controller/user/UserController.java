@@ -212,8 +212,7 @@ public class UserController {
         return "redirect:/myPage/password/updated";
     }
 
-    private boolean isWrongPwd(@ModelAttribute("userPwdInfo") @Validated PwdUpdateForm form,
-                               @Login Member loginUser) {
+    private boolean isWrongPwd(PwdUpdateForm form, Member loginUser) {
         return !loginUser.getPassword().equals(HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
     }
 

@@ -58,6 +58,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public Post findPostByPostId(Long postId) {
+        return postRepository.findByPostId(postId);
+    }
+
+    @Override
     public List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end) {
 
         Member user = memberRepository.findByUserId(userId);
@@ -84,7 +89,7 @@ public class PostServiceImpl implements PostService {
             //HashMap을 이용해 imageUrl과 PostUrl을 넣어준다.
             HashMap<String, String> postImageUrls = new HashMap<>();
             postImageUrls.put("imageUrl", image.getUrl());
-            postImageUrls.put("postUrl", extractPostUrl(postWithImage));
+            postImageUrls.put("postUrl", postWithImage.getId().toString());
 
             postImages.add(postImageUrls);
 
@@ -93,11 +98,9 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostWithImage getPostInfo(Long memberId, String postUrl) {
+    public PostWithImage getPostInfo(Long postId) {
 
-        LocalDateTime createdDate = postUrlToCreatedDate(postUrl);
-
-        PostWithImage postInfo = postRepository.findPostInfo(memberId, createdDate);
+        PostWithImage postInfo = postRepository.findPostInfo(postId);
 
         if (postInfo == null) {
             return null;
@@ -108,41 +111,8 @@ public class PostServiceImpl implements PostService {
         return postInfo;
     }
 
-    //createdDate를 Post Page의 Url로 사용하기 위해 숫자만 추출
-    private String extractPostUrl(PostWithImage postWithImage) {
-        return postWithImage.getCreatedDate()
-                            .toString()
-                            .replace("T", "")
-                            .replace(" ", "")
-                            .replace("-", "")
-                            .replace(":", "");
-    }
-
-    private String extractPostUrls(PostWithImage postWithImage) {
-        DateTimeFormatter postUrlFormatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        return postWithImage.getCreatedDate().format(postUrlFormatter);
-    }
-
-    //String 타입인 postUrl을 LocalDateTime 타입의 createdDate로 변환
-    private LocalDateTime postUrlToCreatedDate(String postUrl) {
-        String stringDate = postUrl.substring(0, 4)
-                            + "-"
-                            + postUrl.substring(4, 6)
-                            + "-"
-                            + postUrl.substring(6, 8)
-                            + " "
-                            + postUrl.substring(8, 10)
-                            + ":"
-                            + postUrl.substring(10, 12)
-                            + ":"
-                            + postUrl.substring(12);
-
-        return LocalDateTime.parse(stringDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-    }
-
     @Override
     public int countPosts(Long memberId) {
         return postRepository.countPosts(memberId);
     }
-
 }

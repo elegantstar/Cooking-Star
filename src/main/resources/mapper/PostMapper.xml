@@ -22,6 +22,12 @@
     WHERE member_id = #{memberId};
   </select>
 
+  <select id="findByPostId" resultType="Post">
+    SELECT *
+    FROM post
+    WHERE id = #{id};
+  </select>
+
   <select id="findUserPagePostImage" resultMap="postWithImage">
     SELECT <include refid="post_base_column"></include>,
     <include refid="postimage_base_column"></include>
@@ -39,7 +45,7 @@
     FROM post AS p
     INNER JOIN postimage AS i
     ON p.id = i.post_id
-    WHERE member_id = #{memberId} AND created_date = #{createdDate} AND p.status = 'POSTING'
+    WHERE p.id = #{id} AND p.status = 'POSTING'
     ORDER BY i.priority ASC;
   </select>
 

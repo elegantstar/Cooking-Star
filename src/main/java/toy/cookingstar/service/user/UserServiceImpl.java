@@ -25,9 +25,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Member getUserInfo(String userId) {
-
         return memberRepository.findByUserId(userId);
-
     }
 
     @Override
@@ -78,6 +76,11 @@ public class UserServiceImpl implements UserService {
         memberRepository.updatePwd(userId, newPassword, newSalt);
 
         return getUserInfo(userId);
+    }
+
+    @Override
+    public Member getUserInfo(Long memberId) {
+        return memberRepository.findById(memberId);
     }
 
     private boolean isNotJoinedUser(String userId) {

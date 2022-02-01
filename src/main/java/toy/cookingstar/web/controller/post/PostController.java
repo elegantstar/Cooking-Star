@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostCreateParam;
@@ -81,20 +82,27 @@ public class PostController {
         return "redirect:/myPage";
     }
 
-    @GetMapping("/user/{userId}/{postUrl}")
-    public String postPage(@PathVariable String userId, @PathVariable String postUrl, @Login Member loginUser, Model model) {
+    @GetMapping("/post/{postUrl}")
+    public String postPage(@PathVariable String postUrl, @Login Member loginUser, Model model) {
 
-        Member userInfo = userService.getUserInfo(userId);
+        long postId = Long.parseLong(postUrl);
+        Post foundPost = postService.findPostByPostId(postId);
         Member loginMember = userService.getUserInfo(loginUser.getUserId());
 
-        if (userInfo == null || loginMember == null) {
+        if (foundPost == null || loginMember == null) {
+            return "error-page/404";
+        }
+
+        Member userInfo = userService.getUserInfo(foundPost.getMemberId());
+
+        if (userInfo == null) {
             return "error-page/404";
         }
 
         model.addAttribute("userInfo", userInfo);
 
         //user의 memberId와 postUrl을 통해 해당 post의 data를 가져온다.
-        PostWithImage postInfo = postService.getPostInfo(userInfo.getId(), postUrl);
+        PostWithImage postInfo = postService.getPostInfo(postId);
 
         if (postInfo == null) {
             return "error-page/404";
