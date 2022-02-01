@@ -3,6 +3,7 @@ package toy.cookingstar.config;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
@@ -13,6 +14,7 @@ import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import lombok.RequiredArgsConstructor;
+import toy.cookingstar.service.post.StatusType;
 
 // @Mapper 인터페이스 패키지 위치 선언
 @Configuration
@@ -41,6 +43,7 @@ public class MybatisConfig {
 
         sessionFactory.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/*.xml"));
         sessionFactory.setTypeAliasesPackage("toy.cookingstar.domain");
+        sessionFactory.setTypeHandlers(new StatusType.TypeHandler());
 
         return sessionFactory.getObject();
     }

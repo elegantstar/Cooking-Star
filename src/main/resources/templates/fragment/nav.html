@@ -34,7 +34,7 @@
              href="#" id="postingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" href="#" th:text="#{label.nav.posting}">포스팅</a></li>
+            <li><a class="dropdown-item" th:href="@{/post/create}" th:text="#{label.nav.posting}">포스팅</a></li>
             <li><a class="dropdown-item" href="#" th:text="#{label.nav.outbox}">임시 보관함</a></li>
           </ul>
         </li>
@@ -43,8 +43,8 @@
              href="#" id="myPageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" th:href="@{/user/myPage}" th:text="#{label.nav.myPage}">마이 페이지</a></li>
-            <li><a class="dropdown-item" th:href="@{/user/myPage/edit}" th:text="#{label.nav.changeInfo}">내 정보</a></li>
+            <li><a class="dropdown-item" th:href="@{/myPage}" th:text="#{label.nav.myPage}">마이 페이지</a></li>
+            <li><a class="dropdown-item" th:href="@{/myPage/edit}" th:text="#{label.nav.changeInfo}">내 정보</a></li>
             <li><hr class="dropdown-divider"></li>
             <li>
               <form th:action="@{/logout}" method="post">
