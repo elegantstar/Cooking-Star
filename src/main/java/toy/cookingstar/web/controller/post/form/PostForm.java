@@ -21,6 +21,8 @@ public class PostForm {
     @Length(max = 2200)
     private String content;
 
+    private StatusType status;
+
     public void removeEmptyImage() {
         images.removeIf(image -> StringUtils.isEmpty(image.getOriginalFilename()));
     }

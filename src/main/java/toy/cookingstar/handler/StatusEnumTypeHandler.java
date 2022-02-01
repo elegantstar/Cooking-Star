@@ -40,7 +40,7 @@ public abstract class StatusEnumTypeHandler<E extends Enum<E> & StatusEnum> impl
     private StatusEnum getStatusEnum(String status) {
         return EnumSet.allOf(type)
                       .stream()
-                      .filter(value -> value.getStatus().toLowerCase().equals(status.toLowerCase()))
+                      .filter(value -> value.getStatus().equals(status))
                       .findFirst()
                       .orElseGet(null);
     }

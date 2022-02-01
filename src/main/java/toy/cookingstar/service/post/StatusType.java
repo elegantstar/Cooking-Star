@@ -7,9 +7,9 @@ import toy.cookingstar.handler.StatusEnumTypeHandler;
 
 public enum StatusType implements StatusEnum {
 
-    POSTING("posting"),
-    TEMPORARY_STORAGE("temporaryStorage"),
-    PRIVATE("private");
+    POSTING("POSTING"),
+    TEMPORARY_STORAGE("TEMPORARY_STORAGE"),
+    PRIVATE("PRIVATE");
 
     private final String status;
 
