@@ -1,6 +1,3 @@
-<!-- TODO: 여기서 볼 수 있는 것 - postImage, userProfileImage, userId, postContent, createdDate, updatedDate-->
-<!-- TODO: 여기서 할 수 있는 것 - 삭제, 게시글 수정, 링크 복사, 취소 - 이거 지금으로서는 dropdown으로 구현해야 할듯 -->
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -9,12 +6,12 @@
 
   <link th:replace="fragment/bootstrap :: bootstrapCss">
   <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
   <script type="text/javascript">
     function button_deletion() {
       var result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
       if (result) {
-        alert("해당 게시물을 삭제하였습니다.");
         document.getElementById('deletion').submit();
       } else {
         return false;
@@ -85,11 +82,21 @@
 
   <div class="mb-3">
 
-    <!-- Post Image 영역 -->
-    <div class="img-layer-box">
-      <div class="img-box">
-        <img th:each="image : ${postInfo.getImages()}" th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+    <!-- Post Image 영역(캐러셀 적용) -->
+    <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
+      <div class="carousel-inner img-box">
+        <div th:each="image : ${postInfo.getImages()}" class="carousel-item">
+          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+        </div>
       </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
 
     <!-- 우측 상단 Profile 영역 -->
@@ -160,6 +167,10 @@
   </div>
 
 </div>
+
+<script type="text/javascript">
+  $('.carousel-item').filter(':first').addClass('active');
+</script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
 

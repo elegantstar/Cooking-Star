@@ -6,6 +6,7 @@
 
   <link th:replace="fragment/bootstrap :: bootstrapCss">
   <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
   <style>
     .img-layer-box {
@@ -67,11 +68,21 @@
 
   <div class="mb-3">
 
-    <!-- Post Image 영역 -->
-    <div class="img-layer-box">
-      <div class="img-box">
-        <img th:each="image : ${postInfo.getImages()}" th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+    <!-- Post Image 영역(캐러셀 적용) -->
+    <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
+      <div class="carousel-inner img-box">
+        <div th:each="image : ${postInfo.getImages()}" class="carousel-item">
+          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+        </div>
       </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
     </div>
 
     <!-- 우측 상단 Profile 영역 -->
@@ -123,6 +134,10 @@
   </div>
 
 </div>
+
+<script type="text/javascript">
+  $('.carousel-item').filter(':first').addClass('active');
+</script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
 
