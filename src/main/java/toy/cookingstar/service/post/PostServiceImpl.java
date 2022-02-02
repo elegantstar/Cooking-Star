@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end) {
+    public List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end, StatusType statusType) {
 
         Member user = memberRepository.findByUserId(userId);
 
@@ -69,8 +69,20 @@ public class PostServiceImpl implements PostService {
             return null;
         }
 
-        List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
+        if (statusType == StatusType.POSTING) {
+            List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
+            return getPostImages(postWithImages);
+        }
 
+        if (statusType == StatusType.PRIVATE) {
+            List<PostWithImage> postWithImages = postRepository.findPrivatePagePostImage(user.getId(), start, end);
+            return getPostImages(postWithImages);
+        }
+
+        return null;
+    }
+
+    private List<HashMap<String, String>> getPostImages(List<PostWithImage> postWithImages) {
         if (CollectionUtils.isEmpty(postWithImages)) {
             return null;
         }

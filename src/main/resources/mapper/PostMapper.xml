@@ -39,6 +39,17 @@
     LIMIT #{start}, #{end};
   </select>
 
+  <select id="findPrivatePagePostImage" resultMap="postWithImage">
+    SELECT <include refid="post_base_column"></include>,
+    <include refid="postimage_base_column"></include>
+    FROM postimage AS i
+    INNER JOIN post AS p
+    ON p.id = i.post_id
+    WHERE p.member_id = #{memberId} AND i.priority = 1 AND p.status = 'PRIVATE'
+    ORDER BY p.id DESC
+    LIMIT #{start}, #{end};
+  </select>
+
   <select id="findPostInfo" resultMap="postWithImage">
     SELECT <include refid="post_base_column"></include>,
     <include refid="postimage_base_column"></include>

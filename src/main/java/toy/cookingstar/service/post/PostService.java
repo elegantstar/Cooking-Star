@@ -12,7 +12,7 @@ public interface PostService {
 
     Post findPostByPostId(Long postId);
 
-    List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end);
+    List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end, StatusType statusType);
 
     int countPosts(Long memberId);
 

@@ -29,4 +29,6 @@ public interface PostRepository {
     void deletePost(Long id);
 
     void updatePost(@Param("id") Long id, @Param("content") String content, @Param("status") StatusType status);
+
+    List<PostWithImage> findPrivatePagePostImage(@Param("memberId") Long memberId, @Param("start") int start, @Param("end") int end);
 }
