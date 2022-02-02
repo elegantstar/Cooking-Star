@@ -45,9 +45,25 @@
     FROM post AS p
     INNER JOIN postimage AS i
     ON p.id = i.post_id
-    WHERE p.id = #{id} AND p.status = 'POSTING'
+    WHERE p.id = #{id}
     ORDER BY i.priority ASC;
   </select>
+
+  <delete id="deletePostImages">
+    DELETE FROM postimage
+    WHERE post_id = #{postId}
+  </delete>
+
+  <delete id="deletePost">
+    DELETE FROM post
+    WHERE id = ${id}
+  </delete>
+
+  <update id="updatePost">
+    UPDATE post
+    SET content = #{content}, status = #{status}, updated_date = CURRENT_TIMESTAMP
+    WHERE id = #{id};
+  </update>
 
   <resultMap id="postWithImage" type="toy.cookingstar.domain.PostWithImage">
     <id column="p_id" property="id" javaType="long" />

@@ -19,6 +19,10 @@ public class LoginServiceImpl implements LoginService {
         // 1.아이디 조회
         Member foundMember = memberRepository.findByUserId(userId);
 
+        if (foundMember == null) {
+            return null;
+        }
+
         // 2. 패스워드와 조회한 아이디의 salt를 이용하여 hashing
         String requestPwd = HashUtil.encrypt(password + foundMember.getSalt());
 

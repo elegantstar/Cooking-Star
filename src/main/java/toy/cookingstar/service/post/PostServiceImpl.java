@@ -1,7 +1,5 @@
 package toy.cookingstar.service.post;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -81,6 +79,8 @@ public class PostServiceImpl implements PostService {
 //                                               .collect(Collectors.toList()).stream().map(PostImage::getUrl)
 //                                               .collect(Collectors.toList());
 
+        //TODO: 아래 로직 간단히 변경 (PostController, myPost.html, userPost.html 함께 변경)
+
         ArrayList<HashMap<String, String>> postImages = new ArrayList<>();
 
         for (PostWithImage postWithImage : postWithImages) {
@@ -114,5 +114,20 @@ public class PostServiceImpl implements PostService {
     @Override
     public int countPosts(Long memberId) {
         return postRepository.countPosts(memberId);
+    }
+
+    @Override
+    @Transactional
+    public void deletePost(String userId, Long postId) {
+        postRepository.deletePostImages(postId);
+        postRepository.deletePost(postId);
+        log.info("DELETE POST: userId=[{}], deletedPostId=[{}]", userId, postId);
+    }
+
+    @Override
+    @Transactional
+    public void updatePost(String userId, Long id, String content, StatusType status) {
+        postRepository.updatePost(id, content, status);
+        log.info("UPDATE POST: userId=[{}], updatedPostId=[{}]", userId, id);
     }
 }

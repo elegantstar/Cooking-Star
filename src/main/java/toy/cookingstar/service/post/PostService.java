@@ -17,4 +17,8 @@ public interface PostService {
     int countPosts(Long memberId);
 
     PostWithImage getPostInfo(Long postId);
+
+    void deletePost(String userId, Long postId);
+
+    void updatePost(String userId, Long id, String content, StatusType status);
 }

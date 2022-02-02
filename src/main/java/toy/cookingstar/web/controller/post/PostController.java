@@ -29,6 +29,8 @@ import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.post.form.DeleteForm;
+import toy.cookingstar.web.controller.post.form.PostEditForm;
 import toy.cookingstar.web.controller.post.form.PostForm;
 
 @Slf4j
@@ -45,13 +47,9 @@ public class PostController {
         return "post/createForm";
     }
 
-    /**
-     * @param status : view에서 임시저장, 등록 두 개의 button submit에 따라 status enum 값을 달리 주기 위한 요청 파라미터
-     */
     @PostMapping("/post/create")
-    public String create(@Validated @ModelAttribute("post") PostForm form, @RequestParam StatusType status,
-                         BindingResult bindingResult, @Login Member loginUser,
-                         RedirectAttributes redirectAttributes) throws IOException {
+    public String create(@Validated @ModelAttribute("post") PostForm form, BindingResult bindingResult,
+                         @Login Member loginUser) throws IOException {
 
         form.removeEmptyImage();
 
@@ -73,12 +71,11 @@ public class PostController {
         // 서버에 이미지 업로드
         List<String> storedImages = imageStoreService.storeImages(form.getImages());
 
-        PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), status, storedImages);
+        PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), form.getStatus(), storedImages);
 
         // DB에 post 데이터 저장 + postImage 데이터 저장
         postService.createPost(postCreateParam);
 
-        redirectAttributes.addFlashAttribute("userPageInfo", loginUser);
         return "redirect:/myPage";
     }
 
@@ -129,6 +126,59 @@ public class PostController {
         model.addAttribute("updatedDateDiff", updatedDateDiff);
 
         return "post/userPost";
+    }
+
+    @PostMapping("/post/deletion")
+    public String deletePost(@ModelAttribute DeleteForm form, @Login Member loginUser, Model model) {
+        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+        Post foundPost = postService.findPostByPostId(Long.parseLong(form.getPostId()));
+
+        if (userInfo == null || foundPost == null) {
+            return "error-page/404";
+        }
+
+        if (!userInfo.getId().equals(foundPost.getMemberId())) {
+            return "error-page/404";
+        }
+
+        postService.deletePost(userInfo.getUserId(), foundPost.getId());
+
+        return "redirect:/myPage";
+    }
+
+    @GetMapping("/post/edit/{postUrl}")
+    public String editForm(@PathVariable String postUrl, Model model) {
+        PostWithImage postInfo = postService.getPostInfo(Long.parseLong(postUrl));
+        if (postInfo == null) {
+            return "error-page/404";
+        }
+        model.addAttribute("postInfo", postInfo);
+        return "post/editForm";
+    }
+
+    @PostMapping("/post/edit/{postUrl}")
+    public String update(@Validated @ModelAttribute PostEditForm form, @PathVariable String postUrl,
+                         BindingResult bindingResult, @Login Member loginUser) {
+
+        if (bindingResult.hasErrors()) {
+            log.error("errors={}", bindingResult);
+            return "post/createForm";
+        }
+
+        PostWithImage postInfo = postService.getPostInfo(Long.parseLong(postUrl));
+        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (postInfo == null || userInfo == null) {
+            return "error-page/404";
+        }
+
+        if (!userInfo.getId().equals(postInfo.getMemberId())) {
+            return "error-page/404";
+        }
+
+        postService.updatePost(userInfo.getUserId(), postInfo.getId(), form.getContent(), form.getStatus());
+
+        return "redirect:/post/" + postUrl;
     }
 
     private String getDayDiff(LocalDateTime localDateTime) {
