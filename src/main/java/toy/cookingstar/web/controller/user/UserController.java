@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
@@ -147,8 +148,8 @@ public class UserController {
         //프로필 이미지 업로드
         String storedProfileImage;
 
-        if (form.getProfileImage() == null) {
-            storedProfileImage = null;
+        if (StringUtils.isEmpty(form.getProfileImage().getOriginalFilename())) {
+            storedProfileImage = loginUser.getProfileImage();
         } else {
             storedProfileImage = imageStoreService.storeImage(ImageType.PROFILE, form.getProfileImage());
         }
