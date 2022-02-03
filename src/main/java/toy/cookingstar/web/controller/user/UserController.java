@@ -2,8 +2,6 @@ package toy.cookingstar.web.controller.user;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,7 +10,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.imagestore.ImageType;
-import toy.cookingstar.service.post.PostImageParam;
+import toy.cookingstar.service.post.PostImageUrlParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
 import toy.cookingstar.service.user.GenderType;
@@ -76,8 +73,9 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
-        model.addAttribute("postImageUrls", postImageUrls);
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postUrls", postImageUrls.getPostUrls());
 
         // userPage로
         return "user/userPage";
@@ -103,8 +101,9 @@ public class UserController {
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
         //TODO: getPostImageUrls로 ImageUrl과 PostUrl을 받음
-        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
-        model.addAttribute("postImageUrls", postImageUrls);
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postUrls", postImageUrls.getPostUrls());
 
         return "user/myPage";
     }
@@ -213,14 +212,15 @@ public class UserController {
         model.addAttribute("totalPost", totalPost);
 
         //getPostImageUrls로 ImageUrl과 PostUrl을 받음
-        List<HashMap<String, String>> postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
-        model.addAttribute("postImageUrls", postImageUrls);
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postUrls", postImageUrls.getPostUrls());
 
         return "user/privatePage";
     }
 
     // 페이지 구성 이미지 조회
-    private List<HashMap<String, String>> getPostImageUrls(Member userPageInfo, int totalPost, StatusType statusType) {
+    private PostImageUrlParam getPostImageUrls(Member userPageInfo, int totalPost, StatusType statusType) {
         int currentPageNo = 1;
         int postsPerPage = 12;
         int countPages = 1;

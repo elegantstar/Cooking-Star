@@ -1,8 +1,5 @@
 package toy.cookingstar.service.post;
 
-import java.util.HashMap;
-import java.util.List;
-
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostWithImage;
 
@@ -12,7 +9,7 @@ public interface PostService {
 
     Post findPostByPostId(Long postId);
 
-    List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end, StatusType statusType);
+    PostImageUrlParam getUserPagePostImages(String userId, int start, int end, StatusType statusType);
 
     int countPosts(Long memberId);
 

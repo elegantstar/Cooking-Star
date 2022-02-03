@@ -99,8 +99,8 @@
   </ul>
 
   <div class="img-layer" style="text-align: center">
-    <a th:each="postImageUrl : ${postImageUrls}" th:href="@{'/post/' + ${postImageUrl['postUrl']}}" style="text-decoration: none">
-      <img th:src="|/image/${postImageUrl['imageUrl']}|" class="img-standard" alt="포스트 이미지" />
+    <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postUrls.get(index.index)}}" style="text-decoration: none">
+      <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
     </a>
   </div>
 </div>

@@ -1,8 +1,8 @@
 package toy.cookingstar.service.post;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +61,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<HashMap<String, String>> getUserPagePostImages(String userId, int start, int end, StatusType statusType) {
+    public PostImageUrlParam getUserPagePostImages(String userId, int start, int end, StatusType statusType) {
 
         Member user = memberRepository.findByUserId(userId);
 
@@ -69,6 +69,7 @@ public class PostServiceImpl implements PostService {
             return null;
         }
 
+        //StatusType 별 조회
         if (statusType == StatusType.POSTING) {
             List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
             return getPostImages(postWithImages);
@@ -82,31 +83,19 @@ public class PostServiceImpl implements PostService {
         return null;
     }
 
-    private List<HashMap<String, String>> getPostImages(List<PostWithImage> postWithImages) {
+    private PostImageUrlParam getPostImages(List<PostWithImage> postWithImages) {
         if (CollectionUtils.isEmpty(postWithImages)) {
             return null;
         }
 
-//        List<String> imageUrls = postWithImages.stream().map(PostWithImage::getImages).flatMap(Collection::stream)
-//                                               .collect(Collectors.toList()).stream().map(PostImage::getUrl)
-//                                               .collect(Collectors.toList());
+        List<String> imageUrls = postWithImages.stream().map(PostWithImage::getImages).flatMap(Collection::stream)
+                                               .collect(Collectors.toList()).stream().map(PostImage::getUrl)
+                                               .collect(Collectors.toList());
 
-        //TODO: 아래 로직 간단히 변경 (PostController, myPost.html, userPost.html 함께 변경)
+        List<String> postUrls = postWithImages.stream().map(Post::getId)
+                                              .map(Object::toString).collect(Collectors.toList());
 
-        ArrayList<HashMap<String, String>> postImages = new ArrayList<>();
-
-        for (PostWithImage postWithImage : postWithImages) {
-            PostImage image = postWithImage.getImages().get(0);
-
-            //HashMap을 이용해 imageUrl과 PostUrl을 넣어준다.
-            HashMap<String, String> postImageUrls = new HashMap<>();
-            postImageUrls.put("imageUrl", image.getUrl());
-            postImageUrls.put("postUrl", postWithImage.getId().toString());
-
-            postImages.add(postImageUrls);
-
-        }
-        return postImages;
+        return new PostImageUrlParam(imageUrls, postUrls);
     }
 
     @Override
