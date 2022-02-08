@@ -1,5 +1,7 @@
 package toy.cookingstar.service.imagestore;
 
+import static toy.cookingstar.service.imagestore.ImageType.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -22,12 +24,12 @@ public class ImageStoreService {
     private String profileDir;
 
     //이미지 저장 경로 찾기
-    public String getFullPath(ImageType imageType, String url) {
+    public String getFullPath(ImageType imageType, String uri) {
         String dirPath = getDirPath(imageType);
         if (StringUtils.isEmpty(dirPath)) {
             return null;
         }
-        return dirPath + url.substring(0, 10) + "/" + url;
+        return dirPath + uri.substring(0, 10) + "/" + uri;
     }
 
     //현재 날짜 로직
@@ -45,7 +47,7 @@ public class ImageStoreService {
         List<String> storeImageResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
-                storeImageResult.add(storeImage(ImageType.POST, multipartFile));
+                storeImageResult.add(storeImage(POST, multipartFile));
             }
         }
         return storeImageResult;
@@ -74,10 +76,12 @@ public class ImageStoreService {
 
     //이미지 저장 경로 결정
     private String getDirPath(ImageType imageType) {
-        if (imageType == ImageType.POST) {
-            return imageDir;
-        } else if (imageType == ImageType.PROFILE) {
-            return profileDir;
+
+        switch (imageType) {
+            case POST:
+                return imageDir;
+            case PROFILE:
+                return profileDir;
         }
         return null;
     }
