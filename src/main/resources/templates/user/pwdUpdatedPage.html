@@ -60,7 +60,12 @@
       <!--  프로필 이미지 영역  -->
       <div id="profile-box mb-5">
         <div class="profile-img-box">
-          <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="샘플 이미지5" />
+          <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+          </div>
+          <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+          </div>
         </div>
         <div style="padding-top: 1.5%">
           <span class="user-id mt-3" style="font-size: 35px;" th:text="${userInfo.userId}">유저 아이디</span><br/>

@@ -1,9 +1,14 @@
 package toy.cookingstar.web.controller.user.form;
 
+import java.util.List;
+
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.Data;
 
@@ -22,6 +27,6 @@ public class InfoUpdateForm {
 
     private String gender;
 
-    private String profileImage;
+    private MultipartFile profileImage;
 
 }

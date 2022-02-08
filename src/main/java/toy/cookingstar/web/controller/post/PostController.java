@@ -16,6 +16,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
+import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostCreateParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.user.UserService;
@@ -29,6 +30,7 @@ import toy.cookingstar.web.controller.post.form.PostForm;
 public class PostController {
 
     private final PostService postService;
+    private final ImageStoreService imageStoreService;
     private final UserService userService;
 
     @GetMapping("/create")
@@ -58,7 +60,7 @@ public class PostController {
         }
 
         // 서버에 이미지 업로드
-        List<String> storedImages = postService.storeImages(form.getImages());
+        List<String> storedImages = imageStoreService.storeImages(form.getImages());
 
         PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), form.getStatus(),
                                                               storedImages);
