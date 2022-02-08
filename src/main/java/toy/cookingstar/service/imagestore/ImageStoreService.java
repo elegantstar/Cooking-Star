@@ -1,7 +1,5 @@
 package toy.cookingstar.service.imagestore;
 
-import static toy.cookingstar.service.imagestore.ImageType.*;
-
 import java.io.File;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -13,6 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
+import toy.cookingstar.service.post.StatusType;
 
 @Service
 public class ImageStoreService {
@@ -47,7 +47,7 @@ public class ImageStoreService {
         List<String> storeImageResult = new ArrayList<>();
         for (MultipartFile multipartFile : multipartFiles) {
             if (!multipartFile.isEmpty()) {
-                storeImageResult.add(storeImage(POST, multipartFile));
+                storeImageResult.add(storeImage(ImageType.POST, multipartFile));
             }
         }
         return storeImageResult;
