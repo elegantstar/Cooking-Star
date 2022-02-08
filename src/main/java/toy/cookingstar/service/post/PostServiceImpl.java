@@ -70,16 +70,12 @@ public class PostServiceImpl implements PostService {
         }
 
         //StatusType 별 조회
-        if (statusType == StatusType.POSTING) {
-            List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
-            return getPostImages(postWithImages);
+        switch (statusType) {
+            case POSTING:
+                return getPostImages(postRepository.findUserPagePostImage(user.getId(), start, end));
+            case PRIVATE:
+                return getPostImages(postRepository.findPrivatePagePostImage(user.getId(), start, end));
         }
-
-        if (statusType == StatusType.PRIVATE) {
-            List<PostWithImage> postWithImages = postRepository.findPrivatePagePostImage(user.getId(), start, end);
-            return getPostImages(postWithImages);
-        }
-
         return null;
     }
 
