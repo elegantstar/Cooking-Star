@@ -60,6 +60,20 @@
     ORDER BY i.priority ASC;
   </select>
 
+  <select id="findTempStoredPostInfo" resultType="Post">
+    SELECT *
+    FROM post
+    WHERE member_id = #{memberId} AND status = 'TEMPORARY_STORAGE'
+    ORDER BY id DESC
+    LIMIT #{start}, #{end};
+  </select>
+
+  <select id="findTempStoredImage" resultType="String">
+    SELECT url
+    FROM postimage
+    WHERE post_id = #{postId} AND priority = 1;
+  </select>
+
   <delete id="deletePostImages">
     DELETE FROM postimage
     WHERE post_id = #{postId}

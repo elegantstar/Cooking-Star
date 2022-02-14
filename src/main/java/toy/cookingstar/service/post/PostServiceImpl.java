@@ -1,5 +1,6 @@
 package toy.cookingstar.service.post;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import toy.cookingstar.domain.PostImage;
 import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
+import toy.cookingstar.web.controller.post.dto.TempStoredData;
 
 @Slf4j
 @Service
@@ -130,5 +132,22 @@ public class PostServiceImpl implements PostService {
     public void updatePost(String userId, Long id, String content, StatusType status) {
         postRepository.updatePost(id, content, status);
         log.info("UPDATE POST: userId=[{}], updatedPostId=[{}]", userId, id);
+    }
+
+    @Override
+    public TempStoredData getTemporaryStorage(Long memberId, int start, int end, StatusType statusType) {
+
+        Member user = memberRepository.findById(memberId);
+
+        if (user == null) {
+            return null;
+        }
+
+        List<Post> tempStoredPostInfo = postRepository.findTempStoredPostInfo(user.getId(), start, end);
+
+        List<String> tempStoredImages = new ArrayList<>();
+        tempStoredPostInfo.stream().forEach((el) -> tempStoredImages.add(postRepository.findTempStoredImage(el.getId())));
+
+        return new TempStoredData(tempStoredPostInfo, tempStoredImages);
     }
 }

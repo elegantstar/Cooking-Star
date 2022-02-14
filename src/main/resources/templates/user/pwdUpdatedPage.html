@@ -6,6 +6,7 @@
 
   <link th:replace="fragment/bootstrap :: bootstrapCss">
   <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
   <style>
     .profile-head {
@@ -23,6 +24,11 @@
       position: absolute;
       width: 90%;
       height: 90%;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
     }
     #profile-box {
       height: 100px;
@@ -86,6 +92,7 @@
 </div>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
 
 </body>
 </html>
