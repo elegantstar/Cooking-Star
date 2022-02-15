@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTO MAPPER 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="toy.cookingstar.repository.SearchHistoryRepository">
+
+  <select id="findByMemberId" resultType="SearchHistory">
+    SELECT *
+    FROM searchhistory
+    WHERE member_id = #{memberId}
+    ORDER BY last_search_date DESC
+    LIMIT 0, 50;
+  </select>
+
+  <select id="findHistory" resultType="SearchHistory">
+    SELECT *
+    FROM searchhistory
+    WHERE member_id = #{memberId} AND searched_user_id = #{searchedUserId};
+  </select>
+
+  <update id="updateLastSearchDate">
+    UPDATE searchhistory
+    SET last_search_date = CURRENT_TIMESTAMP
+    WHERE member_id = #{memberId} AND searched_user_id = #{searchedUserId};
+  </update>
+
+  <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="SearchHistory">
+    INSERT INTO searchhistory (member_id, searched_user_id)
+    VALUES (#{memberId}, #{searchedUserId});
+  </insert>
+
+  <delete id="clearAll">
+    DELETE FROM searchhistory
+    WHERE member_id = #{memberId};
+  </delete>
+
+</mapper>

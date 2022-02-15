@@ -24,6 +24,16 @@
     WHERE id = #{id}
   </select>
 
+  <select id="findByUserIds" resultType="Member">
+    SELECT *
+    FROM member
+    <where>
+      <foreach collection="userIds" item="userId" open="user_id in (" separator="," close=")">
+        #{userId}
+      </foreach>
+    </where>
+  </select>
+
   <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="Member">
     INSERT INTO member (user_id, password, name, email, nickname, salt)
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});

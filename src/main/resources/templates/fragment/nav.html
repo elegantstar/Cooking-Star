@@ -11,7 +11,7 @@
 <body>
 
 <!-- Navigation bar -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light"
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light"
      style="padding-top: 0.2rem; padding-bottom: 0.0rem;">
   <div class="container">
     <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
@@ -23,9 +23,21 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-      <form class="d-flex col-5">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+      <form class="d-flex col-5 btn-group" style="margin-left: 10%;">
+        <input class="form-control me-2 dropdown-toggle" type="search" placeholder="Search"
+               data-bs-toggle="dropdown" aria-expanded="false" aria-label="Search">
         <!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
+        <ul class="dropdown-menu" style="width: 500px; margin-left: -14%;">
+          <div style="padding-left: 14px;">
+            <span style="float: left; font-weight: bold;">최근 검색 항목</span>
+            <a href="#" class="clear-all-btn" style="margin-left: 55%; text-decoration: none; color: #279ae3; font-weight: bold;">모두 지우기</a>
+          </div>
+          <li><a class="dropdown-item" href="#">Action</a></li>
+          <li><a class="dropdown-item" href="#">Another action</a></li>
+          <li><a class="dropdown-item" href="#">Something else here</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="#">Separated link</a></li>
+        </ul>
       </form>
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 col col justify-content-end">
@@ -95,6 +107,11 @@
 
 <footer th:fragment="navbarScript">
   <script>
+    // 유저 검색 로직
+
+
+
+    // 임시 보관함 로직
     async function getTempStoredPosts() {
       $('#temp-stored-list').empty();
       const res = await fetch('http://localhost:8080/post/temporary-storage');
