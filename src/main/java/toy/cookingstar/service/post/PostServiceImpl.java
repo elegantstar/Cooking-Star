@@ -56,7 +56,7 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public Post findPostByPostId(Long postId) {
+    public Post findById(Long postId) {
         return postRepository.findByPostId(postId);
     }
 
@@ -69,14 +69,7 @@ public class PostServiceImpl implements PostService {
             return null;
         }
 
-        //StatusType 별 조회
-        switch (statusType) {
-            case POSTING:
-                return getPostImages(postRepository.findUserPagePostImage(user.getId(), start, end));
-            case PRIVATE:
-                return getPostImages(postRepository.findPrivatePagePostImage(user.getId(), start, end));
-        }
-        return null;
+        return getPostImages(postRepository.findPostWithImages(user.getId(), statusType, start, end));
     }
 
     private PostImageUrlParam getPostImages(List<PostWithImage> postWithImages) {
@@ -88,10 +81,10 @@ public class PostServiceImpl implements PostService {
                                                .collect(Collectors.toList()).stream().map(PostImage::getUrl)
                                                .collect(Collectors.toList());
 
-        List<String> postUrls = postWithImages.stream().map(Post::getId)
+        List<String> postIds = postWithImages.stream().map(Post::getId)
                                               .map(Object::toString).collect(Collectors.toList());
 
-        return new PostImageUrlParam(imageUrls, postUrls);
+        return new PostImageUrlParam(imageUrls, postIds);
     }
 
     @Override
@@ -99,12 +92,9 @@ public class PostServiceImpl implements PostService {
 
         PostWithImage postInfo = postRepository.findPostInfo(postId);
 
-        if (postInfo == null) {
-            return null;
-        } else if (CollectionUtils.isEmpty(postInfo.getImages())) {
+        if (postInfo == null || CollectionUtils.isEmpty(postInfo.getImages())) {
             return null;
         }
-
         return postInfo;
     }
 

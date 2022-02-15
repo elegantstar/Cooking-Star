@@ -77,11 +77,10 @@ public class PostController {
         return "redirect:/myPage";
     }
 
-    @GetMapping("/post/{postUrl}")
-    public String postPage(@PathVariable String postUrl, @Login Member loginUser, Model model) {
+    @GetMapping("/post/{postId}")
+    public String postPage(@PathVariable Long postId, @Login Member loginUser, Model model) {
 
-        long postId = Long.parseLong(postUrl);
-        Post foundPost = postService.findPostByPostId(postId);
+        Post foundPost = postService.findById(postId);
         Member loginMember = userService.getUserInfo(loginUser.getUserId());
 
         if (foundPost == null || loginMember == null) {
@@ -96,7 +95,7 @@ public class PostController {
 
         model.addAttribute("userInfo", userInfo);
 
-        //user의 memberId와 postUrl을 통해 해당 post의 data를 가져온다.
+        //user의 memberId와 postId을 통해 해당 post의 data를 가져온다.
         PostWithImage postInfo = postService.getPostInfo(postId);
 
         if (postInfo == null) {
@@ -129,7 +128,7 @@ public class PostController {
     @PostMapping("/post/deletion")
     public String deletePost(@ModelAttribute DeleteForm form, @Login Member loginUser, Model model) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
-        Post foundPost = postService.findPostByPostId(Long.parseLong(form.getPostId()));
+        Post foundPost = postService.findById(Long.parseLong(form.getPostId()));
 
         if (userInfo == null || foundPost == null) {
             return "error-page/404";
@@ -144,9 +143,9 @@ public class PostController {
         return "redirect:/myPage";
     }
 
-    @GetMapping("/post/edit/{postUrl}")
-    public String editForm(@PathVariable String postUrl, Model model) {
-        PostWithImage postInfo = postService.getPostInfo(Long.parseLong(postUrl));
+    @GetMapping("/post/edit/{postId}")
+    public String editForm(@PathVariable Long postId, Model model) {
+        PostWithImage postInfo = postService.getPostInfo(postId);
         if (postInfo == null) {
             return "error-page/404";
         }
@@ -154,8 +153,8 @@ public class PostController {
         return "post/editForm";
     }
 
-    @PostMapping("/post/edit/{postUrl}")
-    public String update(@Validated @ModelAttribute PostEditForm form, @PathVariable String postUrl,
+    @PostMapping("/post/edit/{postId}")
+    public String update(@Validated @ModelAttribute PostEditForm form, @PathVariable Long postId,
                          BindingResult bindingResult, @Login Member loginUser) {
 
         if (bindingResult.hasErrors()) {
@@ -163,7 +162,7 @@ public class PostController {
             return "post/createForm";
         }
 
-        PostWithImage postInfo = postService.getPostInfo(Long.parseLong(postUrl));
+        PostWithImage postInfo = postService.getPostInfo(postId);
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
 
         if (postInfo == null || userInfo == null) {
@@ -176,7 +175,7 @@ public class PostController {
 
         postService.updatePost(userInfo.getUserId(), postInfo.getId(), form.getContent(), form.getStatus());
 
-        return "redirect:/post/" + postUrl;
+        return "redirect:/post/" + postId;
     }
 
     private String getDayDiff(LocalDateTime localDateTime) {

@@ -10,5 +10,5 @@ import lombok.Data;
 public class PostImageUrlParam {
 
     List<String> imageUrls;
-    List<String> postUrls;
+    List<String> postIds;
 }
