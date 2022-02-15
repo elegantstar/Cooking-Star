@@ -75,7 +75,7 @@ public class UserController {
 
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postUrls", postImageUrls.getPostUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
 
         // userPage로
         return "user/userPage";
@@ -100,10 +100,10 @@ public class UserController {
         //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
-        //TODO: getPostImageUrls로 ImageUrl과 PostUrl을 받음
+        //TODO: getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postUrls", postImageUrls.getPostUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
 
         return "user/myPage";
     }
@@ -211,10 +211,10 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        //getPostImageUrls로 ImageUrl과 PostUrl을 받음
+        //getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postUrls", postImageUrls.getPostUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
 
         return "user/privatePage";
     }
@@ -254,6 +254,7 @@ public class UserController {
     }
 
     private boolean isWrongPwd(PwdUpdateForm form, Member loginUser) {
-        return !loginUser.getPassword().equals(HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
+        return !StringUtils.equals(loginUser.getPassword(),
+                                   HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
     }
 }

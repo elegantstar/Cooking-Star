@@ -20,7 +20,9 @@ public interface PostRepository {
 
     int countPosts(Long memberId);
 
-    List<PostWithImage> findUserPagePostImage(@Param("memberId") Long memberId, @Param("start") int start, @Param("end") int end);
+    List<PostWithImage> findPostWithImages(@Param("memberId") Long memberId,
+                                           @Param("statusType") StatusType statusType,
+                                           @Param("start") int start, @Param("end") int end);
 
     PostWithImage findPostInfo(@Param("id") Long id);
 
@@ -30,9 +32,8 @@ public interface PostRepository {
 
     void updatePost(@Param("id") Long id, @Param("content") String content, @Param("status") StatusType status);
 
-    List<PostWithImage> findPrivatePagePostImage(@Param("memberId") Long memberId, @Param("start") int start, @Param("end") int end);
-
-    List<Post> findTempStoredPostInfo(@Param("memberId") Long memberId, @Param("start") int start, @Param("end") int end);
+    List<Post> findTempStoredPostInfo(@Param("memberId") Long memberId, @Param("start") int start,
+                                      @Param("end") int end);
 
     String findTempStoredImage(Long postId);
 }

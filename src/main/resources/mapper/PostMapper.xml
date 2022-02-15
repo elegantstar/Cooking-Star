@@ -28,24 +28,13 @@
     WHERE id = #{id};
   </select>
 
-  <select id="findUserPagePostImage" resultMap="postWithImage">
+  <select id="findPostWithImages" resultMap="postWithImage">
     SELECT <include refid="post_base_column"></include>,
     <include refid="postimage_base_column"></include>
     FROM postimage AS i
     INNER JOIN post AS p
     ON p.id = i.post_id
-    WHERE p.member_id = #{memberId} AND i.priority = 1 AND p.status = 'POSTING'
-    ORDER BY p.id DESC
-    LIMIT #{start}, #{end};
-  </select>
-
-  <select id="findPrivatePagePostImage" resultMap="postWithImage">
-    SELECT <include refid="post_base_column"></include>,
-    <include refid="postimage_base_column"></include>
-    FROM postimage AS i
-    INNER JOIN post AS p
-    ON p.id = i.post_id
-    WHERE p.member_id = #{memberId} AND i.priority = 1 AND p.status = 'PRIVATE'
+    WHERE p.member_id = #{memberId} AND i.priority = 1 AND p.status = #{statusType}
     ORDER BY p.id DESC
     LIMIT #{start}, #{end};
   </select>

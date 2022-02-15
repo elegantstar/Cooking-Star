@@ -8,7 +8,7 @@ public interface PostService {
 
     void createPost(PostCreateParam postCreateParam);
 
-    Post findPostByPostId(Long postId);
+    Post findById(Long postId);
 
     PostImageUrlParam getUserPagePostImages(String userId, int start, int end, StatusType statusType);
 
