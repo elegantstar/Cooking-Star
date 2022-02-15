@@ -100,7 +100,7 @@ public class UserController {
         //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
-        //TODO: getPostImageUrls로 ImageUrl과 postId을 받음
+        //TODO: getPostImageUrls로 ImageUrl과 PostId를 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
@@ -118,6 +118,12 @@ public class UserController {
     @PostMapping("/myPage/edit")
     public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form, BindingResult bindingResult,
                            @Login Member loginUser, HttpServletRequest request) throws IOException {
+
+        Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userPageInfo == null) {
+            return "error-page/404";
+        }
 
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
             bindingResult.reject("edit.email.notAvailable");
@@ -211,7 +217,7 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        //getPostImageUrls로 ImageUrl과 postId을 받음
+        //getPostImageUrls로 ImageUrl과 PostId를 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
