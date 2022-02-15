@@ -18,6 +18,12 @@
     WHERE email = #{email};
   </select>
 
+  <select id="findById" resultType="Member">
+    SELECT *
+    FROM member
+    WHERE id = #{id}
+  </select>
+
   <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="Member">
     INSERT INTO member (user_id, password, name, email, nickname, salt)
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});

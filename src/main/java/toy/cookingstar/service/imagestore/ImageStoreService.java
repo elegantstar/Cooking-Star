@@ -12,8 +12,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import toy.cookingstar.service.post.StatusType;
-
 @Service
 public class ImageStoreService {
 
@@ -33,7 +31,7 @@ public class ImageStoreService {
     }
 
     //현재 날짜 로직
-    public String getCurrentDate() {
+    private String getCurrentDate() {
         return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
     }
 
@@ -76,7 +74,6 @@ public class ImageStoreService {
 
     //이미지 저장 경로 결정
     private String getDirPath(ImageType imageType) {
-
         switch (imageType) {
             case POST:
                 return imageDir;

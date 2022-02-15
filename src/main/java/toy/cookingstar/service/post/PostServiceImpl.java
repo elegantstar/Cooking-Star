@@ -1,22 +1,15 @@
 package toy.cookingstar.service.post;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostImage;
@@ -24,6 +17,7 @@ import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -62,7 +56,12 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<String> getUserPagePostImages(String userId, int start, int end) {
+    public Post findById(Long postId) {
+        return postRepository.findByPostId(postId);
+    }
+
+    @Override
+    public PostImageUrlParam getUserPagePostImages(String userId, int start, int end, StatusType statusType) {
 
         Member user = memberRepository.findByUserId(userId);
 
@@ -70,15 +69,33 @@ public class PostServiceImpl implements PostService {
             return null;
         }
 
-        List<PostWithImage> postWithImages = postRepository.findUserPagePostImage(user.getId(), start, end);
+        return getPostImages(postRepository.findPostWithImages(user.getId(), statusType, start, end));
+    }
 
+    private PostImageUrlParam getPostImages(List<PostWithImage> postWithImages) {
         if (CollectionUtils.isEmpty(postWithImages)) {
             return null;
         }
 
-        return postWithImages.stream().map(PostWithImage::getImages)
-                             .flatMap(Collection::stream).collect(Collectors.toList())
-                             .stream().map(PostImage::getUrl).collect(Collectors.toList());
+        List<String> imageUrls = postWithImages.stream().map(PostWithImage::getImages).flatMap(Collection::stream)
+                                               .collect(Collectors.toList()).stream().map(PostImage::getUrl)
+                                               .collect(Collectors.toList());
+
+        List<String> postIds = postWithImages.stream().map(Post::getId)
+                                              .map(Object::toString).collect(Collectors.toList());
+
+        return new PostImageUrlParam(imageUrls, postIds);
+    }
+
+    @Override
+    public PostWithImage getPostInfo(Long postId) {
+
+        PostWithImage postInfo = postRepository.findPostInfo(postId);
+
+        if (postInfo == null || CollectionUtils.isEmpty(postInfo.getImages())) {
+            return null;
+        }
+        return postInfo;
     }
 
     @Override
@@ -86,4 +103,18 @@ public class PostServiceImpl implements PostService {
         return postRepository.countPosts(memberId);
     }
 
+    @Override
+    @Transactional
+    public void deletePost(String userId, Long postId) {
+        postRepository.deletePostImages(postId);
+        postRepository.deletePost(postId);
+        log.info("DELETE POST: userId=[{}], deletedPostId=[{}]", userId, postId);
+    }
+
+    @Override
+    @Transactional
+    public void updatePost(String userId, Long id, String content, StatusType status) {
+        postRepository.updatePost(id, content, status);
+        log.info("UPDATE POST: userId=[{}], updatedPostId=[{}]", userId, id);
+    }
 }

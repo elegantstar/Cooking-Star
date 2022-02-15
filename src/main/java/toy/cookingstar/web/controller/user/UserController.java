@@ -2,7 +2,6 @@ package toy.cookingstar.web.controller.user;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,7 +23,9 @@ import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.imagestore.ImageType;
+import toy.cookingstar.service.post.PostImageUrlParam;
 import toy.cookingstar.service.post.PostService;
+import toy.cookingstar.service.post.StatusType;
 import toy.cookingstar.service.user.GenderType;
 import toy.cookingstar.service.user.PwdUpdateParam;
 import toy.cookingstar.service.user.UserService;
@@ -47,6 +48,9 @@ public class UserController {
     private final PostService postService;
     private final ImageStoreService imageStoreService;
 
+    /**
+     * 유저 페이지
+     */
     @GetMapping("/user/{userId}")
     public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) {
 
@@ -60,7 +64,7 @@ public class UserController {
         model.addAttribute("userPageInfo", userPageInfo);
 
         // 요청 받은 userId가 로그인 유저의 userId와 같으면 myPage로
-        if (userId.equals(loginUser.getUserId())) {
+        if (StringUtils.equals(userId, loginUser.getUserId())) {
             return "redirect:/myPage";
         }
 
@@ -69,13 +73,17 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        List<String> postImageUrls = getPostImageUrls(userPageInfo, totalPost);
-        model.addAttribute("postImageUrls", postImageUrls);
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
 
         // userPage로
         return "user/userPage";
     }
 
+    /**
+     * 마이 페이지
+     */
     @GetMapping("/myPage")
     public String myPage(@Login Member loginUser, Model model) {
 
@@ -91,38 +99,13 @@ public class UserController {
 
         //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
         //지금은 단순히 1페이지만 보여주는 것으로 작업
-        List<String> postImageUrls = getPostImageUrls(userPageInfo, totalPost);
-        model.addAttribute("postImageUrls", postImageUrls);
+
+        //TODO: getPostImageUrls로 ImageUrl과 PostId를 받음
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
 
         return "user/myPage";
-    }
-
-    // 페이지 구성 이미지 조회
-    private List<String> getPostImageUrls(Member userPageInfo, int totalPost) {
-        int currentPageNo = 1;
-        int postsPerPage = 12;
-        int countPages = 1;
-
-        PagingVO pagingVO = new PagingVO(totalPost, currentPageNo, countPages, postsPerPage);
-
-        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(), pagingVO.getEnd());
-    }
-
-    @ResponseBody
-    @GetMapping("/profile/{imageUrl}")
-    public Resource userProfileImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.PROFILE, imageUrl));
-    }
-
-    @ResponseBody
-    @GetMapping("/image/{imageUrl}")
-    public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
-    }
-
-    @ModelAttribute("genderTypes")
-    public GenderType[] genderTypes() {
-        return GenderType.values();
     }
 
     @GetMapping("/myPage/edit")
@@ -135,6 +118,12 @@ public class UserController {
     @PostMapping("/myPage/edit")
     public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form, BindingResult bindingResult,
                            @Login Member loginUser, HttpServletRequest request) throws IOException {
+
+        Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userPageInfo == null) {
+            return "error-page/404";
+        }
 
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
             bindingResult.reject("edit.email.notAvailable");
@@ -197,7 +186,6 @@ public class UserController {
 
         Member updatedUser = userService.updatePwd(pwdUpdateParam);
 
-
         if (updatedUser == null) {
             return "error-page/404";
         }
@@ -208,16 +196,70 @@ public class UserController {
         return "redirect:/myPage/password/updated";
     }
 
-    private boolean isWrongPwd(@ModelAttribute("userPwdInfo") @Validated PwdUpdateForm form,
-                               @Login Member loginUser) {
-        return !loginUser.getPassword().equals(HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
-    }
-
     @GetMapping("/myPage/password/updated")
     public String updatedPwd(@Login Member loginUser, Model model) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
         model.addAttribute("userInfo", userInfo);
 
         return "user/pwdUpdatedPage";
+    }
+
+    @GetMapping("/myPage/private")
+    public String privatePage(@Login Member loginUser, Model model) {
+
+        Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userPageInfo == null) {
+            return "error-page/404";
+        }
+        model.addAttribute("userPageInfo", userPageInfo);
+
+        int totalPost = postService.countPosts(userPageInfo.getId());
+        model.addAttribute("totalPost", totalPost);
+
+        //getPostImageUrls로 ImageUrl과 PostId를 받음
+        PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
+        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
+        model.addAttribute("postIds", postImageUrls.getPostIds());
+
+        return "user/privatePage";
+    }
+
+    // 페이지 구성 이미지 조회
+    private PostImageUrlParam getPostImageUrls(Member userPageInfo, int totalPost, StatusType statusType) {
+        int currentPageNo = 1;
+        int postsPerPage = 12;
+        int countPages = 1;
+
+        PagingVO pagingVO = new PagingVO(totalPost, currentPageNo, countPages, postsPerPage);
+
+        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(), pagingVO.getEnd(), statusType);
+    }
+
+    /**
+     * 프로필 이미지 가져오기
+     */
+    @ResponseBody
+    @GetMapping("/profile/{imageUrl}")
+    public Resource userProfileImage(@PathVariable String imageUrl) throws MalformedURLException {
+        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.PROFILE, imageUrl));
+    }
+
+    /**
+     * 포스트 이미지 가져오기
+     */
+    @ResponseBody
+    @GetMapping("/image/{imageUrl}")
+    public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
+        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
+    }
+
+    @ModelAttribute("genderTypes")
+    public GenderType[] genderTypes() {
+        return GenderType.values();
+    }
+
+    private boolean isWrongPwd(PwdUpdateForm form, Member loginUser) {
+        return !StringUtils.equals(loginUser.getPassword(), HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
     }
 }
