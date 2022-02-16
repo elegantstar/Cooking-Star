@@ -39,7 +39,7 @@ public class SearchRestController {
         return recentSearchHistory.stream().map(UserSearchDto::of).collect(Collectors.toList());
     }
 
-    @PostMapping("/search/history/clearAll")
+    @GetMapping("/search/history/clearAll")
     public void clearAll(@Login Member loginUser) {
 
         Member loginMember = userService.getUserInfo(loginUser.getUserId());

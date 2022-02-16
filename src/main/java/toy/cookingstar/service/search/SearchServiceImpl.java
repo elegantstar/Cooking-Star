@@ -29,17 +29,7 @@ public class SearchServiceImpl implements SearchService {
             return null;
         }
 
-        List<SearchHistory> history = searchHistoryRepository.findByMemberId(memberId);
-
-        if (CollectionUtils.isEmpty(history)) {
-            return null;
-        }
-
-        List<String> userIds = history.stream()
-                                      .map(SearchHistory::getSearchedUserId)
-                                      .collect(Collectors.toList());
-
-        return memberRepository.findByUserIds(userIds);
+        return memberRepository.findSearchHistoryById(memberId);
     }
 
     @Override

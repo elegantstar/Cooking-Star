@@ -23,6 +23,6 @@ public interface MemberRepository {
 
     void updatePwd(@Param("userId") String userId, @Param("newPassword") String newPassword, @Param("newSalt") String newSalt);
 
-    List<Member> findByUserIds(@Param("userIds") List<String> userIds);
+    List<Member> findSearchHistoryById(Long memberId);
 
 }

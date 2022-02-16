@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -102,6 +103,9 @@ public class UserController {
 
         //TODO: getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        if (postImageUrls == null) {
+            return "user/myPage";
+        }
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 
@@ -213,6 +217,11 @@ public class UserController {
 
         //getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
+
+        if (postImageUrls == null) {
+            return "user/privatePage";
+        }
+
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 

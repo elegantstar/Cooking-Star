@@ -28,10 +28,20 @@
     SELECT *
     FROM member
     <where>
-      <foreach collection="userIds" item="userId" open="user_id in (" separator="," close=")">
+      <foreach collection="userIds" index="index" item="userId" open="user_id in (" separator="," close=")">
         #{userId}
       </foreach>
     </where>
+  </select>
+
+  <select id="findSearchHistoryById" resultType="Member">
+    SELECT *
+    FROM searchhistory AS s
+    INNER JOIN member AS m
+    ON s.searched_user_id = m.user_id
+    WHERE s.member_id = #{memberId}
+    ORDER BY s.last_search_date DESC
+    LIMIT 0, 50;
   </select>
 
   <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="Member">

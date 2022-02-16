@@ -24,20 +24,17 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
       <form class="d-flex col-5 btn-group" style="margin-left: 10%;">
-        <input class="form-control me-2 dropdown-toggle" type="search" placeholder="Search"
+        <input id="search-bar" class="form-control me-2 dropdown-toggle" type="search" placeholder="Search"
                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Search">
         <!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
-        <ul class="dropdown-menu" style="width: 500px; margin-left: -14%;">
-          <div style="padding-left: 14px;">
-            <span style="float: left; font-weight: bold;">최근 검색 항목</span>
-            <a href="#" class="clear-all-btn" style="margin-left: 55%; text-decoration: none; color: #279ae3; font-weight: bold;">모두 지우기</a>
+        <div id="recent-search-history" class="dropdown-menu"
+            style="width: 500px; height: 100px; overflow: auto; overflow-x: hidden; margin-left: -14%;">
+          <div id="search-history-title" style="padding-left: 14px;">
+            <span style="float: left; font-weight: bold; margin-bottom: 8px; font-size: 17px;">최근 검색 항목</span>
+            <a href="#" id="clear-all-btn" style="margin-left: 55%; text-decoration: none;
+             color: #279ae3; font-size: 15px; font-weight: bold;">모두 지우기</a>
           </div>
-          <li><a class="dropdown-item" href="#">Action</a></li>
-          <li><a class="dropdown-item" href="#">Another action</a></li>
-          <li><a class="dropdown-item" href="#">Something else here</a></li>
-          <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="#">Separated link</a></li>
-        </ul>
+        </div>
       </form>
 
       <ul class="navbar-nav me-auto mb-2 mb-lg-0 col col justify-content-end">
@@ -108,7 +105,40 @@
 <footer th:fragment="navbarScript">
   <script>
     // 유저 검색 로직
+    async function getRecentSearchHistory() {
+      $('#recent-search-history .dropdown-item').remove();
+      const res = await fetch('http://localhost:8080/search/history');
+      const recentHistory = await res.json();
 
+      if (recentHistory.length !== 0) {
+        $('#recent-search-history').css('height', '300px');
+      }
+
+      console.log(recentHistory);
+      recentHistory.forEach((searchedUser) => {
+        const { userId, nickname, profileImage } = searchedUser;
+        $('#recent-search-history').append('<div class="dropdown-item container">' +
+                                           '<div class="searched-profile-box">' +
+                                           '<img class="searched-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+                                           '<div><span class="searched-user-id" style="font-weight: bold;"></span></div>' +
+                                           '<div><span class="searched-user-nickname" style="color: gray;"></span></div></div>');
+        if (profileImage === null) {
+          $('#recent-search-history img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#recent-search-history img').last().attr('src', `/profile/${profileImage}`);
+        }
+        $('#recent-search-history .searched-user-id').last().text(`${userId}`);
+        $('#recent-search-history .searched-user-nickname').last().text(`${nickname}`);
+      });
+    }
+
+    async function clearSearchHistory() {
+      await fetch('http://localhost:8080/search/history/clearAll');
+      $('#recent-search-history').css('height', '100px');
+    }
+
+    $('#search-bar').on('click', getRecentSearchHistory);
+    $('#clear-all-btn').on('click', clearSearchHistory);
 
 
     // 임시 보관함 로직

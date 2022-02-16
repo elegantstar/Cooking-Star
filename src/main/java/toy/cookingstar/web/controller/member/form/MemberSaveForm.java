@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class MemberSaveForm {
 
-    @Pattern(regexp = "^[a-z\\d]{5,20}")
+    @Pattern(regexp = "^[a-z\\d_]{5,20}")
     private String userId;
 
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d)(?=.*[~!@#$%^&*()+|=])[a-zA-Z\\d~!@#$%^&*()+|=]{12,20}$")

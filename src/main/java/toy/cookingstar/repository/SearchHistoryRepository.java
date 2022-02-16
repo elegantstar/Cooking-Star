@@ -9,8 +9,6 @@ import toy.cookingstar.domain.SearchHistory;
 @Mapper
 public interface SearchHistoryRepository {
 
-    List<SearchHistory> findByMemberId(Long memberId);
-
     void save(SearchHistory searchHistory);
 
     SearchHistory findHistory(Long memberId, String searchedUserId);
