@@ -1,12 +1,9 @@
 package toy.cookingstar.service.search;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
@@ -63,5 +60,11 @@ public class SearchServiceImpl implements SearchService {
             return;
         }
         searchHistoryRepository.clearAll(memberId);
+    }
+
+    @Override
+    public List<Member> searchUsers(String keyword) {
+
+        return memberRepository.findByKeyword(keyword);
     }
 }

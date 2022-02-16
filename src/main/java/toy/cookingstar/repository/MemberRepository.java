@@ -25,4 +25,5 @@ public interface MemberRepository {
 
     List<Member> findSearchHistoryById(Long memberId);
 
+    List<Member> findByKeyword(String keyword);
 }

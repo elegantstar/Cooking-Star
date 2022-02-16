@@ -10,4 +10,6 @@ public interface SearchService {
     void saveHistory(Member loginMember, String userId);
 
     void clearAll(Long memberId);
+
+    List<Member> searchUsers(String keyword);
 }

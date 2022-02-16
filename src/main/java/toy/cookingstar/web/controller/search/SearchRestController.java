@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -48,6 +49,17 @@ public class SearchRestController {
         }
 
         searchService.clearAll(loginMember.getId());
+    }
+
+    @GetMapping("/search/users")
+    public List<UserSearchDto> userSearch(@RequestParam String keyword) {
+        List<Member> searchResults = searchService.searchUsers(keyword);
+
+        if (CollectionUtils.isEmpty(searchResults)) {
+            return null;
+        }
+
+        return searchResults.stream().map(UserSearchDto::of).collect(Collectors.toList());
     }
 
 }

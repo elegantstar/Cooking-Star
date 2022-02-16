@@ -44,6 +44,13 @@
     LIMIT 0, 50;
   </select>
 
+  <select id="findByKeyword" resultType="Member">
+    SELECT *
+    FROM member
+    WHERE user_id like CONCAT('%',#{keyword},'%') OR nickname like CONCAT('%',#{keyword},'%')
+    LIMIT 0, 50;
+  </select>
+
   <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="Member">
     INSERT INTO member (user_id, password, name, email, nickname, salt)
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});
