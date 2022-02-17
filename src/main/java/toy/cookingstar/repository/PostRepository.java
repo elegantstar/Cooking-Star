@@ -32,8 +32,4 @@ public interface PostRepository {
 
     void updatePost(@Param("id") Long id, @Param("content") String content, @Param("status") StatusType status);
 
-    List<Post> findTempStoredPostInfo(@Param("memberId") Long memberId, @Param("start") int start,
-                                      @Param("end") int end);
-
-    String findTempStoredImage(Long postId);
 }

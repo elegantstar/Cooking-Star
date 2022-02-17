@@ -193,17 +193,15 @@
     async function getTempStoredPosts() {
       $('#temp-stored-list').empty();
       const res = await fetch('http://localhost:8080/post/temporary-storage');
-      const tempStoredData = await res.json();
-      const {tempStoredPostInfo, tempStoredImages} = tempStoredData;
+      const tempStoredPostInfo = await res.json();
 
       if (tempStoredPostInfo.length === 0) {
         $('#temp-stored-list').append('<div style="text-align: center">임시 저장한 게시물이 없습니다.</div>');
         $('#outbox-submit-btn').css('display', 'none');
       }
 
-      tempStoredPostInfo.forEach((postInfo, i) => {
-        const {id, content, createdDate} = postInfo;
-        const {0: imageUrl} = $(tempStoredImages).eq(i);
+      tempStoredPostInfo.forEach((postInfo) => {
+        const {id, content, createdDate, imageUrl} = postInfo;
 
         $('#temp-stored-list').append('<div class="form-check">' +
                                       '<input class="form-check-input" type="radio" name="postId" style="margin-top: 3.5em;">' +
