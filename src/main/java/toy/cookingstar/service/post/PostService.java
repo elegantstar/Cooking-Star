@@ -1,8 +1,9 @@
 package toy.cookingstar.service.post;
 
+import java.util.List;
+
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostWithImage;
-import toy.cookingstar.web.controller.post.dto.TempStoredData;
 
 public interface PostService {
 
@@ -20,5 +21,5 @@ public interface PostService {
 
     void updatePost(String userId, Long id, String content, StatusType status);
 
-    TempStoredData getTemporaryStorage(Long memberId, int start, int end, StatusType statusType);
+    List<PostWithImage> getTemporaryStorage(Long memberId, StatusType statusType, int start, int end);
 }
