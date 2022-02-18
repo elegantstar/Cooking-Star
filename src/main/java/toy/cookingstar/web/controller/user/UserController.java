@@ -135,18 +135,9 @@ public class UserController {
             return "user/editForm";
         }
 
-        //프로필 이미지 업로드
-        String storedProfileImage;
-
-        if (StringUtils.isEmpty(form.getProfileImage().getOriginalFilename())) {
-            storedProfileImage = loginUser.getProfileImage();
-        } else {
-            storedProfileImage = imageStoreService.storeImage(ImageType.PROFILE, form.getProfileImage());
-        }
-
         UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
                                                               form.getIntroduction(), form.getEmail(),
-                                                              form.getGender(), storedProfileImage);
+                                                              form.getGender());
 
         Member updatedUser = userService.updateInfo(userUpdateParam);
 

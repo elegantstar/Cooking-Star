@@ -151,7 +151,7 @@
       <div class="modal-body">
         <form id="profile-form" method="post" enctype="multipart/form-data" style="margin-top: -1.5%; margin-bottom: -1.5%; text-align: center;">
           <label for="profileImg-upload" class="profile-edit-menu" id="profile-upload">사진 업로드</label>
-          <input type="file" id="profileImg-upload" name="profileImage" style="display: none;"/>
+          <input type="file" id="profileImg-upload" name="profileImage" accept="image/*" style="display: none;"/>
         </form>
         <hr style="color: #8d8c8c">
         <div class="profile-edit-menu" id="profile-deletion">현재 사진 삭제</div>
@@ -179,6 +179,14 @@
   }
 
   async function uploadProfileImg() {
+    const imgFile = $('#profileImg-upload').val();
+    const fileForm = /(.*?)\.(jpg|jpeg|png|gif|bmp|pdf)$/;
+
+    if (!imgFile.match(fileForm)) {
+      alert("이미지 파일만 업로드 가능합니다.");
+      return;
+    }
+
     const formData = new FormData($('#profile-form')[0]);
 
     try {
