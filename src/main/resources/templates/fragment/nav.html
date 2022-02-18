@@ -23,13 +23,13 @@
 
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
-      <form class="d-flex col-5 btn-group" style="margin-left: 10%;">
-        <input id="search-bar" class="form-control me-2 dropdown-toggle" type="search" placeholder="Search"
+      <form class="d-flex col-5 btn-group search-bar-form" style="margin-left: 10%;">
+        <input id="search-bar" class="form-control me-2 dropdown-toggle" data-bs-auto-close="outside" type="search" placeholder="Search"
                data-bs-toggle="dropdown" aria-expanded="false" aria-label="Search" autocomplete="off">
         <!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
         
         <!-- 검색창 하위 드롭다운(최근 검색 항목 & 유저 검색 결과) -->
-        <div id="search-bar-dropdown" class="dropdown-menu"
+        <div id="search-bar-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuClickableInside"
             style="width: 500px; height: 100px; overflow: auto; overflow-x: hidden; margin-left: -14%;">
         </div>
       </form>
@@ -146,6 +146,8 @@
           }
           $('#search-bar-dropdown .searched-user-id').last().text(`${userId}`);
           $('#search-bar-dropdown .searched-user-nickname').last().text(`${nickname}`);
+
+          $('#search-bar').removeClass('dropdown-toggle show');
         });
       } catch (err) {
         console.log(err);
@@ -161,6 +163,11 @@
         await fetch('http://localhost:8080/search/history/clearAll', {
           method: "DELETE",
         });
+        $('#search-bar-dropdown').empty();
+        $('#search-bar-dropdown').append('<div id="search-history-title" style="padding-left: 14px;">' +
+                                         '<span style="float: left; font-weight: bold; margin-bottom: 8px; font-size: 17px;">최근 검색 항목</span>' +
+                                         '<a href="#" id="clear-all-btn" style="margin-left: 55%; text-decoration: none;' +
+                                         'color: #279ae3; font-size: 15px; font-weight: bold;">모두 지우기</a></div>');
         $('#search-bar-dropdown').css('height', '100px');
       } catch (err) {
         console.log(err);
@@ -177,6 +184,10 @@
          await fetch(`http://localhost:8080/search/history/delete?userId=${userId}`, {
            method: "DELETE",
          });
+         $(this).parent().parent().remove();
+         if ($('.search-history').length === 0) {
+           $('#search-bar-dropdown').css('height', '100px');
+         }
        } catch (err) {
          console.log(err);
          alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
@@ -256,6 +267,14 @@
     $('#search-bar').on('input', searchUsers);
     $(document).on('click', '.search-result', moveToUserPage);
     $(document).on('click', '#history-deletion-btn', deleteSearchHistory);
+
+    $('html').click(function(e){
+      if($(e.target).parents('.search-bar-form').length < 1 && $(e.target).parent('.search-bar-dropdown').length < 1){
+        $('#search-bar').addClass('dropdown-toggle show');
+        $('#search-bar').removeClass('show');
+        $('#search-bar-dropdown').removeClass('show');
+      }
+    });
 
 
     // 임시 보관함 로직
