@@ -75,6 +75,9 @@ public class UserController {
         model.addAttribute("totalPost", totalPost);
 
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        if (postImageUrls == null) {
+            return "user/userPage";
+        }
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 

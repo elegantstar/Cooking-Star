@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -40,7 +41,7 @@ public class SearchRestController {
         return recentSearchHistory.stream().map(UserSearchDto::of).collect(Collectors.toList());
     }
 
-    @GetMapping("/search/history/clearAll")
+    @DeleteMapping("/search/history/clearAll")
     public void clearAll(@Login Member loginUser) {
 
         Member loginMember = userService.getUserInfo(loginUser.getUserId());
@@ -60,6 +61,17 @@ public class SearchRestController {
         }
 
         return searchResults.stream().map(UserSearchDto::of).collect(Collectors.toList());
+    }
+
+    @PostMapping("/search/history/add")
+    public void addSearchHistory(@RequestParam("userId") String searchedUserId, @Login Member loginUser) {
+
+        Member loginMember = userService.getUserInfo(loginUser.getUserId());
+        if (loginMember == null) {
+            return;
+        }
+
+        searchService.saveHistory(loginMember, searchedUserId);
     }
 
 }

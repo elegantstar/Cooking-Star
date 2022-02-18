@@ -26,4 +26,8 @@ public interface MemberRepository {
     List<Member> findSearchHistoryById(Long memberId);
 
     List<Member> findByKeyword(String keyword);
+
+    void deleteProfileImage(Long id);
+
+    void updateProfileImage(@Param("id") Long id, @Param("profileImage") String profileImage);
 }

@@ -83,6 +83,27 @@ public class UserServiceImpl implements UserService {
         return memberRepository.findById(memberId);
     }
 
+    @Override
+    @Transactional
+    public void deleteProfileImg(Long id) {
+        if (memberRepository.findById(id) == null) {
+            return;
+        }
+        memberRepository.deleteProfileImage(id);
+    }
+
+    @Override
+    @Transactional
+    public void updateProfileImg(Long memberId, String storedProfileImage) {
+
+        if (memberRepository.findById(memberId) == null) {
+            return;
+        }
+
+        memberRepository.updateProfileImage(memberId, storedProfileImage);
+
+    }
+
     private boolean isNotJoinedUser(String userId) {
         return memberRepository.findByUserId(userId) == null;
     }

@@ -68,4 +68,16 @@
     WHERE user_id = #{userId};
   </update>
 
+  <update id="deleteProfileImage">
+    UPDATE member
+    SET profile_image = null
+    WHERE id = #{id};
+  </update>
+
+  <update id="updateProfileImage">
+    UPDATE member
+    SET profile_image = #{profileImage}
+    WHERE id = #{id};
+  </update>
+
 </mapper>

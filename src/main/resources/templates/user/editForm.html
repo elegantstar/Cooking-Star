@@ -39,6 +39,9 @@
       border-color: #dc3545;
       color: #dc3545;
     }
+    .img-change-btn {
+      cursor: pointer;
+    }
     .img-preview {
       width: 15%;
       height: 15%;
@@ -103,10 +106,10 @@
 
         <div class="mt-3 mb-1">
           <span class="user-id" style="font-size: 25px;" th:text="${session.loginMember.userId}">유저 아이디</span><br/>
-          <div class="img-change-btn" th:text="#{label.edit.profile}" style="color: #3097fc; font-weight: bold;">
+          <label for="profileImg-upload" class="img-change-btn" th:text="#{label.edit.profile}" style="color: #3097fc; font-weight: bold;">
             프로필 사진 교체
-          </div>
-          <input type="file" name="profileImage" />
+          </label>
+          <input type="file" id="profileImg-upload" name="profileImage" style="display: none;"/>
         </div>
       </div>
     </div>
