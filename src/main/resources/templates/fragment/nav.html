@@ -11,8 +11,8 @@
 <body>
 
 <!-- Navigation bar -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light"
-     style="padding-top: 0.2rem; padding-bottom: 0.0rem;">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light sticky-top"
+     style="padding-top: 0.2rem; padding-bottom: 0.0rem; background: white; box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%)">
   <div class="container">
     <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
@@ -75,29 +75,29 @@
 
     </div>
   </div>
+</nav>
 
-  <!-- Modal -->
-  <form method="GET" th:action="|/post/edit|">
-    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
-         aria-labelledby="staticBackdropLabel" aria-hidden="true">
-      <div class="modal-dialog modal-dialog-centered modal-lg">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.nav.outbox}"
-                style="margin-left: 16em;">임시 보관함</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div id="temp-stored-list" class="modal-body">
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{button.outbox.cancel}">취소</button>
-            <button id="outbox-submit-btn" type="submit" class="btn btn-primary" th:text="#{button.outbox.load}">불러오기</button>
-          </div>
+<!-- Modal -->
+<form th:fragment="navbar-temp-storage-modal" method="GET" th:action="|/post/edit|">
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.nav.outbox}"
+              style="margin-left: 16em;">임시 보관함</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="temp-stored-list" class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{button.outbox.cancel}">취소</button>
+          <button id="outbox-submit-btn" type="submit" class="btn btn-primary" th:text="#{button.outbox.load}">불러오기</button>
         </div>
       </div>
     </div>
-  </form>
-</nav>
+  </div>
+</form>
 
 <footer th:fragment="navbarScript">
   <script>
