@@ -36,4 +36,9 @@
     WHERE member_id = #{memberId};
   </delete>
 
+  <delete id="deleteHistory">
+    DELETE FROM searchhistory
+    WHERE member_id = #{memberId} AND searched_user_id = #{searchedUserId};
+  </delete>
+
 </mapper>

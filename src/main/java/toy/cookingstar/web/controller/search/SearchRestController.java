@@ -74,4 +74,15 @@ public class SearchRestController {
         searchService.saveHistory(loginMember, searchedUserId);
     }
 
+    @DeleteMapping("/search/history/delete")
+    public void deleteSearchHistory(@Login Member loginUser, @RequestParam("userId") String userId) {
+
+        Member loginMember = userService.getUserInfo(loginUser.getUserId());
+        if (loginMember == null) {
+            return;
+        }
+
+        searchService.deleteHistory(loginMember.getId(), userId);
+    }
+
 }

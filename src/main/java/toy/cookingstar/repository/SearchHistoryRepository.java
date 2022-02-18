@@ -17,4 +17,6 @@ public interface SearchHistoryRepository {
     void updateLastSearchDate(@Param("memberId") Long memberId, @Param("searchedUserId") String searchedUserId);
 
     void clearAll(Long memberId);
+
+    void deleteHistory(@Param("memberId") Long memberId, @Param("searchedUserId") String searchedUserId);
 }

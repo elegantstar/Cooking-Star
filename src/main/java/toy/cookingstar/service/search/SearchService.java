@@ -12,4 +12,6 @@ public interface SearchService {
     void clearAll(Long memberId);
 
     List<Member> searchUsers(String keyword);
+
+    void deleteHistory(Long memberId, String userId);
 }

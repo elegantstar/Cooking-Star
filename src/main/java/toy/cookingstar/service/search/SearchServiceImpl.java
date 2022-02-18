@@ -67,4 +67,14 @@ public class SearchServiceImpl implements SearchService {
 
         return memberRepository.findByKeyword(keyword);
     }
+
+    @Override
+    @Transactional
+    public void deleteHistory(Long memberId, String userId) {
+        if (memberRepository.findById(memberId) == null) {
+            return;
+        }
+
+        searchHistoryRepository.deleteHistory(memberId, userId);
+    }
 }
