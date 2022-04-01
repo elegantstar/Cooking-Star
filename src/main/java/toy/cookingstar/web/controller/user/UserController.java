@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -123,7 +123,8 @@ public class UserController {
     }
 
     @PostMapping("/myPage/edit")
-    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form, BindingResult bindingResult,
+    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form,
+                           BindingResult bindingResult,
                            @Login Member loginUser, HttpServletRequest request) throws IOException {
 
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
@@ -152,7 +153,8 @@ public class UserController {
     }
 
     @GetMapping("/myPage/password/change")
-    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser, Model model) {
+    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser,
+                               Model model) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
         model.addAttribute("userInfo", userInfo);
         return "user/pwdForm";
@@ -230,7 +232,8 @@ public class UserController {
 
         PagingVO pagingVO = new PagingVO(totalPost, currentPageNo, countPages, postsPerPage);
 
-        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(), pagingVO.getEnd(), statusType);
+        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(),
+                                                 pagingVO.getEnd(), statusType);
     }
 
     /**
@@ -238,8 +241,11 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/profile/{imageUrl}")
-    public Resource userProfileImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.PROFILE, imageUrl));
+    public Resource userProfileImage(@PathVariable String imageUrl, HttpServletResponse response)
+            throws MalformedURLException {
+        response.setHeader("Cache-Control", "max-age=60");
+        return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
+                .getFullPath(ImageType.PROFILE, imageUrl));
     }
 
     /**
@@ -247,8 +253,11 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/image/{imageUrl}")
-    public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
+    public Resource userPageImage(@PathVariable String imageUrl, HttpServletResponse response)
+            throws MalformedURLException {
+        response.setHeader("Cache-Control", "max-age=60");
+        return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
+                .getFullPath(ImageType.POST, imageUrl));
     }
 
     @ModelAttribute("genderTypes")
