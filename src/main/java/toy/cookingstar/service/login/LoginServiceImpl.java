@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.repository.MemberRepository;
+import toy.cookingstar.mapper.MemberRepository;
 import toy.cookingstar.utils.HashUtil;
 
 @Service

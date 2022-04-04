@@ -3,10 +3,10 @@ package toy.cookingstar.config;
 import javax.sql.DataSource;
 
 import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.type.TypeHandler;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,7 +18,8 @@ import toy.cookingstar.service.post.StatusType;
 
 // @Mapper 인터페이스 패키지 위치 선언
 @Configuration
-@MapperScan(value = "toy.cookingstar.repository")
+@MapperScan(basePackages = {"toy.cookingstar.mapper"},
+        sqlSessionFactoryRef = "sqlSessionFactory", sqlSessionTemplateRef = "sqlSessionTemplate")
 @EnableTransactionManagement
 @RequiredArgsConstructor
 public class MybatisConfig {
@@ -28,8 +29,8 @@ public class MybatisConfig {
     /**
      * @param dataSource : DB 접속을 위한 계정, DB 드라이버, 패스워드 등의 설정 정보
      */
-    @Bean
-    public SqlSessionFactory sqlSessionFactory(DataSource dataSource) throws Exception {
+    @Bean(name = "sqlSessionFactory")
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("dataSource") DataSource dataSource) throws Exception {
 
         // SqlSessionFactoryBean 객체 생성
         SqlSessionFactoryBean sessionFactory = new SqlSessionFactoryBean();
@@ -53,8 +54,8 @@ public class MybatisConfig {
      * @param sqlSessionFactory
      * @return
      */
-    @Bean
-    public SqlSessionTemplate sqlSession(SqlSessionFactory sqlSessionFactory) {
+    @Bean(name="sqlSessionTemplate")
+    public SqlSessionTemplate sqlSession(@Qualifier("sqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 }

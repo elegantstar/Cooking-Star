@@ -1,4 +1,4 @@
-package toy.cookingstar.repository;
+package toy.cookingstar.mapper;
 
 import java.util.List;
 

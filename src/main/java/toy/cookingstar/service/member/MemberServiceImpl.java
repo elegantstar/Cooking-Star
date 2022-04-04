@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.repository.MemberRepository;
+import toy.cookingstar.mapper.MemberRepository;
 import toy.cookingstar.utils.HashUtil;
 
 @Service

@@ -1,6 +1,4 @@
-package toy.cookingstar.repository;
-
-import java.util.List;
+package toy.cookingstar.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

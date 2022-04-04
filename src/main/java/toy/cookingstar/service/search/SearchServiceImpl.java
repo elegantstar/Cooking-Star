@@ -8,8 +8,8 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.domain.SearchHistory;
-import toy.cookingstar.repository.MemberRepository;
-import toy.cookingstar.repository.SearchHistoryRepository;
+import toy.cookingstar.mapper.MemberRepository;
+import toy.cookingstar.mapper.SearchHistoryRepository;
 
 @Service
 @RequiredArgsConstructor
