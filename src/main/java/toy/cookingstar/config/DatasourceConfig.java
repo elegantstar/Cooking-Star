@@ -15,12 +15,10 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.PlatformTransactionManager;
 
-import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableJpaRepositories(basePackages = "toy.cookingstar.repository",
         entityManagerFactoryRef = "entityManagerFactory", transactionManagerRef = "transactionManager")
-@RequiredArgsConstructor
 public class DatasourceConfig {
 
     @Primary
@@ -45,7 +43,7 @@ public class DatasourceConfig {
         return builder
                 .dataSource(primaryDataSource)
                 .properties(jpaProperties.getProperties())
-                .packages("toy.cookingstar.domain")
+                .packages("toy.cookingstar.entity")
                 .persistenceUnit("default")
                 .build();
     }

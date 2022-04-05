@@ -8,39 +8,39 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import toy.cookingstar.domain.Member;
 import toy.cookingstar.domain.SearchHistory;
-import toy.cookingstar.mapper.MemberRepository;
-import toy.cookingstar.mapper.SearchHistoryRepository;
+import toy.cookingstar.mapper.MemberMapper;
+import toy.cookingstar.mapper.SearchHistoryMapper;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class SearchServiceImpl implements SearchService {
 
-    private final MemberRepository memberRepository;
-    private final SearchHistoryRepository searchHistoryRepository;
+    private final MemberMapper memberMapper;
+    private final SearchHistoryMapper searchHistoryMapper;
 
     @Override
     public List<Member> getRecentSearchHistory(Long memberId) {
 
-        if (memberRepository.findById(memberId) == null) {
+        if (memberMapper.findById(memberId) == null) {
             return null;
         }
 
-        return memberRepository.findSearchHistoryById(memberId);
+        return memberMapper.findSearchHistoryById(memberId);
     }
 
     @Override
     @Transactional
     public void saveHistory(Member loginMember, String searchedUserId) {
 
-        if (memberRepository.findById(loginMember.getId()) == null) {
+        if (memberMapper.findById(loginMember.getId()) == null) {
             return;
         }
 
         //userId 검색 기록이 이미 존재하는 경우에는 lastSearchedDate 최신화
-        SearchHistory history = searchHistoryRepository.findHistory(loginMember.getId(), searchedUserId);
+        SearchHistory history = searchHistoryMapper.findHistory(loginMember.getId(), searchedUserId);
         if (history != null) {
-            searchHistoryRepository.updateLastSearchDate(loginMember.getId(), searchedUserId);
+            searchHistoryMapper.updateLastSearchDate(loginMember.getId(), searchedUserId);
             return;
         }
 
@@ -49,32 +49,32 @@ public class SearchServiceImpl implements SearchService {
                                                    .memberId(loginMember.getId())
                                                    .searchedUserId(searchedUserId)
                                                    .build();
-        searchHistoryRepository.save(searchHistory);
+        searchHistoryMapper.save(searchHistory);
     }
 
     @Override
     @Transactional
     public void clearAll(Long memberId) {
 
-        if (memberRepository.findById(memberId) == null) {
+        if (memberMapper.findById(memberId) == null) {
             return;
         }
-        searchHistoryRepository.clearAll(memberId);
+        searchHistoryMapper.clearAll(memberId);
     }
 
     @Override
     public List<Member> searchUsers(String keyword) {
 
-        return memberRepository.findByKeyword(keyword);
+        return memberMapper.findByKeyword(keyword);
     }
 
     @Override
     @Transactional
     public void deleteHistory(Long memberId, String userId) {
-        if (memberRepository.findById(memberId) == null) {
+        if (memberMapper.findById(memberId) == null) {
             return;
         }
 
-        searchHistoryRepository.deleteHistory(memberId, userId);
+        searchHistoryMapper.deleteHistory(memberId, userId);
     }
 }

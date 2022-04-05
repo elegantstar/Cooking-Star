@@ -14,8 +14,8 @@ import toy.cookingstar.domain.Member;
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostImage;
 import toy.cookingstar.domain.PostWithImage;
-import toy.cookingstar.mapper.MemberRepository;
-import toy.cookingstar.mapper.PostRepository;
+import toy.cookingstar.mapper.MemberMapper;
+import toy.cookingstar.mapper.PostMapper;
 
 @Slf4j
 @Service
@@ -23,15 +23,15 @@ import toy.cookingstar.mapper.PostRepository;
 @Transactional(readOnly = true)
 public class PostServiceImpl implements PostService {
 
-    private final PostRepository postRepository;
-    private final MemberRepository memberRepository;
+    private final PostMapper postMapper;
+    private final MemberMapper memberMapper;
 
     @Override
     @Transactional
     public void createPost(PostCreateParam postCreateParam) {
 
         String userId = postCreateParam.getUserId();
-        Member user = memberRepository.findByUserId(userId);
+        Member user = memberMapper.findByUserId(userId);
 
         Post post = Post.builder()
                         .memberId(user.getId())
@@ -40,7 +40,7 @@ public class PostServiceImpl implements PostService {
                         .build();
 
         // post 테이블에 포스트 데이터 생성
-        postRepository.create(post);
+        postMapper.create(post);
 
         // postImage 테이블에 업로드한 이미지 데이터 생성
         List<String> storedImages = postCreateParam.getStoredImages();
@@ -51,25 +51,25 @@ public class PostServiceImpl implements PostService {
                                            .priority(storedImages.indexOf(storedImage) + 1)
                                            .build();
 
-            postRepository.saveImage(postImage);
+            postMapper.saveImage(postImage);
         }
     }
 
     @Override
     public Post findById(Long postId) {
-        return postRepository.findByPostId(postId);
+        return postMapper.findByPostId(postId);
     }
 
     @Override
     public PostImageUrlParam getUserPagePostImages(String userId, int start, int end, StatusType statusType) {
 
-        Member user = memberRepository.findByUserId(userId);
+        Member user = memberMapper.findByUserId(userId);
 
         if (user == null) {
             return null;
         }
 
-        return getPostImages(postRepository.findPostWithImages(user.getId(), statusType, start, end));
+        return getPostImages(postMapper.findPostWithImages(user.getId(), statusType, start, end));
     }
 
     private PostImageUrlParam getPostImages(List<PostWithImage> postWithImages) {
@@ -90,7 +90,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PostWithImage getPostInfo(Long postId) {
 
-        PostWithImage postInfo = postRepository.findPostInfo(postId);
+        PostWithImage postInfo = postMapper.findPostInfo(postId);
 
         if (postInfo == null || CollectionUtils.isEmpty(postInfo.getImages())) {
             return null;
@@ -100,33 +100,33 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public int countPosts(Long memberId) {
-        return postRepository.countPosts(memberId);
+        return postMapper.countPosts(memberId);
     }
 
     @Override
     @Transactional
     public void deletePost(String userId, Long postId) {
-        postRepository.deletePostImages(postId);
-        postRepository.deletePost(postId);
+        postMapper.deletePostImages(postId);
+        postMapper.deletePost(postId);
         log.info("DELETE POST: userId=[{}], deletedPostId=[{}]", userId, postId);
     }
 
     @Override
     @Transactional
     public void updatePost(String userId, Long id, String content, StatusType status) {
-        postRepository.updatePost(id, content, status);
+        postMapper.updatePost(id, content, status);
         log.info("UPDATE POST: userId=[{}], updatedPostId=[{}]", userId, id);
     }
 
     @Override
     public List<PostWithImage> getTemporaryStorage(Long memberId, StatusType statusType, int start, int end) {
 
-        Member user = memberRepository.findById(memberId);
+        Member user = memberMapper.findById(memberId);
 
         if (user == null) {
             return null;
         }
 
-        return postRepository.findPostWithImages(memberId, statusType, start, end);
+        return postMapper.findPostWithImages(memberId, statusType, start, end);
     }
 }

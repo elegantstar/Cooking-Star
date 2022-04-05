@@ -11,7 +11,7 @@ import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.service.post.StatusType;
 
 @Mapper
-public interface PostRepository {
+public interface PostMapper {
     void create(Post post);
 
     Post findByPostId(Long id);

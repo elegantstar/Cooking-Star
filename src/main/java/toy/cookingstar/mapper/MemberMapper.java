@@ -9,7 +9,7 @@ import toy.cookingstar.domain.Member;
 import toy.cookingstar.service.user.UserUpdateParam;
 
 @Mapper
-public interface MemberRepository {
+public interface MemberMapper {
 
     Member findByUserId(String userId);
 

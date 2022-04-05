@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import toy.cookingstar.domain.SearchHistory;
 
 @Mapper
-public interface SearchHistoryRepository {
+public interface SearchHistoryMapper {
 
     void save(SearchHistory searchHistory);
 
