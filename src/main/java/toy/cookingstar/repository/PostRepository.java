@@ -15,12 +15,12 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     @Query("select p from Post p join fetch p.postImages pi" +
             " where p.member.id = :memberId and p.status = :status and pi.priority = 1")
-    Slice<Post> findPosts(@Param("memberId") Long memberId, @Param("status") StatusType status,
-                          @Param("pageable") Pageable pageable);
+    Slice<Post> findPosts(@Param("memberId") Long memberId, @Param("status") StatusType status, Pageable pageable);
 
     int countByMemberId(Long memberId);
 
     @Query("select p from Post p join fetch p.postImages pi" +
             " where p.member.id = :memberId and p.status = :status and pi.priority = 1")
-    List<Post> findTemporaryStoredPosts(Long memberId, StatusType status, int offset, int limit);
+    List<Post> findTemporaryStoredPosts(@Param("memberId") Long memberId, @Param("status") StatusType status,
+                                        Pageable pageable);
 }

@@ -84,7 +84,7 @@ public class UserJpaService {
      */
     @Transactional
     public void deleteProfileImg(Long id) {
-        Member user = memberRepository.findById(id).orElse(null);
+        Member user = memberRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         if (user == null) {
             return;
         }
@@ -96,7 +96,7 @@ public class UserJpaService {
      */
     @Transactional
     public void updateProfileImg(Long id, String storedProfileImage) {
-        Member user = memberRepository.findById(id).orElse(null);
+        Member user = memberRepository.findById(id).orElseThrow(IllegalArgumentException::new);
         if (user == null) {
             return;
         }

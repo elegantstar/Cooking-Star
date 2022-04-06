@@ -42,13 +42,14 @@ public class PostJpaService {
 
         Member user = memberRepository.findByUserId(postCreateDto.getUserId());
 
-        Post post = Post.builder().member(user).content(postCreateDto.getContent()).status(
-                postCreateDto.getStatus()).build();
+        Post post = Post.builder()
+                        .member(user)
+                        .content(postCreateDto.getContent())
+                        .status(postCreateDto.getStatus())
+                        .build();
 
         // post 테이블에 포스트 데이터 생성
         postRepository.save(post);
-
-        List<String> storedImages1 = postCreateDto.getStoredImages();
 
         // postImage 테이블에 업로드한 이미지 데이터 생성
         List<String> storedImages = postCreateDto.getStoredImages();
@@ -88,8 +89,8 @@ public class PostJpaService {
         List<Long> postIds = pages.getContent().stream().map(Post::getId).collect(Collectors.toList());
 
         List<String> imageUrls = pages.getContent().stream()
-                .map(Post::getPostImages).flatMap(Collection::stream)
-                .map(PostImage::getUrl).collect(Collectors.toList());
+                                                   .map(Post::getPostImages).flatMap(Collection::stream)
+                                                   .map(PostImage::getUrl).collect(Collectors.toList());
 
         return new PostImageUrlDto(postIds, imageUrls);
     }
@@ -118,8 +119,9 @@ public class PostJpaService {
      * 게시물 삭제
      */
     public void deletePost(String userId, Long postId) {
-        postImageRepository.deleteAllByPostId(postId);
-        postRepository.deleteById(postId);
+        Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+        postImageRepository.deleteAllByPost(post);
+        postRepository.delete(post);
         log.info("DELETE POST: userId=[{}], deletedPostId=[{}]", userId, postId);
     }
 
@@ -138,7 +140,8 @@ public class PostJpaService {
      */
     public List<Post> getTemporaryStorage(Long memberId, StatusType statusType, int offset, int limit) {
         Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
-        return postRepository.findTemporaryStoredPosts(user.getId(), statusType, offset, limit);
+        Pageable pageable = PageRequest.of(offset, limit);
+        return postRepository.findTemporaryStoredPosts(user.getId(), statusType, pageable);
     }
 
 }

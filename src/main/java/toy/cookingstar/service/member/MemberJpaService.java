@@ -18,7 +18,7 @@ public class MemberJpaService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public Member saveMember(String userId, String password, String name, String email) {
+    public Long saveMember(String userId, String password, String name, String email) {
 
         //1. 아이디 중복 검증
         if (idAlreadyExist(userId)) {
@@ -47,9 +47,7 @@ public class MemberJpaService {
                               .build();
 
         //6. member 저장
-        memberRepository.save(member);
-
-        return member;
+        return memberRepository.save(member).getId();
     }
 
     private boolean emailAlreadyExist(String email) {
