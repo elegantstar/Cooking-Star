@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import toy.cookingstar.service.user.dto.UserInfoDto;
 
 @Getter @Setter
 @Entity
@@ -49,6 +50,27 @@ public class Member {
         this.email = email;
         this.salt = salt;
         this.nickname = nickname;
+    }
+
+    public void updateInfo(UserInfoDto dto) {
+        this.name = dto.getName();
+        this.email = dto.getEmail();
+        this.nickname = dto.getNickname();
+        this.introduction = dto.getIntroduction();
+        this.gender = dto.getGender();
+    }
+
+    public void updatePwd(String newPassword, String newSalt) {
+        this.password = newPassword;
+        this.salt = newSalt;
+    }
+
+    public void deleteProfileImage() {
+        this.profileImage = null;
+    }
+
+    public void updateProfileImage(String storedProfileImage) {
+        this.profileImage = storedProfileImage;
     }
 }
 
