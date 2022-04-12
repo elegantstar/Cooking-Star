@@ -1,7 +1,9 @@
 package toy.cookingstar.service.post;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
@@ -42,29 +44,34 @@ public class PostJpaService {
 
         Member user = memberRepository.findByUserId(postCreateDto.getUserId());
 
-        Post post = Post.builder()
-                        .member(user)
-                        .content(postCreateDto.getContent())
-                        .status(postCreateDto.getStatus())
-                        .build();
-
-        // post 테이블에 포스트 데이터 생성
-        postRepository.save(post);
-
-        // postImage 테이블에 업로드한 이미지 데이터 생성
-        List<String> storedImages = postCreateDto.getStoredImages();
-        for (String storedImage : storedImages) {
-            PostImage postImage = PostImage.builder()
-                                           .post(post)
-                                           .url(storedImage)
-                                           .priority(storedImages.indexOf(storedImage) + 1)
-                                           .build();
-            postImageRepository.save(postImage);
+        if (user == null) {
+            return;
         }
+
+        //게시물 이미지 생성
+        AtomicInteger priority = new AtomicInteger(1);
+        List<PostImage> postImages = postCreateDto.getStoredImages().stream()
+                .map(image -> PostImage.createPostImage(image, priority.getAndIncrement()))
+                .collect(Collectors.toList());
+
+        //게시물 생성
+        Post post = Post.createPost(user, postCreateDto.getContent(), postCreateDto.getStatus(), postImages);
+
+        //게시물 저장
+        postRepository.save(post);
     }
 
+    /**
+     * 게시물 단건 조회
+     * @return Post 객체
+     */
     public Post findById(Long postId) {
-        return postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+        Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+
+        if (CollectionUtils.isEmpty(post.getPostImages())) {
+            return null;
+        }
+        return post;
     }
 
     /**
@@ -80,32 +87,16 @@ public class PostJpaService {
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "id"));
-        Slice<Post> pages = postRepository.findPosts(user.getId(), StatusType.POSTING, pageable);
-
-        if (pages.isEmpty()) {
-            return null;
-        }
+        Slice<Post> pages = postRepository.findPosts(user.getId(), statusType, pageable);
 
         List<Long> postIds = pages.getContent().stream().map(Post::getId).collect(Collectors.toList());
 
         List<String> imageUrls = pages.getContent().stream()
                                                    .map(Post::getPostImages).flatMap(Collection::stream)
+                                                   .filter(e -> e.getPriority() == 1)
                                                    .map(PostImage::getUrl).collect(Collectors.toList());
 
         return new PostImageUrlDto(postIds, imageUrls);
-    }
-
-    /**
-     * 게시물 단건 조회
-     * @return Post 객체
-     */
-    public Post getPostInfo(Long postId) {
-        Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
-
-        if (CollectionUtils.isEmpty(post.getPostImages())) {
-            return null;
-        }
-        return post;
     }
 
     /**
@@ -140,8 +131,9 @@ public class PostJpaService {
      */
     public List<Post> getTemporaryStorage(Long memberId, StatusType statusType, int offset, int limit) {
         Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
-        Pageable pageable = PageRequest.of(offset, limit);
-        return postRepository.findTemporaryStoredPosts(user.getId(), statusType, pageable);
+        Pageable pageable = PageRequest.of(offset, limit, Sort.by(Direction.DESC, "id"));
+
+        return postRepository.findPosts(user.getId(), statusType, pageable).getContent();
     }
 
 }

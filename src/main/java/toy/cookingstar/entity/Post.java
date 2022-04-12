@@ -9,7 +9,6 @@ import java.util.List;
 import javax.persistence.*;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toy.cookingstar.service.post.StatusType;
@@ -27,7 +26,9 @@ public class Post {
     private Member member;
     private String content;
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+    //TODO: orphanRemoval을 true로 두고 PostRepository가 post 삭제 시 postImages를 함께 삭제하도록 할 것인지(postImage 수만큼 delete query 발생)
+    //TODO: postImages는 PostImageRepository에서 jpql을 통해 한 번에 삭제하도록 할 것인지 결정(삭제할 post의 자식에 해당하는 postImage를 query 한 번에 삭제)
+    @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<PostImage> postImages = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -40,11 +41,20 @@ public class Post {
     @Column(name = "updated_date")
     private LocalDateTime updatedDate;
 
-    @Builder
-    public Post(Member member, String content, StatusType status) {
-        this.member = member;
-        this.content = content;
-        this.status = status;
+    //연관 관계 편의 메서드
+    public void addPostImage(PostImage postImage) {
+        postImages.add(postImage);
+        postImage.setPost(this);
+    }
+
+    //생성 메서드
+    public static Post createPost(Member member, String content, StatusType status, List<PostImage> postImages) {
+        Post post = new Post();
+        post.member = member;
+        post.content = content;
+        post.status = status;
+        postImages.forEach(post::addPostImage);
+        return post;
     }
 
     public void updatePost(String content, StatusType status) {

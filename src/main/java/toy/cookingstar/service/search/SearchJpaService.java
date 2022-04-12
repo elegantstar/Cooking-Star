@@ -3,6 +3,7 @@ package toy.cookingstar.service.search;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import toy.cookingstar.entity.Member;
@@ -24,7 +25,7 @@ public class SearchJpaService {
     public List<UserSearchDto> getRecentSearchHistory(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
 
-        Pageable limitFifty = PageRequest.of(0, 50);
+        Pageable limitFifty = PageRequest.of(0, 50, Sort.by(Sort.Order.desc("lastSearchDate")));
 
         return searchHistoryRepository.findSearchHistoryByMember(member, limitFifty)
                                       .map(UserSearchDto::of)
@@ -46,11 +47,7 @@ public class SearchJpaService {
         }
 
         //userId 검색 기록이 존재하지 않는 경우에는 새로운 기록 저장
-        SearchHistory searchHistory = SearchHistory.builder()
-                                                   .member(loginMember)
-                                                   .searchedUser(searchedUser)
-                                                   .build();
-        searchHistoryRepository.save(searchHistory);
+        searchHistoryRepository.save(new SearchHistory(loginMember, searchedUser));
     }
 
     @Transactional

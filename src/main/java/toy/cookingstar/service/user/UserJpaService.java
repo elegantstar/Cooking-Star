@@ -35,10 +35,7 @@ public class UserJpaService {
      * @return UserInfoDto = [ id, userId, name, email, nickname, introduction, gender ]
      */
     public UserInfoDto getUserInfo(Long memberId) {
-        Member user = memberRepository.findById(memberId).orElse(null);
-        if (user == null) {
-            return null;
-        }
+        Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
         return UserInfoDto.of(user);
     }
 

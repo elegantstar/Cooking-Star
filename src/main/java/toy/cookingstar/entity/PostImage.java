@@ -10,7 +10,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -28,10 +27,15 @@ public class PostImage {
     private String url;
     private int priority;
 
-    @Builder
-    public PostImage(Post post, String url, int priority) {
+    public void setPost(Post post) {
         this.post = post;
-        this.url = url;
-        this.priority = priority;
+    }
+
+    //생성 메서드
+    public static PostImage createPostImage(String url, int priority) {
+        PostImage postImage = new PostImage();
+        postImage.url = url;
+        postImage.priority = priority;
+        return postImage;
     }
 }

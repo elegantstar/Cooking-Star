@@ -31,7 +31,6 @@ public class SearchHistory {
     @Column(name = "last_search_date")
     private LocalDateTime lastSearchDate;
 
-    @Builder
     public SearchHistory(Member member, Member searchedUser) {
         this.member = member;
         this.searchedUser = searchedUser;
