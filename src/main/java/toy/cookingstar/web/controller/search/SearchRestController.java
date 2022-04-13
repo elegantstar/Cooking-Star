@@ -17,7 +17,7 @@ import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.search.dto.UserSearchDto;
 
-@RestController
+//@RestController
 @RequiredArgsConstructor
 public class SearchRestController {
 

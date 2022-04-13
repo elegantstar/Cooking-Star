@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import toy.cookingstar.domain.PostWithImage;
+import toy.cookingstar.entity.Post;
 
 @Data
 @AllArgsConstructor

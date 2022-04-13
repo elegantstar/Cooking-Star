@@ -10,7 +10,7 @@ import toy.cookingstar.service.search.SearchService;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 
-@Controller
+//@Controller
 @RequiredArgsConstructor
 public class SearchController {
 

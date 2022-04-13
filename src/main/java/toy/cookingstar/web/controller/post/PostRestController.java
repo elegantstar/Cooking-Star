@@ -15,7 +15,7 @@ import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.dto.TempStoredDto;
 
-@RestController
+//@RestController
 @RequiredArgsConstructor
 public class PostRestController {
 

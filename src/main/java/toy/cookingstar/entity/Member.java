@@ -1,17 +1,9 @@
 package toy.cookingstar.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 import javax.persistence.*;
-
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import java.time.LocalDateTime;
 
 @Getter @Setter
 @Entity
@@ -34,10 +26,10 @@ public class Member {
     @Column(name = "profile_image")
     private String profileImage;
 
-    @Column(name = "created_date")
+    @Column(name = "created_date", insertable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "updated_date")
+    @Column(name = "updated_date", insertable = false, updatable = false)
     private LocalDateTime updatedDate;
 
     @Builder
@@ -50,12 +42,11 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void updateInfo(UserInfoDto dto) {
-        this.name = dto.getName();
-        this.email = dto.getEmail();
-        this.nickname = dto.getNickname();
-        this.introduction = dto.getIntroduction();
-        this.gender = dto.getGender();
+    public void updateInfo(String email, String nickname, String introduction, String gender) {
+        this.email = email;
+        this.nickname = nickname;
+        this.introduction = introduction;
+        this.gender = gender;
     }
 
     public void updatePwd(String newPassword, String newSalt) {

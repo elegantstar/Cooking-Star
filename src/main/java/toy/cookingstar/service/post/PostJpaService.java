@@ -1,6 +1,5 @@
 package toy.cookingstar.service.post;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -25,6 +24,8 @@ import toy.cookingstar.repository.PostImageRepository;
 import toy.cookingstar.repository.PostRepository;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostImageUrlDto;
+import toy.cookingstar.service.post.dto.PostInfoDto;
+import toy.cookingstar.service.post.dto.TempStoredPostDto;
 
 @Slf4j
 @Service
@@ -40,12 +41,12 @@ public class PostJpaService {
      * 포스트 생성
      */
     @Transactional
-    public void create(PostCreateDto postCreateDto) {
+    public void create(PostCreateDto postCreateDto) throws IllegalArgumentException {
 
         Member user = memberRepository.findByUserId(postCreateDto.getUserId());
 
         if (user == null) {
-            return;
+            throw new IllegalArgumentException();
         }
 
         //게시물 이미지 생성
@@ -71,6 +72,7 @@ public class PostJpaService {
         if (CollectionUtils.isEmpty(post.getPostImages())) {
             return null;
         }
+        post.getMember().getUserId();
         return post;
     }
 
@@ -78,12 +80,12 @@ public class PostJpaService {
      * 유저 페이지 게시물 리스트 조회
      * @return PostImageUrlDto: 게시물 번호 리스트, 게시물 메인 이미지 URl 리스트
      */
-    public PostImageUrlDto getUserPagePostImages(String userId, int page, int size, StatusType statusType) {
+    public PostImageUrlDto getUserPagePostImages(String userId, int page, int size, StatusType statusType) throws IllegalArgumentException {
 
         Member user = memberRepository.findByUserId(userId);
 
         if (user == null) {
-            return null;
+            throw new IllegalArgumentException();
         }
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "id"));
@@ -109,6 +111,7 @@ public class PostJpaService {
     /**
      * 게시물 삭제
      */
+    @Transactional
     public void deletePost(String userId, Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         postImageRepository.deleteAllByPost(post);
@@ -133,7 +136,10 @@ public class PostJpaService {
         Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
         Pageable pageable = PageRequest.of(offset, limit, Sort.by(Direction.DESC, "id"));
 
-        return postRepository.findPosts(user.getId(), statusType, pageable).getContent();
+        List<Post> posts = postRepository.findPosts(user.getId(), statusType, pageable).getContent();
+        posts.forEach(post -> post.getPostImages().get(0).getId());
+
+        return posts;
     }
 
 }

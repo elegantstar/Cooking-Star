@@ -1,17 +1,16 @@
 package toy.cookingstar.entity;
 
-import static javax.persistence.FetchType.*;
-
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.*;
-
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import toy.cookingstar.service.post.StatusType;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -35,10 +34,10 @@ public class Post {
     @Column(name = "status")
     private StatusType status;
 
-    @Column(name = "created_date")
+    @Column(name = "created_date", insertable = false, updatable = false)
     private LocalDateTime createdDate;
 
-    @Column(name = "updated_date")
+    @Column(name = "updated_date", insertable = false, updatable = false)
     private LocalDateTime updatedDate;
 
     //연관 관계 편의 메서드

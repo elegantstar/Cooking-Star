@@ -66,7 +66,7 @@ class SearchJpaServiceTest {
             ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
 
             //when
-            List<UserSearchDto> recentSearchHistory = searchService.getRecentSearchHistory(1L);
+            List<SearchHistory> recentSearchHistory = searchService.getRecentSearchHistory(1L);
 
             //then
             then(memberRepository).should(times(1)).findById(1L);
@@ -79,12 +79,13 @@ class SearchJpaServiceTest {
 
             assertNotNull(recentSearchHistory);
             assertEquals(2, recentSearchHistory.size());
-            assertEquals("searched_user1", recentSearchHistory.get(0).getUserId());
-            assertEquals("searched tester1", recentSearchHistory.get(0).getNickname());
-            assertEquals("target_profile_image1", recentSearchHistory.get(0).getProfileImage());
-            assertEquals("searched_user2", recentSearchHistory.get(1).getUserId());
-            assertEquals("searched tester2", recentSearchHistory.get(1).getNickname());
-            assertEquals("target_profile_image2", recentSearchHistory.get(1).getProfileImage());
+
+            assertEquals("searched_user1", recentSearchHistory.get(0).getSearchedUser().getUserId());
+            assertEquals("searched tester1", recentSearchHistory.get(0).getSearchedUser().getNickname());
+            assertEquals("target_profile_image1", recentSearchHistory.get(0).getSearchedUser().getProfileImage());
+            assertEquals("searched_user2", recentSearchHistory.get(1).getSearchedUser().getUserId());
+            assertEquals("searched tester2", recentSearchHistory.get(1).getSearchedUser().getNickname());
+            assertEquals("target_profile_image2", recentSearchHistory.get(1).getSearchedUser().getProfileImage());
         }
 
         @Test

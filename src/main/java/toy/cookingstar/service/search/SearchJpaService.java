@@ -22,14 +22,12 @@ public class SearchJpaService {
     private final MemberRepository memberRepository;
     private final SearchHistoryRepository searchHistoryRepository;
 
-    public List<UserSearchDto> getRecentSearchHistory(Long memberId) {
+    public List<SearchHistory> getRecentSearchHistory(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
 
         Pageable limitFifty = PageRequest.of(0, 50, Sort.by(Sort.Order.desc("lastSearchDate")));
 
-        return searchHistoryRepository.findSearchHistoryByMember(member, limitFifty)
-                                      .map(UserSearchDto::of)
-                                      .getContent();
+        return searchHistoryRepository.findSearchHistoryByMember(member, limitFifty).getContent();
     }
 
     @Transactional

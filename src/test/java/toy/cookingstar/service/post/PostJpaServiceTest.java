@@ -19,6 +19,7 @@ import toy.cookingstar.repository.PostImageRepository;
 import toy.cookingstar.repository.PostRepository;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostImageUrlDto;
+import toy.cookingstar.service.post.dto.PostInfoDto;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,10 +95,8 @@ class PostJpaServiceTest {
             given(dto.getUserId()).willReturn("test_user");
             given(memberRepository.findByUserId("test_user")).willReturn(null);
 
-            //when
-            postService.create(dto);
-
-            //then
+            //when & then
+            assertThrows(IllegalArgumentException.class, () -> postService.create(dto));
             then(memberRepository).should(times(1)).findByUserId("test_user");
             then(postRepository).should(never()).save(any(Post.class));
         }
@@ -111,11 +110,13 @@ class PostJpaServiceTest {
         @DisplayName("성공")
         void findByIdSuccessTest() throws Exception {
             //given
+            Member member = mock(Member.class);
             Post post = mock(Post.class);
             PostImage postImage = mock(PostImage.class);
-            Optional<Post> optionalPost = Optional.of(post);
+            given(post.getMember()).willReturn(member);
             given(post.getPostImages()).willReturn(Arrays.asList(postImage, postImage, postImage));
 
+            Optional<Post> optionalPost = Optional.of(post);
             given(postRepository.findById(anyLong())).willReturn(optionalPost);
 
             //when
@@ -214,10 +215,9 @@ class PostJpaServiceTest {
         void getUserPagePostImageFailureTest() throws Exception {
             //given
             given(memberRepository.findByUserId("test_user")).willReturn(null);
-            //when
-            PostImageUrlDto dto = postService.getUserPagePostImages("test_user", 0, 5, StatusType.POSTING);
-            //then
-            assertNull(dto);
+            //when & then
+            assertThrows(IllegalArgumentException.class,
+                    () -> postService.getUserPagePostImages("test_user", 0, 5, StatusType.POSTING));
         }
     }
 

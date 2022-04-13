@@ -12,6 +12,7 @@ import toy.cookingstar.entity.Member;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.service.user.dto.PwdUpdateDto;
 import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.service.user.dto.UserInfoUpdateDto;
 
 import java.util.Optional;
 
@@ -45,17 +46,17 @@ class UserJpaServiceTest {
             given(memberRepository.findByUserId("test_user")).willReturn(user);
 
             //when
-            UserInfoDto dto = userService.getUserInfo("test_user");
+            Member foundUser = userService.getUserInfoByUserId("test_user");
 
             //then
             then(memberRepository).should(times(1)).findByUserId(anyString());
-            assertEquals(user.getId(), dto.getId());
-            assertEquals(user.getUserId(), dto.getUserId());
-            assertEquals(user.getName(), dto.getName());
-            assertEquals(user.getEmail(), dto.getEmail());
-            assertEquals(user.getNickname(), dto.getNickname());
-            assertEquals(user.getIntroduction(), dto.getIntroduction());
-            assertEquals(user.getGender(), dto.getGender());
+            assertEquals(user.getId(), foundUser.getId());
+            assertEquals(user.getUserId(), foundUser.getUserId());
+            assertEquals(user.getName(), foundUser.getName());
+            assertEquals(user.getEmail(), foundUser.getEmail());
+            assertEquals(user.getNickname(), foundUser.getNickname());
+            assertEquals(user.getIntroduction(), foundUser.getIntroduction());
+            assertEquals(user.getGender(), foundUser.getGender());
         }
 
         @Test
@@ -64,12 +65,9 @@ class UserJpaServiceTest {
             //given
             given(memberRepository.findByUserId(anyString())).willReturn(null);
 
-            //when
-            UserInfoDto dto = userService.getUserInfo("test_user");
-
-            //then
+            //when & then
+            assertThrows(IllegalArgumentException.class, () -> userService.getUserInfoByUserId("test_user"));
             then(memberRepository).should(times(1)).findByUserId(anyString());
-            assertNull(dto);
         }
     }
 
@@ -94,17 +92,17 @@ class UserJpaServiceTest {
             given(memberRepository.findById(1L)).willReturn(optionalUser);
 
             //when
-            UserInfoDto dto = userService.getUserInfo(1L);
+            Member foundUser = userService.getUserInfoById(1L);
 
             //then
             then(memberRepository).should(times(1)).findById(anyLong());
-            assertEquals(user.getId(), dto.getId());
-            assertEquals(user.getUserId(), dto.getUserId());
-            assertEquals(user.getName(), dto.getName());
-            assertEquals(user.getEmail(), dto.getEmail());
-            assertEquals(user.getNickname(), dto.getNickname());
-            assertEquals(user.getIntroduction(), dto.getIntroduction());
-            assertEquals(user.getGender(), dto.getGender());
+            assertEquals(user.getId(), foundUser.getId());
+            assertEquals(user.getUserId(), foundUser.getUserId());
+            assertEquals(user.getName(), foundUser.getName());
+            assertEquals(user.getEmail(), foundUser.getEmail());
+            assertEquals(user.getNickname(), foundUser.getNickname());
+            assertEquals(user.getIntroduction(), foundUser.getIntroduction());
+            assertEquals(user.getGender(), foundUser.getGender());
         }
 
         @Test
@@ -115,7 +113,7 @@ class UserJpaServiceTest {
 
             //then
             assertThrows(IllegalArgumentException.class,
-                    () -> userService.getUserInfo(1L));
+                    () -> userService.getUserInfoById(1L));
         }
     }
 
@@ -141,11 +139,11 @@ class UserJpaServiceTest {
         void getUserInfoByEmailFailureTest() throws Exception {
             //given
             given(memberRepository.findByEmail(anyString())).willReturn(null);
-            //when
-            Member foundMember = userService.getUserInfoByEmail("elegant_tester@ggmail.com");
-            //then
+
+            //when & then
+            assertThrows(IllegalArgumentException.class,
+                    () -> userService.getUserInfoByEmail("elegant_tester@ggmail.com"));
             then(memberRepository).should(times(1)).findByEmail(anyString());
-            assertNull(foundMember);
         }
     }
 
@@ -157,31 +155,31 @@ class UserJpaServiceTest {
         @DisplayName("성공")
         void updateInfoSuccessTest() throws Exception {
             //given
-            UserInfoDto dto = mock(UserInfoDto.class);
+            UserInfoUpdateDto dto = mock(UserInfoUpdateDto.class);
             given(dto.getId()).willReturn(1L);
+            given(dto.getNickname()).willReturn("테스터");
+            given(dto.getIntroduction()).willReturn("테스트 계정입니다.");
+            given(dto.getEmail()).willReturn("elegant_tester@ggmail.com");
+            given(dto.getGender()).willReturn("MALE");
 
             Member user = mock(Member.class);
             Optional<Member> optionalUser = Optional.of(user);
             given(memberRepository.findById(dto.getId())).willReturn(optionalUser);
-
-            ArgumentCaptor<UserInfoDto> captor = ArgumentCaptor.forClass(UserInfoDto.class);
 
             //when
             userService.updateInfo(dto);
 
             //then
             then(memberRepository).should(times(1)).findById(1L);
-            then(optionalUser.orElse(null)).should().updateInfo(captor.capture());
-            assertEquals(dto, captor.getValue());
+            then(optionalUser.orElse(null)).should(times(1))
+                    .updateInfo(anyString(), anyString(), anyString(), anyString());
         }
 
         @Test
         @DisplayName("실패_존재하지 않는 Id")
         void updateInfoFailureTest() throws Exception {
             //given
-            Member member = mock(Member.class);
-            given(member.getId()).willReturn(1L);
-            UserInfoDto dto = UserInfoDto.of(member);
+            UserInfoUpdateDto dto = mock(UserInfoUpdateDto.class);
             given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
 
             //then
@@ -227,10 +225,8 @@ class UserJpaServiceTest {
             given(dto.getUserId()).willReturn("test_user");
             given(memberRepository.findByUserId(anyString())).willReturn(null);
 
-            //when
-            userService.updatePwd(dto);
-
-            //then
+            //when & then
+            assertThrows(IllegalArgumentException.class, () -> userService.updatePwd(dto));
             then(memberRepository).should(times(1)).findByUserId(dto.getUserId());
             then(member).should(never()).updatePwd(anyString(), anyString());
         }
