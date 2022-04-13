@@ -1,21 +1,19 @@
 package toy.cookingstar.web.controller.post;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import toy.cookingstar.entity.Member;
+import toy.cookingstar.service.post.PostService;
+import toy.cookingstar.service.post.StatusType;
+import toy.cookingstar.service.post.dto.TempStoredPostDto;
+import toy.cookingstar.service.user.UserService;
+import toy.cookingstar.web.argumentresolver.Login;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import lombok.RequiredArgsConstructor;
-import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.PostWithImage;
-import toy.cookingstar.service.post.PostService;
-import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.web.argumentresolver.Login;
-import toy.cookingstar.web.controller.post.dto.TempStoredDto;
-
-//@RestController
+@RestController
 @RequiredArgsConstructor
 public class PostRestController {
 
@@ -23,19 +21,13 @@ public class PostRestController {
     private final PostService postService;
 
     @GetMapping("/post/temporary-storage")
-    public List<TempStoredDto> temporaryStorage(@Login Member loginUser) {
+    public List<TempStoredPostDto> temporaryStorage(@Login Member loginUser) {
+        Member member = userService.getUserInfoByUserId(loginUser.getUserId());
 
-        Member loginMember = userService.getUserInfo(loginUser.getUserId());
-
-        if (loginMember == null) {
-            return null;
-        }
-
-        List<PostWithImage> temporaryStorage = postService.getTemporaryStorage(loginMember.getId(),
-                                                                               StatusType.TEMPORARY_STORAGE,
-                                                                               0, 7);
-
-        return temporaryStorage.stream().map(TempStoredDto::of).collect(Collectors.toList());
+        return postService.getTemporaryStorage(member.getId(), StatusType.TEMPORARY_STORAGE, 0, 7)
+                .stream()
+                .map(TempStoredPostDto::of)
+                .collect(Collectors.toList());
     }
 
 }

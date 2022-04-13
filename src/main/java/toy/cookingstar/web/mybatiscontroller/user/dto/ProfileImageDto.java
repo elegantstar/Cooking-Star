@@ -1,9 +1,9 @@
-package toy.cookingstar.web.controller.user.dto;
+package toy.cookingstar.web.mybatiscontroller.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import toy.cookingstar.entity.Member;
+import toy.cookingstar.domain.Member;
 
 @Data
 @AllArgsConstructor
@@ -17,5 +17,4 @@ public class ProfileImageDto {
         profileImageDto.imageUrl = member.getProfileImage();
         return profileImageDto;
     }
-
 }

@@ -1,27 +1,27 @@
-package toy.cookingstar.web.controller.member;
+package toy.cookingstar.web.mybatiscontroller.member;
+
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import toy.cookingstar.entity.Member;
-import toy.cookingstar.service.member.MemberService;
-import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.domain.Member;
+import toy.cookingstar.mybatisservice.member.MemberService;
 import toy.cookingstar.web.controller.member.form.MemberSaveForm;
 import toy.cookingstar.web.controller.validator.PwdValidator;
 
 @Slf4j
-@Controller
+//@Controller
 @RequestMapping("/member")
 @RequiredArgsConstructor
 public class MemberController {
 
     private final MemberService memberService;
-    private final UserService userService;
     private final PwdValidator pwdValidator;
 
     @GetMapping("/join")
@@ -39,17 +39,14 @@ public class MemberController {
             return "member/joinForm";
         }
 
-        Long memberId = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
-        Member member = userService.getUserInfoById(memberId);
+        Member member = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
 
-        UserInfoDto memberInfo = UserInfoDto.of(member);
-
-        redirectAttributes.addFlashAttribute("member", memberInfo);
-        return "redirect:/member/welcome";
+        redirectAttributes.addFlashAttribute("member", member);
+        return (member != null) ? "redirect:/member/welcome" : "member/joinForm";
     }
 
     @GetMapping("/welcome")
-    public String welcome(@ModelAttribute("member") UserInfoDto member) {
+    public String welcome(@ModelAttribute("member") Member member) {
         return "member/welcome";
     }
 

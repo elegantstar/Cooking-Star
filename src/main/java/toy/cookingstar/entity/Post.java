@@ -25,8 +25,6 @@ public class Post {
     private Member member;
     private String content;
 
-    //TODO: orphanRemoval을 true로 두고 PostRepository가 post 삭제 시 postImages를 함께 삭제하도록 할 것인지(postImage 수만큼 delete query 발생)
-    //TODO: postImages는 PostImageRepository에서 jpql을 통해 한 번에 삭제하도록 할 것인지 결정(삭제할 post의 자식에 해당하는 postImage를 query 한 번에 삭제)
     @OneToMany(mappedBy = "post", cascade = CascadeType.PERSIST)
     private List<PostImage> postImages = new ArrayList<>();
 

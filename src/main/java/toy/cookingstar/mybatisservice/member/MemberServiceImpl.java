@@ -1,4 +1,4 @@
-package toy.cookingstar.service.member;
+package toy.cookingstar.mybatisservice.member;
 
 import java.util.UUID;
 
@@ -6,19 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import toy.cookingstar.entity.Member;
-import toy.cookingstar.repository.MemberRepository;
+import toy.cookingstar.domain.Member;
+import toy.cookingstar.mapper.MemberMapper;
 import toy.cookingstar.utils.HashUtil;
 
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class MemberService {
+@Transactional(readOnly = true)
+public class MemberServiceImpl implements MemberService {
 
-    private final MemberRepository memberRepository;
+    private final MemberMapper memberMapper;
 
+    @Override
     @Transactional
-    public Long saveMember(String userId, String password, String name, String email) {
+    public Member saveMember(String userId, String password, String name, String email) {
 
         //1. 아이디 중복 검증
         if (idAlreadyExist(userId)) {
@@ -47,14 +48,17 @@ public class MemberService {
                               .build();
 
         //6. member 저장
-        return memberRepository.save(member).getId();
+        memberMapper.save(member);
+
+        return member;
     }
 
     private boolean emailAlreadyExist(String email) {
-        return memberRepository.findByEmail(email) != null;
+        return memberMapper.findByEmail(email) != null;
     }
 
     private boolean idAlreadyExist(String userId) {
-        return memberRepository.findByUserId(userId) != null;
+        return memberMapper.findByUserId(userId) != null;
     }
+
 }

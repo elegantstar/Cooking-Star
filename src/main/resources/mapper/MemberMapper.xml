@@ -56,7 +56,7 @@
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});
   </insert>
 
-  <update id="updateInfo" parameterType="toy.cookingstar.service.user.UserUpdateParam">
+  <update id="updateInfo" parameterType="toy.cookingstar.mybatisservice.user.UserUpdateParam">
     UPDATE member
     SET nickname = #{nickname}, introduction = #{introduction}, email = #{email}, gender = #{gender}, updated_date = CURRENT_TIMESTAMP
     WHERE user_id = #{userId};
