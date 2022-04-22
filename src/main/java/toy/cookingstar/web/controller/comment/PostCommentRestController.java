@@ -6,8 +6,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.comment.PostCommentService;
-import toy.cookingstar.service.comment.dto.PostCommentDto;
+import toy.cookingstar.web.controller.comment.dto.PostCommentDto;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.comment.dto.PostCommentSaveDto;
+import toy.cookingstar.web.controller.comment.dto.PostNestedCommentDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -18,24 +20,23 @@ public class PostCommentRestController {
 
     @PostMapping
     public ResponseEntity<?> createPostComment(@Login Member loginUser,
-                                               @RequestParam Long postId,
-                                               @RequestParam Long parentCommentId,
-                                               @RequestParam String content) throws Exception {
-        if (parentCommentId == null) {
-            postCommentService.create(loginUser.getId(), postId, 0L, content);
+                                               @RequestBody PostCommentSaveDto postCommentSaveDto) throws Exception {
+
+        if (postCommentSaveDto.getParentCommentId() == null) {
+            postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(), 0L, postCommentSaveDto.getContent());
             return ResponseEntity.ok().build();
         }
 
-        postCommentService.create(loginUser.getId(), postId, parentCommentId, content);
+        postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(),
+                postCommentSaveDto.getParentCommentId(), postCommentSaveDto.getContent());
         return ResponseEntity.ok().build();
     }
 
     @GetMapping
     public ResponseEntity<Slice<PostCommentDto>> getCommentsByPostId(@RequestParam Long postId, @RequestParam int page,
-                                                 @RequestParam int size) {
-        Long parentCommentId = 0L;
+                                                                     @RequestParam int size) {
 
-        Slice<PostCommentDto> commentDtoPage = postCommentService.getByPostId(postId, parentCommentId, page, size)
+        Slice<PostCommentDto> commentDtoPage = postCommentService.getCommentsByPostId(postId, page, size)
                 .map(PostCommentDto::of);
 
         return ResponseEntity.ok().body(commentDtoPage);
@@ -48,12 +49,13 @@ public class PostCommentRestController {
     }
 
     @GetMapping("/nested")
-    public ResponseEntity<Slice<PostCommentDto>> getNestedCommentsById(@RequestParam Long postId,
-                                                   @RequestParam("postCommentId") Long parentCommentId,
-                                                   @RequestParam int page, @RequestParam int size) {
+    public ResponseEntity<Slice<PostNestedCommentDto>> getNestedCommentsById(@RequestParam Long postId,
+                                                                             @RequestParam("postCommentId") Long parentCommentId,
+                                                                             @RequestParam int page, @RequestParam int size) {
 
-        Slice<PostCommentDto> nestedCommentDtoPage = postCommentService.getByPostId(postId, parentCommentId, page, size)
-                .map(PostCommentDto::of);
+        Slice<PostNestedCommentDto> nestedCommentDtoPage = postCommentService
+                .getNestedCommentsByPostId(postId, parentCommentId, page, size)
+                .map(PostNestedCommentDto::of);
 
         return ResponseEntity.ok().body(nestedCommentDtoPage);
     }

@@ -3,6 +3,8 @@ package toy.cookingstar.entity;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 
@@ -14,9 +16,9 @@ import static javax.persistence.FetchType.*;
 @Getter
 @Table(name = "post_liker")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostLiker {
+public class PostLiker extends BaseTimeEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = LAZY)
@@ -26,9 +28,6 @@ public class PostLiker {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
-
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
 
     public static PostLiker createPostLiker(Member member, Post post) {
         PostLiker postLiker = new PostLiker();

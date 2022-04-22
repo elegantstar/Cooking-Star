@@ -16,7 +16,7 @@ import static javax.persistence.FetchType.*;
 @Getter
 @Table(name = "post_comment")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostComment {
+public class PostComment extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -34,12 +34,6 @@ public class PostComment {
     private PostComment parentComment;
 
     private String content;
-
-    @Column(name = "created_date", insertable = false, updatable = false)
-    private LocalDateTime createdDate;
-
-    @Column(name = "updated_date", insertable = false, updatable = false)
-    private LocalDateTime updatedDate;
 
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;

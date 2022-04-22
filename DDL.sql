@@ -63,6 +63,7 @@ CREATE TABLE `Post_Liker` (
     `member_id` BIGINT NOT NULL,
     `post_id` BIGINT NOT NULL,
     `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     FOREIGN KEY(`member_id`) REFERENCES Member (id),
     FOREIGN KEY(`post_id`) REFERENCES Post (id)
@@ -73,7 +74,19 @@ CREATE TABLE `Post_Comment_Liker` (
     `member_id` BIGINT NOT NULL,
     `post_comment_id` BIGINT NOT NULL,
     `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY(`id`),
     FOREIGN KEY(`member_id`) REFERENCES Member (id),
     FOREIGN KEY(`post_comment_id`) REFERENCES Post_Comment (id)
+);
+
+CREATE TABLE `Following` (
+    `id` BIGINT NOT NULL UNIQUE AUTO_INCREMENT,
+    `member_id` BIGINT NOT NULL,
+    `followed_member_id` BIGINT NOT NULL,
+    `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`member_id`) REFERENCES Member (id),
+    FOREIGN KEY(`followed_member_id`) REFERENCES Member (id)
 );

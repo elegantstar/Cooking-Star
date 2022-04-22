@@ -4,7 +4,7 @@ import lombok.Getter;
 import toy.cookingstar.entity.Post;
 import toy.cookingstar.entity.PostImage;
 import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 
 import java.time.LocalDateTime;
 import java.util.List;

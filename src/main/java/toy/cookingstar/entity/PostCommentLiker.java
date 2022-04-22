@@ -14,7 +14,7 @@ import static javax.persistence.FetchType.*;
 @Getter
 @Table(name = "post_comment_liker")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PostCommentLiker {
+public class PostCommentLiker extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -26,9 +26,6 @@ public class PostCommentLiker {
     @ManyToOne(fetch = LAZY)
     @JoinColumn(name = "post_comment_id")
     private PostComment postComment;
-
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
 
     public static PostCommentLiker createCommentLiker(Member member, PostComment comment) {
         PostCommentLiker postCommentLiker = new PostCommentLiker();

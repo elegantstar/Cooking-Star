@@ -133,16 +133,16 @@ class PostCommentServiceTest {
             given(slice.getContent().get(0).getMember()).willReturn(member1);
             given(slice.getContent().get(1).getMember()).willReturn(member2);
 
-            given(postCommentRepository.findComments(eq(1L), eq(0L), any(Pageable.class))).willReturn(slice);
+            given(postCommentRepository.findNestedComments(eq(1L), eq(0L), any(Pageable.class))).willReturn(slice);
 
             ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
 
             //when
-            Slice<PostComment> commentSlice = postCommentService.getByPostId(1L, 0L, 0, 5);
+            Slice<PostComment> commentSlice = postCommentService.getNestedCommentsByPostId(1L, 0L, 0, 5);
 
             //then
             then(postRepository).should(times(1)).findById(1L);
-            then(postCommentRepository).should(times(1)).findComments(anyLong(), anyLong(), captor.capture());
+            then(postCommentRepository).should(times(1)).findNestedComments(anyLong(), anyLong(), captor.capture());
             assertEquals(0, captor.getValue().getOffset());
             assertEquals(5, captor.getValue().getPageSize());
             assertEquals(Sort.by(Sort.Direction.ASC, "createdDate"), captor.getValue().getSort());
@@ -162,8 +162,8 @@ class PostCommentServiceTest {
             given(postRepository.findById(anyLong())).willReturn(Optional.empty());
             //when & then
             assertThrows(IllegalArgumentException.class,
-                    () -> postCommentService.getByPostId(1L, 0L, 0, 5));
-            then(postCommentRepository).should(never()).findComments(anyLong(), anyLong(), any(Pageable.class));
+                    () -> postCommentService.getNestedCommentsByPostId(1L, 0L, 0, 5));
+            then(postCommentRepository).should(never()).findNestedComments(anyLong(), anyLong(), any(Pageable.class));
         }
     }
 

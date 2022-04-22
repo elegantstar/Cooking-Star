@@ -8,6 +8,7 @@ import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.liker.PostLikerServiceImpl;
 import toy.cookingstar.service.search.dto.UserSearchDto;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.liker.dto.PostLikerSaveDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +18,8 @@ public class PostLikerRestController {
     private final PostLikerServiceImpl postLikerService;
 
     @PostMapping
-    public ResponseEntity<?> createPostLiker(@Login Member loginUser, @RequestParam Long postId) {
-        postLikerService.create(loginUser.getId(), postId);
+    public ResponseEntity<?> createPostLiker(@Login Member loginUser, @RequestBody PostLikerSaveDto postLikerSaveDto) {
+        postLikerService.create(loginUser.getId(), postLikerSaveDto.getPostId());
         return ResponseEntity.ok().build();
     }
 
@@ -29,7 +30,8 @@ public class PostLikerRestController {
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Slice<UserSearchDto>> getPostLikers(@PathVariable("postId") Long postId, int page, int size) {
+    public ResponseEntity<Slice<UserSearchDto>> getPostLikers(@PathVariable("postId") Long postId,
+                                                              @RequestParam int page, @RequestParam int size) {
         Slice<UserSearchDto> postLikerSlice = postLikerService.getLikers(postId, page, size).map(UserSearchDto::of);
         return ResponseEntity.ok().body(postLikerSlice);
     }

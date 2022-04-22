@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
 import toy.cookingstar.entity.PostLiker;
@@ -14,12 +15,14 @@ import toy.cookingstar.repository.PostRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostLikerServiceImpl implements LikerService {
 
     private final PostLikerRepository postLikerRepository;
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
 
+    @Transactional
     public void create(Long loginMemberId, Long postId) {
         Member loginUser = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
@@ -38,7 +41,9 @@ public class PostLikerServiceImpl implements LikerService {
     public Slice<Member> getLikers(Long postId, int page, int size) {
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         Pageable pageable = PageRequest.of(page, size);
-        return postLikerRepository.findLikersByPost(post, pageable).map(PostLiker::getMember);
+        Slice<PostLiker> likerSlice = postLikerRepository.findLikersByPost(post, pageable);
+        likerSlice.forEach(postLiker -> postLiker.getMember().getUserId());
+        return likerSlice.map(PostLiker::getMember);
     }
 
     public boolean checkForLikes(Long loginMemberId, Long postId) {
@@ -47,6 +52,7 @@ public class PostLikerServiceImpl implements LikerService {
         return postLikerRepository.existsByMemberAndPost(loginUser, post);
     }
 
+    @Transactional
     public void deleteLiker(Long loginMemberId, Long postId) {
         Member loginUser = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);

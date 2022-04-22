@@ -1,32 +1,33 @@
-package toy.cookingstar.service.comment.dto;
+package toy.cookingstar.web.controller.comment.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import toy.cookingstar.entity.PostComment;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.web.controller.user.dto.UserSimpleInfoDto;
 
 import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PostCommentDto {
+public class PostNestedCommentDto {
 
     private Long id;
-    private UserInfoDto userInfoDto;
+    private UserSimpleInfoDto userSimpleInfoDto;
     private Long postId;
     private Long parentCommentId;
+    private String content;
     private LocalDateTime createdDate;
     private LocalDateTime updatedDate;
     private LocalDateTime deletedDate;
 
-    public static PostCommentDto of(PostComment postComment) {
-        PostCommentDto dto = new PostCommentDto();
+    public static PostNestedCommentDto of(PostComment postComment) {
+        PostNestedCommentDto dto = new PostNestedCommentDto();
         dto.id = postComment.getId();
-        dto.userInfoDto = UserInfoDto.of(postComment.getMember());
+        dto.userSimpleInfoDto = UserSimpleInfoDto.of(postComment.getMember());
         dto.postId = postComment.getPost().getId();
-        dto.parentCommentId = postComment.getParentComment().getId();
+        dto.content = postComment.getContent();
         dto.createdDate = postComment.getCreatedDate();
         dto.updatedDate = postComment.getUpdatedDate();
         dto.deletedDate = postComment.getDeletedDate();

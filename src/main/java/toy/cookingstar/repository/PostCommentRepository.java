@@ -10,8 +10,11 @@ import toy.cookingstar.entity.PostComment;
 
 public interface PostCommentRepository extends JpaRepository<PostComment, Long> {
 
+    @Query("select c from PostComment c where c.post.id = :postId and c.parentComment.id is null")
+    Slice<PostComment> findComments(@Param("postId") Long postId, Pageable pageable);
+
     @Query("select c from PostComment c where c.post.id = :postId and c.parentComment.id= :parentCommentId")
-    Slice<PostComment> findComments(@Param("postId") Long postId,
+    Slice<PostComment> findNestedComments(@Param("postId") Long postId,
                                     @Param("parentCommentId") Long parentCommentId,
                                     Pageable pageable);
 

@@ -122,8 +122,8 @@ class PostCommentRepositoryTest {
             Pageable pageable = PageRequest.of(0, 5, Sort.by(Sort.Direction.ASC, "createdDate"));
 
             //when
-            Slice<PostComment> commentSlice = postCommentRepository.findComments(savedPost.getId(), defaultValue, pageable);
-            Slice<PostComment> nestedCommentSlice = postCommentRepository.findComments(savedPost.getId(), savedComment2.getId(), pageable);
+            Slice<PostComment> commentSlice = postCommentRepository.findNestedComments(savedPost.getId(), defaultValue, pageable);
+            Slice<PostComment> nestedCommentSlice = postCommentRepository.findNestedComments(savedPost.getId(), savedComment2.getId(), pageable);
 
             //then
             assertEquals(2, commentSlice.getNumberOfElements());
@@ -139,7 +139,7 @@ class PostCommentRepositoryTest {
             //given
             Pageable pageable = PageRequest.of(0, 5);
             //when
-            Slice<PostComment> slice = postCommentRepository.findComments(-1L, 0L, pageable);
+            Slice<PostComment> slice = postCommentRepository.findNestedComments(-1L, 0L, pageable);
             //then
             assertEquals(0, slice.getNumberOfElements());
         }

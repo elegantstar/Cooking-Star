@@ -8,6 +8,7 @@ import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.liker.PostCommentLikerServiceImpl;
 import toy.cookingstar.service.search.dto.UserSearchDto;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.liker.dto.PostCommentSaveDto;
 
 @RestController
 @RequiredArgsConstructor
@@ -17,8 +18,8 @@ public class PostCommentLikerRestController {
     private final PostCommentLikerServiceImpl postCommentLikerService;
 
     @PostMapping
-    public ResponseEntity<?> createPostLiker(@Login Member loginUser, @RequestParam Long postCommentId) {
-        postCommentLikerService.create(loginUser.getId(), postCommentId);
+    public ResponseEntity<?> createPostLiker(@Login Member loginUser, @RequestBody PostCommentSaveDto postCommentSaveDto) {
+        postCommentLikerService.create(loginUser.getId(), postCommentSaveDto.getPostCommentId());
         return ResponseEntity.ok().build();
     }
 

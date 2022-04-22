@@ -17,7 +17,7 @@ import toy.cookingstar.service.post.StatusType;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostInfoDto;
 import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.form.DeleteForm;
 import toy.cookingstar.web.controller.post.form.PostEditForm;
@@ -85,14 +85,14 @@ public class PostController {
         UserInfoDto userInfoDto = postInfoDto.getUserInfo();
         model.addAttribute("userInfo", userInfoDto);
 
-        String createdDateDiff = getDayDiff(postInfoDto.getCreatedDate());
-        String updatedDateDiff = getDayDiff(postInfoDto.getUpdatedDate());
+        String createdDateTimeDiff = getDateTimeDiff(postInfoDto.getCreatedDate());
+        String updatedDateTimeDiff = getDateTimeDiff(postInfoDto.getUpdatedDate());
 
         //TODO: userId가 loginUser의 userId와 같으면 수정이 가능한 페이지로, 같지 않으면 조회만 가능한 페이지로 이동
         if (StringUtils.equals(userInfoDto.getUserId(), loginUser.getUserId())) {
             model.addAttribute("postInfo", postInfoDto);
-            model.addAttribute("createdDateDiff", createdDateDiff);
-            model.addAttribute("updatedDateDiff", updatedDateDiff);
+            model.addAttribute("createdDateTimeDiff", createdDateTimeDiff);
+            model.addAttribute("updatedDateTimeDiff", updatedDateTimeDiff);
             return "post/myPost";
         }
 
@@ -102,8 +102,8 @@ public class PostController {
         }
 
         model.addAttribute("postInfo", postInfoDto);
-        model.addAttribute("createdDateDiff", createdDateDiff);
-        model.addAttribute("updatedDateDiff", updatedDateDiff);
+        model.addAttribute("createdDateTimeDiff", createdDateTimeDiff);
+        model.addAttribute("updatedDateTimeDiff", updatedDateTimeDiff);
 
         return "post/userPost";
     }
@@ -168,11 +168,18 @@ public class PostController {
         return "redirect:/post/edit/" + postId;
     }
 
-    private String getDayDiff(LocalDateTime localDateTime) {
-        LocalDateTime targetDay = localDateTime.truncatedTo(ChronoUnit.DAYS);
-        LocalDateTime nowDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
+    private String getDateTimeDiff(LocalDateTime localDateTime) {
+        LocalDateTime targetDays = localDateTime.truncatedTo(ChronoUnit.DAYS);
+        LocalDateTime nowDays = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
-        long dayDiff = targetDay.until(nowDay, ChronoUnit.DAYS);
+        long dayDiff = targetDays.until(nowDays, ChronoUnit.DAYS);
+
+        if (dayDiff == 0L) {
+            LocalDateTime targetHours = localDateTime.truncatedTo(ChronoUnit.HOURS);
+            LocalDateTime nowHours = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
+
+            return targetHours.until(nowHours, ChronoUnit.HOURS) + "시간";
+        }
 
         return dayDiff + "일";
     }

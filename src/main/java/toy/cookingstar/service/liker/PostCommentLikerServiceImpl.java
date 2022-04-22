@@ -5,6 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import toy.cookingstar.entity.*;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostCommentLikerRepository;
@@ -12,12 +13,14 @@ import toy.cookingstar.repository.PostCommentRepository;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class PostCommentLikerServiceImpl implements LikerService {
 
     private final MemberRepository memberRepository;
     private final PostCommentRepository postCommentRepository;
     private final PostCommentLikerRepository postCommentLikerRepository;
 
+    @Transactional
     public void create(Long loginMemberId, Long postCommentId) {
         Member loginUser = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         PostComment comment = postCommentRepository.findById(postCommentId).orElseThrow(IllegalArgumentException::new);
@@ -38,7 +41,9 @@ public class PostCommentLikerServiceImpl implements LikerService {
     public Slice<Member> getLikers(Long postCommentId, int page, int size) {
         PostComment comment = postCommentRepository.findById(postCommentId).orElseThrow(IllegalArgumentException::new);
         Pageable pageable = PageRequest.of(page, size);
-        return postCommentLikerRepository.findLikersByPostComment(comment, pageable).map(PostCommentLiker::getMember);
+        Slice<PostCommentLiker> likerSlice = postCommentLikerRepository.findLikersByPostComment(comment, pageable);
+        likerSlice.forEach(postLiker -> postLiker.getMember().getUserId());
+        return likerSlice.map(PostCommentLiker::getMember);
     }
 
     @Override
@@ -49,6 +54,7 @@ public class PostCommentLikerServiceImpl implements LikerService {
     }
 
     @Override
+    @Transactional
     public void deleteLiker(Long loginMemberId, Long postId) {
         Member loginUser = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         PostComment comment = postCommentRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
