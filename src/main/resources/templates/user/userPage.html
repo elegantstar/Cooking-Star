@@ -28,8 +28,9 @@
       color: black;
       text-decoration: none;
     }
-    .num-of-post {
+    .num-of-post, .num-of-follower, .num-of-following {
       font-size: 18px;
+      margin-right: 37px;
     }
     .nickname {
       font-size: 20px;
@@ -94,7 +95,9 @@
     <span class="user-id" th:text="${userPageInfo.userId}">유저 아이디</span>
   </div>
   <div class="mt-3 mb-3">
-    <span class="num-of-post" th:text="|#{label.myPage.numPost} ${totalPost}|">게시물 0</span><br/>
+    <span class="num-of-post" th:text="|#{label.myPage.numPost} ${totalPost}|">게시물 0</span>
+    <span class="num-of-follower" th:text="|#{label.myPage.numFollower} ${totalFollower}|" style="cursor: pointer;">팔로워 0</span>
+    <span class="num-of-following" th:text="|#{label.myPage.numFollowing} ${totalFollowing}|", style="cursor: pointer;">팔로잉 0</span>
   </div>
   <div class="mt-3 mb-1">
     <span class="nickname" th:text="${userPageInfo.nickname}">유저 닉네임</span>

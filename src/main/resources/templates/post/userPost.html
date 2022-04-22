@@ -105,13 +105,17 @@
       text-decoration: none;
     }
 
-    .liker-list-scroll {
+    .post-liker-list-scroll, .comment-liker-list-scroll {
       -ms-overflow-style: none;
       overflow-y: scroll;
       height: 300px;
     }
 
-    .liker-list-scroll::-webkit-scrollbar {
+    .post-liker-list-scroll::-webkit-scrollbar {
+      display: none;
+    }
+
+    .comment-liker-list-scroll::-webkit-scrollbar {
       display: none;
     }
 
@@ -239,13 +243,26 @@
     </div>
   </div>
 
-  <div class="modal fade" id="liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <!-- 게시글 '좋아요' 클릭 유저 리스트 모달 -->
+  <div class="modal fade" id="post-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
       <div class="modal-content">
         <div class="modal-header" style="justify-content: center; height: 43px;">
-          <p class="modal-title" id="exampleModalLabel" style="font-weight: bold;">좋아요</p>
+          <p class="modal-title" style="font-weight: bold;">좋아요</p>
         </div>
-        <div class="modal-body liker-list-scroll"></div>
+        <div class="modal-body post-liker-list-scroll"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 댓글 '좋아요' 클릭 유저 리스트 모달 -->
+  <div class="modal fade" id="comment-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+      <div class="modal-content">
+        <div class="modal-header" style="justify-content: center; height: 43px;">
+          <p class="modal-title" style="font-weight: bold;">좋아요</p>
+        </div>
+        <div class="modal-body comment-liker-list-scroll"></div>
       </div>
     </div>
   </div>
