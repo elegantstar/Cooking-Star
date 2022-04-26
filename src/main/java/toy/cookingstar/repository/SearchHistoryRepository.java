@@ -1,22 +1,26 @@
 package toy.cookingstar.repository;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import toy.cookingstar.entity.Member;
+import toy.cookingstar.entity.SearchHistory;
 
-import toy.cookingstar.domain.SearchHistory;
+public interface SearchHistoryRepository extends JpaRepository<SearchHistory, Long> {
 
-@Mapper
-public interface SearchHistoryRepository {
+    @EntityGraph(attributePaths = {"searchedUser"})
+    Page<SearchHistory> findSearchHistoryByMember(Member member, Pageable pageable);
 
-    void save(SearchHistory searchHistory);
+    SearchHistory findByMemberAndSearchedUser(Member member, Member searchedUser);
 
-    SearchHistory findHistory(@Param("memberId") Long memberId, @Param("searchedUserId") String searchedUserId);
+    @Modifying(clearAutomatically = true, flushAutomatically = true)
+    @Query("delete from SearchHistory s where s.member = :member")
+    void deleteAllByMember(@Param("member") Member member);
 
-    void updateLastSearchDate(@Param("memberId") Long memberId, @Param("searchedUserId") String searchedUserId);
-
-    void clearAll(Long memberId);
-
-    void deleteHistory(@Param("memberId") Long memberId, @Param("searchedUserId") String searchedUserId);
+    void deleteByMemberAndSearchedUser(Member member, Member searchedUser);
 }

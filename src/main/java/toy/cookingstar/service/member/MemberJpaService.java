@@ -6,20 +6,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
-import toy.cookingstar.domain.Member;
-import toy.cookingstar.mapper.MemberMapper;
+import toy.cookingstar.entity.Member;
+import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.utils.HashUtil;
 
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class MemberServiceImpl implements MemberService {
+@RequiredArgsConstructor
+public class MemberJpaService {
 
-    private final MemberMapper memberMapper;
+    private final MemberRepository memberRepository;
 
-    @Override
     @Transactional
-    public Member saveMember(String userId, String password, String name, String email) {
+    public Long saveMember(String userId, String password, String name, String email) {
 
         //1. 아이디 중복 검증
         if (idAlreadyExist(userId)) {
@@ -48,17 +47,14 @@ public class MemberServiceImpl implements MemberService {
                               .build();
 
         //6. member 저장
-        memberMapper.save(member);
-
-        return member;
+        return memberRepository.save(member).getId();
     }
 
     private boolean emailAlreadyExist(String email) {
-        return memberMapper.findByEmail(email) != null;
+        return memberRepository.findByEmail(email) != null;
     }
 
     private boolean idAlreadyExist(String userId) {
-        return memberMapper.findByUserId(userId) != null;
+        return memberRepository.findByUserId(userId) != null;
     }
-
 }

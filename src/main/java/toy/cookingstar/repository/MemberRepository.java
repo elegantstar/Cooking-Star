@@ -1,33 +1,20 @@
 package toy.cookingstar.repository;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import toy.cookingstar.entity.Member;
 
-import toy.cookingstar.domain.Member;
-import toy.cookingstar.service.user.UserUpdateParam;
-
-@Mapper
-public interface MemberRepository {
-
-    Member findByUserId(String userId);
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
     Member findByEmail(String email);
 
-    Member findById(Long id);
+    Member findByUserId(String userId);
 
-    void save(Member member);
-
-    void updateInfo(UserUpdateParam userUpdateParam);
-
-    void updatePwd(@Param("userId") String userId, @Param("newPassword") String newPassword, @Param("newSalt") String newSalt);
-
-    List<Member> findSearchHistoryById(Long memberId);
-
-    List<Member> findByKeyword(String keyword);
-
-    void deleteProfileImage(Long id);
-
-    void updateProfileImage(@Param("id") Long id, @Param("profileImage") String profileImage);
+    @Query("select m from Member m" +
+            " where m.userId like concat('%', :keyword,'%') or m.nickname like concat('%', :keyword, '%')")
+    Page<Member> findByKeyword(@Param("keyword") String keyword, Pageable pageable);
 }

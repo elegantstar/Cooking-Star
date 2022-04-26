@@ -1,35 +1,20 @@
 package toy.cookingstar.repository;
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
-import toy.cookingstar.domain.Post;
-import toy.cookingstar.domain.PostImage;
-import toy.cookingstar.domain.PostWithImage;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import toy.cookingstar.entity.Post;
 import toy.cookingstar.service.post.StatusType;
 
-@Mapper
-public interface PostRepository {
-    void create(Post post);
+public interface PostRepository extends JpaRepository<Post, Long> {
 
-    Post findByPostId(Long id);
+    //JAP 표준 스펙에서 fetch join 대상에는 alias를 줄 수 없음(Hibernate는 허용)
+    //fetch join 대상은 where에 포함되어서는 안 됨. 조회 결과가 DB와 동일한 일관성을 유지하지 못 하기 때문.
+    @Query("select p from Post p join fetch p.postImages where p.member.id = :memberId and p.status = :status")
+    Slice<Post> findPosts(@Param("memberId") Long memberId, @Param("status") StatusType status, Pageable pageable);
 
-    void saveImage(PostImage postImage);
-
-    int countPosts(Long memberId);
-
-    List<PostWithImage> findPostWithImages(@Param("memberId") Long memberId,
-                                           @Param("statusType") StatusType statusType,
-                                           @Param("start") int start, @Param("end") int end);
-
-    PostWithImage findPostInfo(@Param("id") Long id);
-
-    void deletePostImages(Long postId);
-
-    void deletePost(Long id);
-
-    void updatePost(@Param("id") Long id, @Param("content") String content, @Param("status") StatusType status);
+    int countByMemberId(Long memberId);
 
 }
