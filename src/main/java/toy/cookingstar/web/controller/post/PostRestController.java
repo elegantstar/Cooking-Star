@@ -36,6 +36,7 @@ public class PostRestController {
                                                                                0, 7);
 
         return temporaryStorage.stream().map(TempStoredDto::of).collect(Collectors.toList());
+
     }
 
 }

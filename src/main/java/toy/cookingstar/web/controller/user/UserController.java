@@ -127,6 +127,12 @@ public class UserController {
                            BindingResult bindingResult,
                            @Login Member loginUser, HttpServletRequest request) throws IOException {
 
+        Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
+
+        if (userPageInfo == null) {
+            return "error-page/404";
+        }
+
         if (userService.isNotAvailableEmail(loginUser.getUserId(), form.getEmail())) {
             bindingResult.reject("edit.email.notAvailable");
         }
