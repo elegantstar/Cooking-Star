@@ -10,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -74,6 +75,9 @@ public class UserController {
         model.addAttribute("totalPost", totalPost);
 
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        if (postImageUrls == null) {
+            return "user/userPage";
+        }
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 
@@ -102,6 +106,9 @@ public class UserController {
 
         //TODO: getPostImageUrls로 ImageUrl과 PostId를 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        if (postImageUrls == null) {
+            return "user/myPage";
+        }
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 
@@ -134,18 +141,9 @@ public class UserController {
             return "user/editForm";
         }
 
-        //프로필 이미지 업로드
-        String storedProfileImage;
-
-        if (StringUtils.isEmpty(form.getProfileImage().getOriginalFilename())) {
-            storedProfileImage = loginUser.getProfileImage();
-        } else {
-            storedProfileImage = imageStoreService.storeImage(ImageType.PROFILE, form.getProfileImage());
-        }
-
         UserUpdateParam userUpdateParam = new UserUpdateParam(loginUser.getUserId(), form.getNickname(),
                                                               form.getIntroduction(), form.getEmail(),
-                                                              form.getGender(), storedProfileImage);
+                                                              form.getGender());
 
         Member updatedUser = userService.updateInfo(userUpdateParam);
 
@@ -219,6 +217,11 @@ public class UserController {
 
         //getPostImageUrls로 ImageUrl과 PostId를 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
+
+        if (postImageUrls == null) {
+            return "user/privatePage";
+        }
+
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 

@@ -18,4 +18,7 @@ public interface UserService {
 
     Member getUserInfo(Long memberId);
 
+    void deleteProfileImg(Long id);
+
+    void updateProfileImg(Long memberId, String storedProfileImage);
 }

@@ -24,6 +24,33 @@
     WHERE id = #{id}
   </select>
 
+  <select id="findByUserIds" resultType="Member">
+    SELECT *
+    FROM member
+    <where>
+      <foreach collection="userIds" index="index" item="userId" open="user_id in (" separator="," close=")">
+        #{userId}
+      </foreach>
+    </where>
+  </select>
+
+  <select id="findSearchHistoryById" resultType="Member">
+    SELECT *
+    FROM searchhistory AS s
+    INNER JOIN member AS m
+    ON s.searched_user_id = m.user_id
+    WHERE s.member_id = #{memberId}
+    ORDER BY s.last_search_date DESC
+    LIMIT 0, 50;
+  </select>
+
+  <select id="findByKeyword" resultType="Member">
+    SELECT *
+    FROM member
+    WHERE user_id like CONCAT('%',#{keyword},'%') OR nickname like CONCAT('%',#{keyword},'%')
+    LIMIT 0, 50;
+  </select>
+
   <insert id="save" useGeneratedKeys="true" keyProperty="id" parameterType="Member">
     INSERT INTO member (user_id, password, name, email, nickname, salt)
     VALUES (#{userId}, #{password}, #{name}, #{email}, #{nickname}, #{salt});
@@ -31,7 +58,7 @@
 
   <update id="updateInfo" parameterType="toy.cookingstar.service.user.UserUpdateParam">
     UPDATE member
-    SET nickname = #{nickname}, introduction = #{introduction}, email = #{email}, gender = #{gender}, profile_image = #{profileImage}, updated_date = CURRENT_TIMESTAMP
+    SET nickname = #{nickname}, introduction = #{introduction}, email = #{email}, gender = #{gender}, updated_date = CURRENT_TIMESTAMP
     WHERE user_id = #{userId};
   </update>
 
@@ -39,6 +66,18 @@
     UPDATE member
     SET password = #{newPassword}, salt = #{newSalt}, updated_date = CURRENT_TIMESTAMP
     WHERE user_id = #{userId};
+  </update>
+
+  <update id="deleteProfileImage">
+    UPDATE member
+    SET profile_image = null, updated_date = CURRENT_TIMESTAMP
+    WHERE id = #{id};
+  </update>
+
+  <update id="updateProfileImage">
+    UPDATE member
+    SET profile_image = #{profileImage}, updated_date = CURRENT_TIMESTAMP
+    WHERE id = #{id};
   </update>
 
 </mapper>

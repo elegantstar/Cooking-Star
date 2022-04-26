@@ -31,12 +31,12 @@ public class PostRestController {
             return null;
         }
 
-        List<PostWithImage> postWithImages = postService.getTemporaryStorage(loginMember.getId(),
-                                                                             StatusType.TEMPORARY_STORAGE, 0, 7);
+        List<PostWithImage> temporaryStorage = postService.getTemporaryStorage(loginMember.getId(),
+                                                                               StatusType.TEMPORARY_STORAGE,
+                                                                               0, 7);
 
-        return postWithImages.stream()
-                             .map(TempStoredDto::of)
-                             .collect(Collectors.toList());
+        return temporaryStorage.stream().map(TempStoredDto::of).collect(Collectors.toList());
+
     }
 
 }

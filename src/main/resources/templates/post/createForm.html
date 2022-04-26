@@ -36,6 +36,16 @@
       height: 15%;
       margin: 10px;
     }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
     #upload-box {
       height: 800px;
       margin-bottom: 5px;
@@ -47,8 +57,7 @@
 <body>
 
 <nav th:replace="fragment/nav :: navbar"></nav>
-
-<hr class="mt-2">
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
 
 <div class="container" id="upload-box">
 
@@ -64,7 +73,7 @@
         <div class="mb-3" style="font-size: 20px;">이미지를 선택해 주세요!</div>
         <div>이미지 크기 제한 30MB</div>
         <div class="mb-3">업로드 개수 제한 10개</div>
-        <input type="file" multiple="multiple" name="images">
+        <input type="file" multiple="multiple" name="images" accept=".jpg, .gif, .png">
       </div>
     </div>
 

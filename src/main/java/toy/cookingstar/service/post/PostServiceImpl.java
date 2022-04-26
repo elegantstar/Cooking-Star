@@ -17,6 +17,8 @@ import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
 
+import toy.cookingstar.web.controller.post.dto.TempStoredDto;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor

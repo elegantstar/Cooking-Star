@@ -46,6 +46,16 @@
       height: 15%;
       margin: 10px;
     }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
     #profile-box {
       height: 300px;
       margin-bottom: 5px;
@@ -61,8 +71,7 @@
 <body>
 
 <nav th:replace="fragment/nav :: navbar"></nav>
-
-<hr class="my-2">
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
 
 <div class="container" id="profile-box">
   <div class="profile-img-box">

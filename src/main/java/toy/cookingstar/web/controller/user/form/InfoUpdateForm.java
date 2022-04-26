@@ -27,6 +27,4 @@ public class InfoUpdateForm {
 
     private String gender;
 
-    private MultipartFile profileImage;
-
 }

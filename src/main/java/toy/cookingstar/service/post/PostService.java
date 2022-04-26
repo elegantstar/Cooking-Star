@@ -4,6 +4,7 @@ import java.util.List;
 
 import toy.cookingstar.domain.Post;
 import toy.cookingstar.domain.PostWithImage;
+import toy.cookingstar.web.controller.post.dto.TempStoredDto;
 
 public interface PostService {
 

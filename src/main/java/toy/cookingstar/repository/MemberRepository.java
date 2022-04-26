@@ -1,5 +1,7 @@
 package toy.cookingstar.repository;
 
+import java.util.List;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -21,4 +23,11 @@ public interface MemberRepository {
 
     void updatePwd(@Param("userId") String userId, @Param("newPassword") String newPassword, @Param("newSalt") String newSalt);
 
+    List<Member> findSearchHistoryById(Long memberId);
+
+    List<Member> findByKeyword(String keyword);
+
+    void deleteProfileImage(Long id);
+
+    void updateProfileImage(@Param("id") Long id, @Param("profileImage") String profileImage);
 }
