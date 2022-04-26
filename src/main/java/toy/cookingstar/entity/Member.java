@@ -20,6 +20,7 @@ public class Member extends BaseTimeEntity {
     private String email;
     private String salt;
     private String nickname;
+    private String website;
     private String introduction;
     private String gender;
 
@@ -36,9 +37,10 @@ public class Member extends BaseTimeEntity {
         this.nickname = nickname;
     }
 
-    public void updateInfo(String email, String nickname, String introduction, String gender) {
+    public void updateInfo(String email, String nickname, String website, String introduction, String gender) {
         this.email = email;
         this.nickname = nickname;
+        this.website = website;
         this.introduction = introduction;
         this.gender = gender;
     }

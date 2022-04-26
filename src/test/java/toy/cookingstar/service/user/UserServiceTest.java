@@ -171,7 +171,7 @@ class UserServiceTest {
             //then
             then(memberRepository).should(times(1)).findById(1L);
             then(optionalUser.orElse(null)).should(times(1))
-                    .updateInfo(anyString(), anyString(), anyString(), anyString());
+                    .updateInfo(anyString(), anyString(), anyString(), anyString(), anyString());
         }
 
         @Test

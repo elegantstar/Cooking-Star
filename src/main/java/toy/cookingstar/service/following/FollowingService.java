@@ -34,16 +34,47 @@ public class FollowingService {
         followingRepository.save(following);
     }
 
+    /**
+     * memberId로 전체 팔로워 수 조회
+     */
     public int countFollowers(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
         return followingRepository.countFollowers(member);
     }
 
+    /**
+     * userId로 전체 팔로워 수 조회
+     */
+    public int countFollowersByUserId(String userId) throws Exception {
+        Member member = memberRepository.findByUserId(userId);
+        if (member == null) {
+            throw new IllegalArgumentException();
+        }
+        return followingRepository.countFollowers(member);
+    }
+
+    /**
+     * memberId로 전체 팔로잉 수 조회
+     */
     public int countFollowings(Long memberId) {
         Member member = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
         return followingRepository.countFollowings(member);
     }
 
+    /**
+     * userId로 전체 팔로잉 수 조회
+     */
+    public int countFollowingsByUserId(String userId) throws Exception {
+        Member member = memberRepository.findByUserId(userId);
+        if (member == null) {
+            throw new IllegalArgumentException();
+        }
+        return followingRepository.countFollowings(member);
+    }
+
+    /**
+     * 팔로워 리스트 조회
+     */
     public Slice<Member> getFollowers(String userId, int page, int size) throws Exception {
         Member member = memberRepository.findByUserId(userId);
         if (member == null) {
@@ -55,6 +86,9 @@ public class FollowingService {
         return followerSlice.map(Following::getFollower);
     }
 
+    /**
+     * 팔로잉 리스트 조회
+     */
     public Slice<Member> getFollowings(String userId, int page, int size) throws Exception {
         Member member = memberRepository.findByUserId(userId);
         if (member == null) {
@@ -66,8 +100,11 @@ public class FollowingService {
         return followingSlice.map(Following::getFollowedMember);
     }
 
-    public boolean checkForFollowing(Long memberId, String userId) throws Exception {
-        Member loginMember = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+    /**
+     * 로그인 멤버의 특정 유저 팔로잉 여부 확인
+     */
+    public boolean checkForFollowing(Long loginMemberId, String userId) throws Exception {
+        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         Member searchedUser = memberRepository.findByUserId(userId);
         if (searchedUser == null) {
             throw new IllegalArgumentException();
@@ -75,8 +112,11 @@ public class FollowingService {
         return followingRepository.existsByFollowerAndFollowedMember(loginMember, searchedUser);
     }
 
-    public boolean checkForFollowed(Long memberId, String userId) {
-        Member loginMember = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
+    /**
+     * 특정 유저의 로그인 멤버 팔로잉 여부 확인
+     */
+    public boolean checkForFollowed(Long loginMemberId, String userId) {
+        Member loginMember = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         Member searchedUser = memberRepository.findByUserId(userId);
         if (searchedUser == null) {
             throw new IllegalArgumentException();
@@ -84,15 +124,22 @@ public class FollowingService {
         return followingRepository.existsByFollowerAndFollowedMember(searchedUser, loginMember);
     }
 
+    /**
+     * 팔로잉 관계 삭제
+     */
     @Transactional
-    public void deleteFollowing(Long memberId, String userId) throws Exception {
-        Member loginMember = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
-        Member searchedUser = memberRepository.findByUserId(userId);
-        if (searchedUser == null) {
+    public void deleteFollowing(String followingUserId, String followedUserId) throws Exception {
+        Member member = memberRepository.findByUserId(followingUserId);
+        if (member == null) {
             throw new IllegalArgumentException();
         }
 
-        Following following = followingRepository.findByFollowerAndFollowedMember(loginMember, searchedUser);
+        Member followedUser = memberRepository.findByUserId(followedUserId);
+        if (followedUser == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Following following = followingRepository.findByFollowerAndFollowedMember(member, followedUser);
         if (following == null) {
             throw new IllegalArgumentException();
         }

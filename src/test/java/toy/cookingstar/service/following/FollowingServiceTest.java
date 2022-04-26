@@ -410,32 +410,31 @@ class FollowingServiceTest {
         @DisplayName("성공")
         void deleteFollowingSuccessTest() throws Exception {
             //given
-            Member loginMember = mock(Member.class);
-            given(loginMember.getId()).willReturn(1L);
-            given(memberRepository.findById(1L)).willReturn(Optional.of(loginMember));
+            Member member = mock(Member.class);
+            given(member.getUserId()).willReturn("followingMember");
+            given(memberRepository.findByUserId("followingMember")).willReturn(member);
 
             Member followedMember = mock(Member.class);
             given(followedMember.getUserId()).willReturn("followedMember");
             given(memberRepository.findByUserId("followedMember")).willReturn(followedMember);
 
             Following following = mock(Following.class);
-            given(following.getFollower()).willReturn(loginMember);
+            given(following.getFollower()).willReturn(member);
             given(following.getFollowedMember()).willReturn(followedMember);
-            given(followingRepository.findByFollowerAndFollowedMember(loginMember, followedMember)).willReturn(following);
+            given(followingRepository.findByFollowerAndFollowedMember(member, followedMember)).willReturn(following);
 
             ArgumentCaptor<Following> captor = ArgumentCaptor.forClass(Following.class);
 
             //when
-            followingService.deleteFollowing(1L, "followedMember");
+            followingService.deleteFollowing("followingMember", "followedMember");
 
             //then
-            then(memberRepository).should(times(1)).findById(anyLong());
-            then(memberRepository).should(times(1)).findByUserId(anyString());
+            then(memberRepository).should(times(2)).findByUserId(anyString());
             then(followingRepository).should(times(1))
                     .findByFollowerAndFollowedMember(any(Member.class), any(Member.class));
             then(followingRepository).should(times(1)).delete(captor.capture());
 
-            assertEquals(loginMember.getId(), captor.getValue().getFollower().getId());
+            assertEquals(member.getUserId(), captor.getValue().getFollower().getUserId());
             assertEquals(followedMember.getUserId(), captor.getValue().getFollowedMember().getUserId());
         }
 
@@ -443,13 +442,12 @@ class FollowingServiceTest {
         @DisplayName("실패_존재하지 않는 memberId")
         void deleteFollowingFailureTest_MemberIdDoesNotExist() throws Exception {
             //given
-            given(memberRepository.findById(anyLong())).willReturn(Optional.empty());
+            given(memberRepository.findByUserId(anyString())).willReturn(null);
 
             //when & then
             assertThrows(IllegalArgumentException.class,
-                    () -> followingService.deleteFollowing(1L, "followedMember"));
-            then(memberRepository).should(times(1)).findById(anyLong());
-            then(memberRepository).should(never()).findByUserId(anyString());
+                    () -> followingService.deleteFollowing("followingMember", "followedMember"));
+            then(memberRepository).should(times(1)).findByUserId(anyString());
             then(followingRepository).should(never()).findByFollowerAndFollowedMember(any(Member.class), any(Member.class));
             then(followingRepository).should(never()).delete(any(Following.class));
         }
@@ -458,15 +456,14 @@ class FollowingServiceTest {
         @DisplayName("실패_존재하지 않는 userId")
         void deleteFollowingFailureTest_UserIdDoesNotExist() throws Exception {
             //given
-            Member loginMember = mock(Member.class);
-            given(memberRepository.findById(1L)).willReturn(Optional.of(loginMember));
-            given(memberRepository.findByUserId(anyString())).willReturn(null);
+            Member member = mock(Member.class);
+            given(memberRepository.findByUserId("followingMember")).willReturn(member);
+            given(memberRepository.findByUserId("followedMember")).willReturn(null);
 
             //when & then
             assertThrows(IllegalArgumentException.class,
-                    () -> followingService.deleteFollowing(1L, "followedMember"));
-            then(memberRepository).should(times(1)).findById(anyLong());
-            then(memberRepository).should(times(1)).findByUserId(anyString());
+                    () -> followingService.deleteFollowing("followingMember", "followedMember"));
+            then(memberRepository).should(times(2)).findByUserId(anyString());
             then(followingRepository).should(never()).findByFollowerAndFollowedMember(any(Member.class), any(Member.class));
             then(followingRepository).should(never()).delete(any(Following.class));
         }
@@ -475,19 +472,18 @@ class FollowingServiceTest {
         @DisplayName("실패_존재하지 않는 Following")
         void deleteFollowingFailureTest_FollowingDoesNotExist() throws Exception {
             //given
-            Member loginMember = mock(Member.class);
-            given(memberRepository.findById(1L)).willReturn(Optional.of(loginMember));
+            Member member = mock(Member.class);
+            given(memberRepository.findByUserId("followingMember")).willReturn(member);
 
             Member followedMember = mock(Member.class);
             given(memberRepository.findByUserId("followedMember")).willReturn(followedMember);
 
-            given(followingRepository.findByFollowerAndFollowedMember(loginMember, followedMember)).willReturn(null);
+            given(followingRepository.findByFollowerAndFollowedMember(member, followedMember)).willReturn(null);
 
             //when & then
             assertThrows(IllegalArgumentException.class,
-                    () -> followingService.deleteFollowing(1L, "followedMember"));
-            then(memberRepository).should(times(1)).findById(anyLong());
-            then(memberRepository).should(times(1)).findByUserId(anyString());
+                    () -> followingService.deleteFollowing("followingMember", "followedMember"));
+            then(memberRepository).should(times(2)).findByUserId(anyString());
             then(followingRepository).should(times(1)).findByFollowerAndFollowedMember(any(Member.class), any(Member.class));
             then(followingRepository).should(never()).delete(any(Following.class));
         }

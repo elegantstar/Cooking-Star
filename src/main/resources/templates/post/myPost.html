@@ -10,7 +10,7 @@
 
     <script type="text/javascript">
         function button_deletion() {
-            var result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
+            const result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
             if (result) {
                 document.getElementById('deletion').submit();
             } else {
@@ -473,10 +473,6 @@
                     $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDate);
                 }
             }
-            // content.forEach((comment) => {
-            //
-            //
-            // });
 
             const {last} = commentSlice;
             if (!last) {
@@ -739,7 +735,6 @@
             postLikerPage++;
             console.log("scroll bottom");
             getPostLikers();
-            postLikerPage++;
         }
     });
 
@@ -919,10 +914,6 @@
             getAdditionalCommentLikers($("#selected-comment-id").val());
         }
     });
-
-
-
-
 </script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>

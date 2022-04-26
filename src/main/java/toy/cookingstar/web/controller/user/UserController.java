@@ -139,7 +139,7 @@ public class UserController {
         }
 
         UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(userInfo.getId(), form.getEmail(),
-                form.getNickname(), form.getIntroduction(), form.getGender());
+                form.getNickname(), form.getWebsite(), form.getIntroduction(), form.getGender());
 
         userService.updateInfo(userInfoUpdateDto);
 

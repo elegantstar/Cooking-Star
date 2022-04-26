@@ -10,6 +10,7 @@ public class UserInfoUpdateDto {
     private Long id;
     private String email;
     private String nickname;
+    private String website;
     private String introduction;
     private String gender;
 }

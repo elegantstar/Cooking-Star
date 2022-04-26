@@ -58,7 +58,7 @@ public class UserService {
     public void updateInfo(UserInfoUpdateDto userInfoUpdateDto) {
         Member foundUser = memberRepository.findById(userInfoUpdateDto.getId()).orElseThrow(IllegalArgumentException::new);
         foundUser.updateInfo(userInfoUpdateDto.getEmail(), userInfoUpdateDto.getNickname(),
-                userInfoUpdateDto.getIntroduction(), userInfoUpdateDto.getGender());
+                userInfoUpdateDto.getWebsite(), userInfoUpdateDto.getIntroduction(), userInfoUpdateDto.getGender());
     }
 
     /**

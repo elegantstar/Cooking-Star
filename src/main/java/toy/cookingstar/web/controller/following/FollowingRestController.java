@@ -1,6 +1,7 @@
 package toy.cookingstar.web.controller.following;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -8,6 +9,7 @@ import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.following.FollowingService;
 import toy.cookingstar.service.search.dto.UserSearchDto;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.following.dto.FollowingDeleteDto;
 import toy.cookingstar.web.controller.following.dto.FollowingRelationshipDto;
 import toy.cookingstar.web.controller.following.dto.FollowingSaveDto;
 
@@ -31,6 +33,18 @@ public class FollowingRestController {
         return ResponseEntity.ok().build();
     }
 
+    @GetMapping("/{userId}/count/followers")
+    public ResponseEntity<Integer> countFollowers(@PathVariable("userId") String userId) throws Exception {
+        int count = followingService.countFollowersByUserId(userId);
+        return ResponseEntity.ok().body(count);
+    }
+
+    @GetMapping("/{userId}/count/followings")
+    public ResponseEntity<Integer> countFollowings(@PathVariable("userId") String userId) throws Exception {
+        int count = followingService.countFollowingsByUserId(userId);
+        return ResponseEntity.ok().body(count);
+    }
+
     // 팔로워 리스트 조회
     @GetMapping("/{userId}/followers")
     public ResponseEntity<Slice<UserSearchDto>> getFollowers(@PathVariable("userId") String userId,
@@ -50,7 +64,7 @@ public class FollowingRestController {
     // 팔로잉 관계 확인(로그인 유저의 특정 유저 팔로잉 여부, 특정 유저의 로그인 유저 팔로잉 여부)
     @GetMapping
     public ResponseEntity<FollowingRelationshipDto> checkForFollowingRelationship(@Login Member loginUser,
-                                                                      @RequestParam String userId) throws Exception{
+                                                                                  @RequestParam String userId) throws Exception {
         // loginUser가 user를 팔로잉 하는지 여부
         boolean following = followingService.checkForFollowing(loginUser.getId(), userId);
         // user가 loginUser를 팔로잉 하는지 여부
@@ -60,10 +74,14 @@ public class FollowingRestController {
     }
 
     // 언팔로잉
-    @PostMapping("/{userId}/deletion")
+    @PostMapping("/deletion")
     public ResponseEntity<?> deleteFollowing(@Login Member loginUser,
-                                             @PathVariable("userId") String userId) throws Exception {
-        followingService.deleteFollowing(loginUser.getId(), userId);
+                                             @RequestBody FollowingDeleteDto followingDeleteDto) throws Exception {
+        if (!StringUtils.equals(loginUser.getUserId(), followingDeleteDto.getFollowingUserId())
+                && !StringUtils.equals(loginUser.getUserId(), followingDeleteDto.getFollowedUserId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        followingService.deleteFollowing(followingDeleteDto.getFollowingUserId(), followingDeleteDto.getFollowedUserId());
         return ResponseEntity.ok().build();
     }
 }

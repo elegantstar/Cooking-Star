@@ -14,6 +14,7 @@ public class UserInfoDto {
     private String userId;
     private String name;
     private String email;
+    private String website;
     private String nickname;
     private String introduction;
     private String gender;
@@ -25,6 +26,7 @@ public class UserInfoDto {
         dto.userId = member.getUserId();
         dto.name = member.getName();
         dto.email = member.getEmail();
+        dto.website = member.getWebsite();
         dto.nickname = member.getNickname();
         dto.introduction = member.getIntroduction();
         dto.gender = member.getGender();
