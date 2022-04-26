@@ -17,23 +17,28 @@ import toy.cookingstar.aws.AwsUtils;
 
 @Service
 @RequiredArgsConstructor
-public class ImageStoreService {
+public class ImageLocalStoreService {
 
-    @Value("${postImage.dir}")
+    @Value("${image.dir}")
     private String imageDir;
 
-    @Value("${profileImage.dir}")
+    @Value("${profile.dir}")
     private String profileDir;
 
     private final AwsUtils awsUtils;
 
     //이미지 저장 경로 찾기
-    public String getFullPath(ImageType imageType, String uri) {
+    public String getFullPath(ImageType imageType, String url) {
         String dirPath = getDirPath(imageType);
         if (StringUtils.isEmpty(dirPath)) {
             return null;
         }
-        return dirPath + uri.substring(0, 10) + "/" + uri;
+        return dirPath + url.substring(0, 10) + "/" + url;
+    }
+
+    //현재 날짜 로직
+    private String getCurrentDate() {
+        return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
     }
 
     //이미지 다건 등록 = 포스트 이미지 등록
@@ -61,30 +66,28 @@ public class ImageStoreService {
             return null;
         }
 
+        awsUtils.upload(multipartFile, "image.png");
+
         // 업로드한 이미지 파일명 추출
         String originalFilename = multipartFile.getOriginalFilename();
         // UUID를 이용하여 이미지 파일명 변경 + 확장자 추가
         String storedImageName = createStoreImageName(originalFilename);
+        // 저장 폴더가 없으면 생성
+        makeDir(dirPath);
         // 이미지 파일 저장
-        awsUtils.upload(multipartFile, dirPath + getCurrentDate() + "/" + storedImageName);
+        multipartFile.transferTo(new File(dirPath + getCurrentDate() + "/" + storedImageName));
 
         return storedImageName;
     }
 
     //이미지 저장 경로 결정
     private String getDirPath(ImageType imageType) {
-        switch (imageType) {
-            case POST:
-                return imageDir;
-            case PROFILE:
-                return profileDir;
+        if (imageType == ImageType.POST) {
+            return imageDir;
+        } else if (imageType == ImageType.PROFILE) {
+            return profileDir;
         }
         return null;
-    }
-
-    //현재 날짜 로직
-    private String getCurrentDate() {
-        return new Timestamp(System.currentTimeMillis()).toString().substring(0, 10);
     }
 
     // 저장할 이미지 이름 생성(중복 방지)
@@ -98,5 +101,13 @@ public class ImageStoreService {
     private String extractExt(String originalFilename) {
         int pos = originalFilename.lastIndexOf(".");
         return originalFilename.substring(pos + 1);
+    }
+
+    private void makeDir(String dirPath) {
+        File imageFolder = new File(dirPath + getCurrentDate() + "/");
+
+        if (!imageFolder.exists()) {
+            imageFolder.mkdir();
+        }
     }
 }

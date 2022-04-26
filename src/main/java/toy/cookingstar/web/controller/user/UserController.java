@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -104,7 +104,7 @@ public class UserController {
         //TODO: Page를 구성하기 위한 변수 currentPageNo, postsPerPage, countPages는 Front에서 받아 처리할 수 있음
         //지금은 단순히 1페이지만 보여주는 것으로 작업
 
-        //TODO: getPostImageUrls로 ImageUrl과 PostId를 받음
+        //TODO: getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
         if (postImageUrls == null) {
             return "user/myPage";
@@ -123,7 +123,8 @@ public class UserController {
     }
 
     @PostMapping("/myPage/edit")
-    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form, BindingResult bindingResult,
+    public String editInfo(@Validated @ModelAttribute("userInfo") InfoUpdateForm form,
+                           BindingResult bindingResult,
                            @Login Member loginUser, HttpServletRequest request) throws IOException {
 
         Member userPageInfo = userService.getUserInfo(loginUser.getUserId());
@@ -158,7 +159,8 @@ public class UserController {
     }
 
     @GetMapping("/myPage/password/change")
-    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser, Model model) {
+    public String passwordForm(@ModelAttribute("userPwdInfo") PwdUpdateForm form, @Login Member loginUser,
+                               Model model) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
         model.addAttribute("userInfo", userInfo);
         return "user/pwdForm";
@@ -215,7 +217,7 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        //getPostImageUrls로 ImageUrl과 PostId를 받음
+        //getPostImageUrls로 ImageUrl과 postId을 받음
         PostImageUrlParam postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.PRIVATE);
 
         if (postImageUrls == null) {
@@ -236,7 +238,8 @@ public class UserController {
 
         PagingVO pagingVO = new PagingVO(totalPost, currentPageNo, countPages, postsPerPage);
 
-        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(), pagingVO.getEnd(), statusType);
+        return postService.getUserPagePostImages(userPageInfo.getUserId(), pagingVO.getStart(),
+                                                 pagingVO.getEnd(), statusType);
     }
 
     /**
@@ -244,8 +247,11 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/profile/{imageUrl}")
-    public Resource userProfileImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.PROFILE, imageUrl));
+    public Resource userProfileImage(@PathVariable String imageUrl, HttpServletResponse response)
+            throws MalformedURLException {
+        response.setHeader("Cache-Control", "max-age=60");
+        return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
+                .getFullPath(ImageType.PROFILE, imageUrl));
     }
 
     /**
@@ -253,8 +259,11 @@ public class UserController {
      */
     @ResponseBody
     @GetMapping("/image/{imageUrl}")
-    public Resource userPageImage(@PathVariable String imageUrl) throws MalformedURLException {
-        return new UrlResource("file:" + imageStoreService.getFullPath(ImageType.POST, imageUrl));
+    public Resource userPageImage(@PathVariable String imageUrl, HttpServletResponse response)
+            throws MalformedURLException {
+        response.setHeader("Cache-Control", "max-age=60");
+        return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
+                .getFullPath(ImageType.POST, imageUrl));
     }
 
     @ModelAttribute("genderTypes")
