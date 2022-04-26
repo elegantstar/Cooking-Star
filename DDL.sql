@@ -34,15 +34,6 @@ CREATE TABLE `PostImage` (
     FOREIGN KEY(`post_id`) REFERENCES Post (id)
 );
 
-CREATE TABLE `SearchHistory` (
-    `id` BIGINT NOT NULL UNIQUE AUTO_INCREMENT,
-    `member_id` BIGINT NOT NULL,
-    `searched_user_id` varchar(20) NOT NULL,
-    `last_search_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY(`id`),
-    FOREIGN KEY(`member_id`) REFERENCES Member (id)
-);
-
 CREATE TABLE `Search_History` (
     `id` BIGINT NOT NULL UNIQUE AUTO_INCREMENT,
     `member_id` BIGINT NOT NULL,

@@ -1,18 +1,16 @@
 package toy.cookingstar.web.controller.member;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import toy.cookingstar.domain.Member;
+import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.member.MemberService;
+import toy.cookingstar.service.user.UserService;
+import toy.cookingstar.service.user.dto.UserInfoDto;
 import toy.cookingstar.web.controller.member.form.MemberSaveForm;
 import toy.cookingstar.web.controller.validator.PwdValidator;
 
@@ -23,6 +21,7 @@ import toy.cookingstar.web.controller.validator.PwdValidator;
 public class MemberController {
 
     private final MemberService memberService;
+    private final UserService userService;
     private final PwdValidator pwdValidator;
 
     @GetMapping("/join")
@@ -40,14 +39,17 @@ public class MemberController {
             return "member/joinForm";
         }
 
-        Member member = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
+        Long memberId = memberService.saveMember(form.getUserId(), form.getPassword1(), form.getName(), form.getEmail());
+        Member member = userService.getUserInfoById(memberId);
 
-        redirectAttributes.addFlashAttribute("member", member);
-        return (member != null) ? "redirect:/member/welcome" : "member/joinForm";
+        UserInfoDto memberInfo = UserInfoDto.of(member);
+
+        redirectAttributes.addFlashAttribute("member", memberInfo);
+        return "redirect:/member/welcome";
     }
 
     @GetMapping("/welcome")
-    public String welcome(@ModelAttribute("member") Member member) {
+    public String welcome(@ModelAttribute("member") UserInfoDto member) {
         return "member/welcome";
     }
 

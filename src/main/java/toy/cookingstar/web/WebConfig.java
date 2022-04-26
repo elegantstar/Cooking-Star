@@ -1,7 +1,6 @@
 package toy.cookingstar.web;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.CacheControl;

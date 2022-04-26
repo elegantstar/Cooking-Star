@@ -1,12 +1,12 @@
 package toy.cookingstar.web.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-
-import lombok.RequiredArgsConstructor;
-import toy.cookingstar.domain.Member;
+import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.user.UserService;
+import toy.cookingstar.service.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 
 @Controller
@@ -23,8 +23,9 @@ public class HomeController {
             return "home";
         }
 
-        Member userPageInfo = userService.getUserInfo(loginMember.getUserId());
-        model.addAttribute("userPageInfo", userPageInfo);
+        Member member = userService.getUserInfoByUserId(loginMember.getUserId());
+        UserInfoDto userInfo = UserInfoDto.of(member);
+        model.addAttribute("userPageInfo", userInfo);
         return "redirect:/myPage";
     }
 }

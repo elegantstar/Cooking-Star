@@ -1,36 +1,33 @@
 package toy.cookingstar.web.controller.post;
 
-import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import toy.cookingstar.domain.Member;
-import toy.cookingstar.domain.Post;
-import toy.cookingstar.domain.PostWithImage;
+import org.springframework.web.bind.annotation.*;
+import toy.cookingstar.entity.Member;
+import toy.cookingstar.entity.Post;
 import toy.cookingstar.service.imagestore.ImageStoreService;
-import toy.cookingstar.service.post.PostCreateParam;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
+import toy.cookingstar.service.post.dto.PostCreateDto;
+import toy.cookingstar.service.post.dto.PostInfoDto;
 import toy.cookingstar.service.user.UserService;
+import toy.cookingstar.service.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.form.DeleteForm;
 import toy.cookingstar.web.controller.post.form.PostEditForm;
 import toy.cookingstar.web.controller.post.form.PostForm;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -61,19 +58,15 @@ public class PostController {
             return "post/createForm";
         }
 
-        Member userInfo = userService.getUserInfo(loginUser.getUserId());
-
-        if (userInfo == null) {
-            return "error-page/404";
-        }
+        Member member = userService.getUserInfoByUserId(loginUser.getUserId());
 
         // 서버에 이미지 업로드
         List<String> storedImages = imageStoreService.storeImages(form.getImages());
 
-        PostCreateParam postCreateParam = new PostCreateParam(loginUser.getUserId(), form.getContent(), form.getStatus(), storedImages);
+        PostCreateDto postCreateDto = new PostCreateDto(loginUser.getUserId(), form.getContent(), form.getStatus(), storedImages);
 
         // DB에 post 데이터 저장 + postImage 데이터 저장
-        postService.createPost(postCreateParam);
+        postService.create(postCreateDto);
 
         return "redirect:/myPage";
     }
@@ -81,45 +74,34 @@ public class PostController {
     @GetMapping("/post/{postId}")
     public String postPage(@PathVariable Long postId, @Login Member loginUser, Model model) {
 
-        Post foundPost = postService.findById(postId);
-        Member loginMember = userService.getUserInfo(loginUser.getUserId());
+        Post post = postService.findById(postId);
+        Member loginMember = userService.getUserInfoByUserId(loginUser.getUserId());
 
-        if (foundPost == null || loginMember == null) {
+        if (post == null) {
             return "error-page/404";
         }
 
-        Member userInfo = userService.getUserInfo(foundPost.getMemberId());
+        PostInfoDto postInfoDto = PostInfoDto.of(post);
+        UserInfoDto userInfoDto = postInfoDto.getUserInfo();
+        model.addAttribute("userInfo", userInfoDto);
 
-        if (userInfo == null) {
-            return "error-page/404";
-        }
-
-        model.addAttribute("userInfo", userInfo);
-
-        //user의 memberId와 postId을 통해 해당 post의 data를 가져온다.
-        PostWithImage postInfo = postService.getPostInfo(postId);
-
-        if (postInfo == null) {
-            return "error-page/404";
-        }
-
-        String createdDateDiff = getDayDiff(postInfo.getCreatedDate());
-        String updatedDateDiff = getDayDiff(postInfo.getUpdatedDate());
+        String createdDateDiff = getDayDiff(postInfoDto.getCreatedDate());
+        String updatedDateDiff = getDayDiff(postInfoDto.getUpdatedDate());
 
         //TODO: userId가 loginUser의 userId와 같으면 수정이 가능한 페이지로, 같지 않으면 조회만 가능한 페이지로 이동
-        if (StringUtils.equals(userInfo.getUserId(), loginUser.getUserId())) {
-            model.addAttribute("postInfo", postInfo);
+        if (StringUtils.equals(userInfoDto.getUserId(), loginUser.getUserId())) {
+            model.addAttribute("postInfo", postInfoDto);
             model.addAttribute("createdDateDiff", createdDateDiff);
             model.addAttribute("updatedDateDiff", updatedDateDiff);
             return "post/myPost";
         }
 
         //loginUser의 게시물이 아닌 경우, 임시보관 또는 비공개 상태인 게시물에 접근할 수 없음.
-        if (postInfo.getStatus() != StatusType.POSTING) {
+        if (postInfoDto.getStatus() != StatusType.POSTING) {
             return "error-page/404";
         }
 
-        model.addAttribute("postInfo", postInfo);
+        model.addAttribute("postInfo", postInfoDto);
         model.addAttribute("createdDateDiff", createdDateDiff);
         model.addAttribute("updatedDateDiff", updatedDateDiff);
 
@@ -128,28 +110,30 @@ public class PostController {
 
     @PostMapping("/post/deletion")
     public String deletePost(@ModelAttribute DeleteForm form, @Login Member loginUser) {
-        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+
+        Member user = userService.getUserInfoByUserId(loginUser.getUserId());
         Post foundPost = postService.findById(Long.parseLong(form.getPostId()));
 
-        if (userInfo == null || foundPost == null) {
+        if (foundPost == null) {
             return "error-page/404";
         }
 
-        if (!userInfo.getId().equals(foundPost.getMemberId())) {
+        if (!user.getId().equals(foundPost.getMember().getId())) {
             return "error-page/404";
         }
 
-        postService.deletePost(userInfo.getUserId(), foundPost.getId());
+        postService.deletePost(user.getUserId(), foundPost.getId());
 
         return "redirect:/myPage";
     }
 
     @GetMapping("/post/edit/{postId}")
     public String editForm(@PathVariable Long postId, Model model) {
-        PostWithImage postInfo = postService.getPostInfo(postId);
-        if (postInfo == null) {
+        Post post = postService.findById(postId);
+        if (post == null) {
             return "error-page/404";
         }
+        PostInfoDto postInfo = PostInfoDto.of(post);
         model.addAttribute("postInfo", postInfo);
         return "post/editForm";
     }
@@ -163,18 +147,18 @@ public class PostController {
             return "post/createForm";
         }
 
-        PostWithImage postInfo = postService.getPostInfo(postId);
-        Member userInfo = userService.getUserInfo(loginUser.getUserId());
+        Post post = postService.findById(postId);
+        Member user = userService.getUserInfoByUserId(loginUser.getUserId());
 
-        if (postInfo == null || userInfo == null) {
+        if (post == null) {
             return "error-page/404";
         }
 
-        if (!userInfo.getId().equals(postInfo.getMemberId())) {
+        if (!Objects.equals(user.getId(), post.getMember().getId())) {
             return "error-page/404";
         }
 
-        postService.updatePost(userInfo.getUserId(), postInfo.getId(), form.getContent(), form.getStatus());
+        postService.updatePost(user.getUserId(), post.getId(), form.getContent(), form.getStatus());
 
         return "redirect:/post/" + postId;
     }
@@ -188,8 +172,8 @@ public class PostController {
         LocalDateTime targetDay = localDateTime.truncatedTo(ChronoUnit.DAYS);
         LocalDateTime nowDay = LocalDateTime.now().truncatedTo(ChronoUnit.DAYS);
 
-        int compareResult = nowDay.compareTo(targetDay);
+        long dayDiff = targetDay.until(nowDay, ChronoUnit.DAYS);
 
-        return compareResult + "일";
+        return dayDiff + "일";
     }
 }

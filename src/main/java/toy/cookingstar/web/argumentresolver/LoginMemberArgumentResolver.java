@@ -9,7 +9,7 @@ import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
-import toy.cookingstar.domain.Member;
+import toy.cookingstar.entity.Member;
 import toy.cookingstar.web.controller.login.SessionConst;
 
 public class LoginMemberArgumentResolver implements HandlerMethodArgumentResolver {

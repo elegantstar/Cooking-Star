@@ -17,6 +17,7 @@ public class UserInfoDto {
     private String nickname;
     private String introduction;
     private String gender;
+    private String profileImage;
 
     public static UserInfoDto of(Member member) {
         UserInfoDto dto = new UserInfoDto();
@@ -27,6 +28,7 @@ public class UserInfoDto {
         dto.nickname = member.getNickname();
         dto.introduction = member.getIntroduction();
         dto.gender = member.getGender();
+        dto.profileImage = member.getProfileImage();
         return dto;
     }
 }

@@ -99,7 +99,7 @@
     <!-- Post Image 영역(캐러셀 적용) -->
     <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
       <div class="carousel-inner img-box">
-        <div th:each="image : ${postInfo.getImages()}" class="carousel-item">
+        <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
           <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
         </div>
       </div>
