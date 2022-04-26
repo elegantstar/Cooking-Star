@@ -1,6 +1,5 @@
 package toy.cookingstar.service.post;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +16,7 @@ import toy.cookingstar.domain.PostImage;
 import toy.cookingstar.domain.PostWithImage;
 import toy.cookingstar.repository.MemberRepository;
 import toy.cookingstar.repository.PostRepository;
+
 import toy.cookingstar.web.controller.post.dto.TempStoredDto;
 
 @Slf4j
