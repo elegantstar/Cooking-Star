@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+
+  <style>
+    #content-box {
+      margin-bottom: 5px;
+      padding: 10px 150px 30px 30px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+
+<hr class="mt-2">
+
+<div class="container" id="content-box">
+  <div class="text-center mb-4 fs-5 fw-bold" th:text="#{error.bad.message1}">죄송합니다.</div>
+  <div class="text-center fs-6">
+    <a th:text="#{error.bad.message2}">페이지를 표시할 수 없습니다.</a>
+    <a style="color: #0a0b86; text-decoration: none" th:href="@{/}" th:text="#{error.bad.message3}">메인으로 돌아가기</a>
+  </div>
+</div>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+
+</body>
+</html>

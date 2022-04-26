@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <script type="text/javascript">
+    function button_deletion() {
+      var result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
+      if (result) {
+        document.getElementById('deletion').submit();
+      } else {
+        return false;
+      }
+    }
+  </script>
+
+  <style>
+    .img-layer-box {
+      position: relative;
+      background: rgba(217, 213, 213, 0.68);
+      width: 60%;
+      padding-bottom: 60%;
+      margin: 1px 35px 10px 10px;
+      float: left;
+    }
+    .img-box {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0; margin: auto;
+      text-align: center;
+      width: 100%;
+      height: 100%;
+    }
+    .profile-img-box {
+      position: relative;
+      width: 2%;
+      padding-bottom: 2%;
+      margin: 18px 5px 10px 10px;
+      float: left;
+    }
+    .profile-img {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .post-content-box {
+      height: 565px;
+    }
+    .img-standard {
+      width: 100%;
+      height: 100%;
+    }
+    .user-id {
+      margin-right: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      color: rgba(31, 30, 30, 0.91);
+      text-decoration: none;
+    }
+    .three-dot {
+      float: right;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
+    #post-box {
+      height: 757px;
+      margin-bottom: 5px;
+      padding: 15px 30px 30px 30px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
+
+<div class="container border" id="post-box">
+
+  <div class="mb-3">
+
+    <!-- Post Image 영역(캐러셀 적용) -->
+    <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
+      <div class="carousel-inner img-box">
+        <div th:each="image : ${postInfo.getImages()}" class="carousel-item">
+          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
+
+    <!-- 우측 상단 Profile 영역 -->
+    <div class="profile-img-box">
+      <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+      </div>
+      <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+      </div>
+    </div>
+
+    <div class="row g-3 align-items-center">
+      <div class="col-12">
+        <a class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}">유저 아이디</a>
+
+        <span class="dropdown justify-content-end three-dot">
+          <a class="bi bi-three-dots" style="font-size: 1rem; color: black;"
+             href="#" id="myPageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li>
+              <form name="deletion" th:action="@{/post/deletion}" method="post" onsubmit="return confirm('게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?');">
+                <button type="submit" name="postId" th:value="${postInfo.getId()}"
+                        class="dropdown-item" th:text="#{label.post.delete}" style="color: #db0505; font-weight: bold;">삭제</button>
+              </form>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item" th:href="|/post/edit/${postInfo.getId()}|" th:text="#{label.post.edit}">게시글 수정</a>
+            </li>
+            <li><a class="dropdown-item" href="#" th:text="#{label.post.linkCopy}">링크 복사</a></li>
+          </ul>
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <hr style="color: gray">
+
+  <!-- 컨텐츠 영역 -->
+  <div>
+    <div class="profile-img-box">
+      <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+      </div>
+      <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+      </div>
+    </div>
+
+    <div>
+      <div class="row g-3 align-items-center">
+        <div class="col-12">
+          <a th:class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}" class="post-content-box">유저 아이디</a>
+          <span id="content" th:text="${postInfo.content}" class="post-content-box">텍스트 영역</span>
+
+          <div th:if="${postInfo.createdDate.equals(postInfo.updatedDate)}">
+            <div th:text="${createdDateDiff}" style="font-size: 10px; color: gray;"></div>
+          </div>
+          <div th:if="${not postInfo.createdDate.equals(postInfo.updatedDate)}">
+            <div th:text="|${createdDateDiff} (${updatedDateDiff} 전 수정됨)|" style="font-size: 10px; color: gray;"></div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script type="text/javascript">
+  $('.carousel-item').filter(':first').addClass('active');
+</script>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>

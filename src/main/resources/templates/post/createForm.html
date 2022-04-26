@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <style>
+    .img-upload-box {
+      position: relative;
+      background: rgba(217, 213, 213, 0.68);
+      width: 50%;
+      padding-bottom: 50%;
+      margin: 10px 55px 10px 10px;
+      float: left;
+    }
+    .img-box {
+      position: absolute;
+      top: 0; right: 0; bottom: 0; left: 0; margin: auto;
+      padding: 160px 130px 100px 130px;
+      text-align: center;
+      height: 90%;
+    }
+    .content-upload-box {
+      height: 565px;
+    }
+    .field-error {
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
+    #upload-box {
+      height: 800px;
+      margin-bottom: 5px;
+      padding: 30px 150px 30px 30px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
+
+<div class="container" id="upload-box">
+
+  <form class="mb-5" th:action th:object="${post}" method="post" enctype="multipart/form-data">
+
+    <!--  글로벌 오류 메시지  -->
+    <div th:if="${#fields.hasGlobalErrors()}">
+      <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+    </div>
+
+    <div class="img-upload-box">
+      <div class="img-box">
+        <div class="mb-3" style="font-size: 20px;">이미지를 선택해 주세요!</div>
+        <div>이미지 크기 제한 30MB</div>
+        <div class="mb-3">업로드 개수 제한 10개</div>
+        <input type="file" multiple="multiple" name="images" accept=".jpg, .gif, .png">
+      </div>
+    </div>
+
+    <div class="row g-3 align-items-center">
+      <div class="col-12">
+        <textarea id="content" th:field="*{content}" th:errorclass="field-error" class="form-control content-upload-box" placeholder="내용을 입력해 주세요!"></textarea>
+      </div>
+      <div class="field-error" th:errors="*{content}">
+        컨텐츠 오류
+      </div>
+
+      <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button class="btn" type="submit" formmethod="GET" formaction="/myPage"
+                  style="background: #4c9ed9; color: white;" th:text="#{button.post.cancel}">취소</button>
+          <button class="btn" type="submit" name="status" value="TEMPORARY_STORAGE" formmethod="POST" formaction="/post/create"
+                  style="background: #0c9bfc; color: white;" th:text="#{button.post.storage}">임시저장</button>
+          <button class="btn btn-primary" type="submit" name="status" value="POSTING" formmethod="POST" formaction="/post/create"
+                  th:text="#{button.post.upload}">등록</button>
+      </div>
+    </div>
+
+  </form>
+</div>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>

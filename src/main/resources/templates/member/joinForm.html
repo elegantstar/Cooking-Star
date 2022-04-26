@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="utf-8">
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+
+  <style type="text/css">
+    a:link {text-decoration: none; color: #000000;}
+    a:visited {text-decoration: none; color: #000000;}
+    a:active {text-decoration: none; color: #000000;}
+    a:hover {text-decoration: none; color: #000000;}
+  </style>
+
+  <style>
+    .container {
+      max-width: 720px;
+    }
+
+    .field-error {
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Content here -->
+  <div class="py-4 text-center">
+    <a th:href="@{/}">
+      <h1 class="display-1">Cooking Star</h1>
+    </a>
+  </div>
+
+  <div class="py-4 text-center">
+    <h2>회원 가입</h2>
+  </div>
+
+  <h4 class="mb-4">가입 정보 입력</h4>
+  <form class="mb-5" action="welcome.html" th:action th:object="${member}" method="post">
+
+    <div th:if="${#fields.hasGlobalErrors()}">
+      <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+    </div>
+
+    <div class="mb-3">
+      <label for="userId" th:text="#{label.member.userId}" class="form-label">로그인 ID</label>
+      <input type="text" id="userId" th:field="*{userId}"
+             th:errorclass="field-error" class="form-control" placeholder="아이디를 입력해 주세요.">
+      <div class="field-error" th:errors="*{userId}">
+        아이디 오류
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="password1" th:text="#{label.member.password1}" class="form-label">비밀번호</label>
+      <input type="password" id="password1" th:field="*{password1}"
+             th:errorclass="field-error" class="form-control" placeholder="영문 대소문자, 숫자, 특수문자를 포함한 12~20자를 사용하세요.">
+      <div class="field-error" th:errors="*{password1}">
+        비밀번호1 오류
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="password2" th:text="#{label.member.password2}" class="form-label">비밀번호 재확인</label>
+      <input type="password" id="password2" th:field="*{password2}"
+             th:errorclass="field-error" class="form-control" placeholder="영문 대소문자, 숫자, 특수문자를 포함한 12~20자를 사용하세요.">
+      <div class="field-error" th:errors="*{password2}">
+        비밀번호2 오류
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="name" th:text="#{label.member.name}" class="form-label">이름</label>
+      <input type="text" id="name" th:field="*{name}"
+             th:errorclass="field-error" class="form-control" placeholder="이름을 입력해 주세요.">
+      <div class="field-error" th:errors="*{name}">
+        이름 오류
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" th:text="#{label.member.email}" class="form-label">이름</label>
+      <input type="text" id="email" th:field="*{email}"
+             th:errorclass="field-error" class="form-control" placeholder="이메일 주소를 입력해 주세요.">
+      <div class="field-error" th:errors="*{email}">
+        이메일 오류
+      </div>
+    </div>
+
+
+    <hr class="my-4">
+
+    <div class="row">
+      <div class="col">
+        <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.member.save}">회원가입</button>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <style>
+    .profile-head {
+      margin-bottom: 30px;
+      padding-left: 40px;
+    }
+    .profile-img-box {
+      position: relative;
+      width: 10%;
+      padding-bottom: 10%;
+      margin: 10px 25px 10px 10px;
+      float: left;
+    }
+    .profile-img {
+      position: absolute;
+      width: 90%;
+      height: 90%;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
+    #profile-box {
+      height: 100px;
+      margin-bottom: 5px;
+      padding: 30px 150px 30px 30px;
+    }
+    #content-box {
+      margin-bottom: 5px;
+      padding: 10px 350px 30px 350px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
+
+<div class="container" id="content-box">
+
+  <form class="mb-5" th:action="@{/}" method="get">
+
+    <!--  프로필 편집 / 비밀번호 변경 탭 영역  -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/myPage/edit}" th:text="#{label.edit.userInfo}">정보 변경</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#" th:text="#{label.edit.password}">비밀번호 변경</a>
+      </li>
+    </ul>
+
+    <div class="profile-head">
+      <!--  프로필 이미지 영역  -->
+      <div id="profile-box mb-5">
+        <div class="profile-img-box">
+          <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+          </div>
+          <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+            <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+          </div>
+        </div>
+        <div style="padding-top: 1.5%">
+          <span class="user-id mt-3" style="font-size: 35px;" th:text="${userInfo.userId}">유저 아이디</span><br/>
+        </div>
+      </div>
+    </div>
+
+    <div class="mb-4 fs-5 fw-bold" th:text="|${userInfo.name}님의 비밀번호 변경이 완료되었습니다.|">비밀번호 변경 완료</div>
+
+    <div class="row">
+      <div class="col-auto">
+        <button class="btn btn-primary btn-sm" type="submit" th:text="#{button.home}">홈으로</button>
+      </div>
+    </div>
+
+  </form>
+
+</div>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>

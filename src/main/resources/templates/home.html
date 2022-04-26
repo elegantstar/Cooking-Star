@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <style>
+    .img-standard {
+      width: 30%;
+      height: 30%;
+      margin: 10px;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+      <form class="d-flex col-5">
+        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+<!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
+      </form>
+
+      <div class="navbar-nav me-auto mb-2 mb-lg-0 col justify-content-end">
+        <div class="d-grid gap-2 d-md-block">
+          <button class="btn btn-outline-dark" type="button"
+                  onclick="location.href='joinForm.html'"
+                  th:onclick="|location.href='@{/member/join}'|"
+                  th:text="#{button.join}">회원가입</button>
+          <button class="btn btn-outline-dark" type="button"
+                  onclick="location.href='loginForm.html'"
+                  th:onclick="|location.href='@{/login}'|"
+                  th:text="#{button.login}">로그인</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</nav>
+
+<hr class="my-1">
+
+<div class="container-fluid my-5" style="float: none; margin: 0 auto;">
+  <div class="col-8 mb-4" style="float: none; margin: 0 auto;">
+    <img th:src="@{images/home/sample1.jpg}" class="img-standard" alt="샘플 이미지1" />
+    <img th:src="@{images/home/sample2.jpg}" class="img-standard" alt="샘플 이미지2" />
+    <img th:src="@{images/home/sample3.jpg}" class="img-standard" alt="샘플 이미지3" />
+    <img th:src="@{images/home/sample4.jpg}" class="img-standard" alt="샘플 이미지4" />
+    <img th:src="@{images/home/sample5.jpg}" class="img-standard" alt="샘플 이미지5" />
+    <img th:src="@{images/home/sample6.jpg}" class="img-standard" alt="샘플 이미지6" />
+  </div>
+</div>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>
