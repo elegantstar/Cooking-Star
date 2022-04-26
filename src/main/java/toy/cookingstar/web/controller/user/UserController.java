@@ -260,6 +260,7 @@ public class UserController {
     }
 
     private boolean isWrongPwd(PwdUpdateForm form, Member loginUser) {
-        return !StringUtils.equals(loginUser.getPassword(), HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
+        return !StringUtils.equals(loginUser.getPassword(),
+                                   HashUtil.encrypt(form.getCurrentPwd() + loginUser.getSalt()));
     }
 }

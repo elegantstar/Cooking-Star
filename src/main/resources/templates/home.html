@@ -5,10 +5,16 @@
   <title>Cooking Star</title>
 
   <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <style>
     .img-standard {
       width: 30%;
       height: 30%;
+      margin: 10px;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
       margin: 10px;
     }
   </style>
@@ -61,6 +67,7 @@
 </div>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
 
 </body>
 </html>

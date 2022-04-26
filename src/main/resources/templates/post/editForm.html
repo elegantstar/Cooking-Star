@@ -35,6 +35,11 @@
       border-color: #dc3545;
       color: #dc3545;
     }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
     #upload-box {
       height: 800px;
       margin-bottom: 5px;
@@ -84,7 +89,7 @@
       </div>
 
       <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-          <button class="btn" type="submit" formmethod="GET" formaction="/myPage"
+          <button class="btn" type="button" onclick="location.href='/myPage'"
                   style="background: #4c9ed9; color: white;" th:text="#{button.post.cancel}">취소</button>
           <button class="btn" type="submit" name="status" value="PRIVATE" formmethod="POST" th:formaction="|/post/edit/${postInfo.getId()}|"
                   style="background: #0c9bfc; color: white;" th:text="#{button.post.hiding}">나만 보기</button>
@@ -101,6 +106,7 @@
 </script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
 
 </body>
 </html>

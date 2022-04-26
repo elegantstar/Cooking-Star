@@ -117,4 +117,16 @@ public class PostServiceImpl implements PostService {
         postRepository.updatePost(id, content, status);
         log.info("UPDATE POST: userId=[{}], updatedPostId=[{}]", userId, id);
     }
+
+    @Override
+    public List<PostWithImage> getTemporaryStorage(Long memberId, StatusType statusType, int start, int end) {
+
+        Member user = memberRepository.findById(memberId);
+
+        if (user == null) {
+            return null;
+        }
+
+        return postRepository.findPostWithImages(memberId, statusType, start, end);
+    }
 }

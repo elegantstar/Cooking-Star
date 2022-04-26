@@ -6,6 +6,7 @@
 
   <link th:replace="fragment/bootstrap :: bootstrapCss">
   <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
   <style>
     .profile-head {
@@ -37,6 +38,11 @@
       padding-left: 19%;
       border-color: #dc3545;
       color: #dc3545;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
     }
     #profile-box {
       height: 100px;
@@ -151,7 +157,7 @@
         <div class="col-10">
           <!--  성별 선택 라디오 버튼  -->
           <div th:each="type : ${genderTypes}" class="form-check">
-            <input type="radio" th:field="*{gender}" th:value="${type.name()}" class="form-check-input" name="flexRadioDefault">
+            <input type="radio" th:field="*{gender}" th:value="${type.name()}" class="form-check-input" name="postId">
             <label th:for="${#ids.prev('gender')}" th:type="text" th:field="*{gender}"
                    th:text="${type.description}" class="form-check-label">
               성별
@@ -174,6 +180,7 @@
 </div>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
 
 </body>
 </html>

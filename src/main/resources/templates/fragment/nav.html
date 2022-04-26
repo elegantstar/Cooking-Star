@@ -4,15 +4,20 @@
 <head>
   <meta charset="UTF-8" />
   <title>Cooking Star</title>
+
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 </head>
 
 <body>
 
 <!-- Navigation bar -->
-<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light" style="padding-top: 0.2rem; padding-bottom: 0.0rem;">
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light bg-light"
+     style="padding-top: 0.2rem; padding-bottom: 0.0rem;">
   <div class="container">
     <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
@@ -35,7 +40,11 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" th:href="@{/post/create}" th:text="#{label.nav.posting}">포스팅</a></li>
-            <li><a class="dropdown-item" href="#" th:text="#{label.nav.outbox}">임시 보관함</a></li>
+            <li>
+              <button id="temporary-storage-btn" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop" th:text="#{label.nav.outbox}">임시 보관함
+              </button>
+            </li>
           </ul>
         </li>
         <li class="nav-item dropdown">
@@ -44,8 +53,11 @@
           </a>
           <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
             <li><a class="dropdown-item" th:href="@{/myPage}" th:text="#{label.nav.myPage}">마이 페이지</a></li>
-            <li><a class="dropdown-item" th:href="@{/myPage/edit}" th:text="#{label.nav.changeInfo}">내 정보</a></li>
-            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" th:href="@{/myPage/edit}" th:text="#{label.nav.changeInfo}">내 정보</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
             <li>
               <form th:action="@{/logout}" method="post">
                 <button class="dropdown-item" type="submit" th:text="#{label.nav.logout}">로그아웃</button>
@@ -57,7 +69,69 @@
 
     </div>
   </div>
+
+  <!-- Modal -->
+  <form method="GET" th:action="|/post/edit|">
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+         aria-labelledby="staticBackdropLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.nav.outbox}"
+                style="margin-left: 16em;">임시 보관함</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div id="temp-stored-list" class="modal-body">
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{button.outbox.cancel}">취소</button>
+            <button id="outbox-submit-btn" type="submit" class="btn btn-primary" th:text="#{button.outbox.load}">불러오기</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
 </nav>
+
+<footer th:fragment="navbarScript">
+  <script>
+    async function getTempStoredPosts() {
+      $('#temp-stored-list').empty();
+      const res = await fetch('http://localhost:8080/post/temporary-storage');
+      const tempStoredPostInfo = await res.json();
+
+      if (tempStoredPostInfo.length === 0) {
+        $('#temp-stored-list').append('<div style="text-align: center">임시 저장한 게시물이 없습니다.</div>');
+        $('#outbox-submit-btn').css('display', 'none');
+      }
+
+      tempStoredPostInfo.forEach((postInfo) => {
+        const {id, content, createdDate, imageUrl} = postInfo;
+
+        $('#temp-stored-list').append('<div class="form-check">' +
+                                      '<input class="form-check-input" type="radio" name="postId" style="margin-top: 3.5em;">' +
+                                      '<a><img class="img-preview" alt="임시보관 이미지" /></a>' +
+                                      '<span class="temp-stored-date" style="margin-right: 1em;"></span>' +
+                                      '<span class="temp-stored-content"></span></div>');
+        $('#temp-stored-list img').last().attr('src', `/image/${imageUrl}`);
+        $('#temp-stored-list input').last().attr('value', `${id}`);
+
+        if (content.length >= 15) {
+          $('#temp-stored-list .temp-stored-content').last().text(`${content.substr(0, 30)}...`);
+        } else {
+          $('#temp-stored-list .temp-stored-content').last().text(`${content}`);
+        }
+
+        $('#temp-stored-list .temp-stored-date').last().text(`${createdDate.substr(0, 10)}`);
+      });
+
+      $('#temp-stored-list input').first().attr('checked', true);
+    }
+
+    $('#temporary-storage-btn').on('click', getTempStoredPosts);
+
+  </script>
+</footer>
 
 </body>
 

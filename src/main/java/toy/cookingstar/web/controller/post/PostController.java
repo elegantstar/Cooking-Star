@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -126,7 +127,7 @@ public class PostController {
     }
 
     @PostMapping("/post/deletion")
-    public String deletePost(@ModelAttribute DeleteForm form, @Login Member loginUser, Model model) {
+    public String deletePost(@ModelAttribute DeleteForm form, @Login Member loginUser) {
         Member userInfo = userService.getUserInfo(loginUser.getUserId());
         Post foundPost = postService.findById(Long.parseLong(form.getPostId()));
 
@@ -176,6 +177,11 @@ public class PostController {
         postService.updatePost(userInfo.getUserId(), postInfo.getId(), form.getContent(), form.getStatus());
 
         return "redirect:/post/" + postId;
+    }
+
+    @GetMapping("/post/edit")
+    public String redirectEditForm(@RequestParam String postId) {
+        return "redirect:/post/edit/" + postId;
     }
 
     private String getDayDiff(LocalDateTime localDateTime) {
