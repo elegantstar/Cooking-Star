@@ -20,7 +20,6 @@ public class UserService {
 
     /**
      * 유저ID로 유저 정보 조회
-     * @return UserInfoDto = [ id, userId, name, email, nickname, introduction, gender ]
      */
     public Member getUserInfoByUserId(String userId) throws IllegalArgumentException {
         Member user = memberRepository.findByUserId(userId);
@@ -32,7 +31,6 @@ public class UserService {
 
     /**
      * memberId로 유저 정보 조회
-     * @return UserInfoDto = [ id, userId, name, email, nickname, introduction, gender ]
      */
     public Member getUserInfoById(Long memberId) {
         Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);

@@ -19,7 +19,7 @@ import toy.cookingstar.service.post.dto.PostImageUrlDto;
 import toy.cookingstar.service.user.GenderType;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.service.user.dto.PwdUpdateDto;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.service.user.dto.UserInfoUpdateDto;
 import toy.cookingstar.utils.HashUtil;
 import toy.cookingstar.utils.SessionUtils;

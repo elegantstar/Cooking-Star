@@ -1,4 +1,4 @@
-package toy.cookingstar.service.user.dto;
+package toy.cookingstar.web.controller.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

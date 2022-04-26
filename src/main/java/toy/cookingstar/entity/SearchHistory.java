@@ -26,7 +26,7 @@ public class SearchHistory {
     @JoinColumn(name = "searched_member_id")
     private Member searchedUser;
 
-    @Column(name = "last_search_date", insertable = false, updatable = false)
+    @Column(name = "last_search_date", insertable = false)
     private LocalDateTime lastSearchDate;
 
     public SearchHistory(Member member, Member searchedUser) {

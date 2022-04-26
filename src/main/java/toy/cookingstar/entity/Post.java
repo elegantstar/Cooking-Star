@@ -15,7 +15,7 @@ import static javax.persistence.FetchType.LAZY;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
+public class Post extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -31,12 +31,6 @@ public class Post {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private StatusType status;
-
-    @Column(name = "created_date", insertable = false, updatable = false)
-    private LocalDateTime createdDate;
-
-    @Column(name = "updated_date", insertable = false, updatable = false)
-    private LocalDateTime updatedDate;
 
     //연관 관계 편의 메서드
     public void addPostImage(PostImage postImage) {

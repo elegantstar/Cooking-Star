@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.service.user.dto.UserInfoDto;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 
 @Controller

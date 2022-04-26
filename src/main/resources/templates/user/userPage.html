@@ -65,6 +65,14 @@
       margin-bottom: 5px;
       padding: 30px 150px 30px 30px;
     }
+    .introduction-scroll {
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+      height: 100px;
+    }
+    .introduction-scroll::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 
 </head>
@@ -91,8 +99,9 @@
   <div class="mt-3 mb-1">
     <span class="nickname" th:text="${userPageInfo.nickname}">유저 닉네임</span>
   </div>
-  <div>
-    <span class="introduction" th:text="${userPageInfo.introduction}">유저 소개글</span>
+  <div class="introduction-scroll">
+    <span class="introduction" style="word-wrap: break-word;"
+          th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(userPageInfo.introduction),'\n','&lt;br /&gt;'))}">유저 소개글</span>
   </div>
 
 </div>
