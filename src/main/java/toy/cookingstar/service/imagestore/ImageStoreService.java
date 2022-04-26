@@ -28,12 +28,12 @@ public class ImageStoreService {
     private final AwsUtils awsUtils;
 
     //이미지 저장 경로 찾기
-    public String getFullPath(ImageType imageType, String url) {
+    public String getFullPath(ImageType imageType, String uri) {
         String dirPath = getDirPath(imageType);
         if (StringUtils.isEmpty(dirPath)) {
             return null;
         }
-        return dirPath + url.substring(0, 10) + "/" + url;
+        return dirPath + uri.substring(0, 10) + "/" + uri;
     }
 
     //이미지 다건 등록 = 포스트 이미지 등록
@@ -73,10 +73,11 @@ public class ImageStoreService {
 
     //이미지 저장 경로 결정
     private String getDirPath(ImageType imageType) {
-        if (imageType == ImageType.POST) {
-            return imageDir;
-        } else if (imageType == ImageType.PROFILE) {
-            return profileDir;
+        switch (imageType) {
+            case POST:
+                return imageDir;
+            case PROFILE:
+                return profileDir;
         }
         return null;
     }
