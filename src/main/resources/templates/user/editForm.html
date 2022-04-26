@@ -175,6 +175,18 @@
         </span>
       </div>
 
+      <div class="row align-items-center mb-3">
+        <div class="col-2">
+          <label for="website" class="col-form-label" th:text="#{label.edit.website}">홈페이지</label>
+        </div>
+        <div class="col-10">
+          <input type="text" id="website" th:field="*{website}" th:errorclass="field-error" class="form-control form-control-sm">
+        </div>
+        <div class="field-error" th:errors="*{website}">
+          웹사이트 오류
+        </div>
+      </div>
+
       <div class="row g-3 align-items-center mb-3">
         <div class="col-2">
           <label for="introduction" class="col-form-label" th:text="#{label.edit.introduction}">소개글</label>

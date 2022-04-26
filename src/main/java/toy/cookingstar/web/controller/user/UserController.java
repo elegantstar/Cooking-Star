@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import toy.cookingstar.entity.Member;
+import toy.cookingstar.service.following.FollowingService;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.imagestore.ImageType;
 import toy.cookingstar.service.post.PostService;
@@ -42,6 +43,7 @@ public class UserController {
     private final PwdValidator pwdValidator;
     private final PostService postService;
     private final ImageStoreService imageStoreService;
+    private final FollowingService followingService;
 
     /**
      * 유저 페이지
@@ -70,6 +72,11 @@ public class UserController {
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 
+        int totalFollower = followingService.countFollowers(member.getId());
+        int totalFollowing = followingService.countFollowings(member.getId());
+        model.addAttribute("totalFollower", totalFollower);
+        model.addAttribute("totalFollowing", totalFollowing);
+
         // userPage로
         return "user/userPage";
     }
@@ -95,6 +102,11 @@ public class UserController {
         }
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
+
+        int totalFollower = followingService.countFollowers(userInfo.getId());
+        int totalFollowing = followingService.countFollowings(userInfo.getId());
+        model.addAttribute("totalFollower", totalFollower);
+        model.addAttribute("totalFollowing", totalFollowing);
 
         return "user/myPage";
     }
@@ -127,7 +139,7 @@ public class UserController {
         }
 
         UserInfoUpdateDto userInfoUpdateDto = new UserInfoUpdateDto(userInfo.getId(), form.getEmail(),
-                form.getNickname(), form.getIntroduction(), form.getGender());
+                form.getNickname(), form.getWebsite(), form.getIntroduction(), form.getGender());
 
         userService.updateInfo(userInfoUpdateDto);
 

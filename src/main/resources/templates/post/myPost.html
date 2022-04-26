@@ -10,7 +10,7 @@
 
     <script type="text/javascript">
         function button_deletion() {
-            var result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
+            const result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
             if (result) {
                 document.getElementById('deletion').submit();
             } else {
@@ -301,7 +301,7 @@
         </div>
     </div>
 
-
+    <!-- 게시글 '좋아요' 클릭 유저 리스트 모달 -->
     <div class="modal fade" id="post-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
             <div class="modal-content">
@@ -313,6 +313,7 @@
         </div>
     </div>
 
+    <!-- 댓글 '좋아요' 클릭 유저 리스트 모달 -->
     <div class="modal fade" id="comment-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
             <div class="modal-content">
@@ -472,10 +473,6 @@
                     $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDate);
                 }
             }
-            // content.forEach((comment) => {
-            //
-            //
-            // });
 
             const {last} = commentSlice;
             if (!last) {
@@ -738,7 +735,6 @@
             postLikerPage++;
             console.log("scroll bottom");
             getPostLikers();
-            postLikerPage++;
         }
     });
 
@@ -918,10 +914,6 @@
             getAdditionalCommentLikers($("#selected-comment-id").val());
         }
     });
-
-
-
-
 </script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
