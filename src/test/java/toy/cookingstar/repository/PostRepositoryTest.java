@@ -263,5 +263,45 @@ class PostRepositoryTest {
         assertEquals(Optional.empty(), deletedPost);
     }
 
+    @Test
+    @DisplayName("마지막 조회 postId로 게시물 페이징 조회")
+    void findPostsByLastReadPostIdTest() throws Exception {
+        //given
+        Member member = Member.builder()
+                .userId("test")
+                .build();
+
+        Long savedMemberId = memberRepository.save(member).getId();
+
+        PostImage image1 = PostImage.createPostImage("post_image_url_1", 1);
+        PostImage image2 = PostImage.createPostImage("post_image_url_2", 1);
+        PostImage image3 = PostImage.createPostImage("post_image_url_3", 1);
+        PostImage image4 = PostImage.createPostImage("post_image_url_4", 1);
+
+        Post post1 = Post.createPost(member, "content in post1", StatusType.POSTING, Arrays.asList(image1));
+        Post post2 = Post.createPost(member, "content in post2", StatusType.POSTING, Arrays.asList(image2));
+        Post post3 = Post.createPost(member, "content in post3", StatusType.POSTING, Arrays.asList(image3));
+        Post post4 = Post.createPost(member, "content in post4", StatusType.POSTING, Arrays.asList(image4));
+
+        Post savedPost1 = postRepository.save(post1);
+        Post savedPost2 = postRepository.save(post2);
+        Post savedPost3 = postRepository.save(post3);
+        Post savedPost4 = postRepository.save(post4);
+
+        Pageable pageable = PageRequest.of(0, 3, Sort.by(Sort.Direction.DESC, "createdDate"));
+
+        //when
+        Slice<Post> postSlice = postRepository.findPostsByLastReadPostId(savedMemberId, savedPost4.getId(), pageable, StatusType.POSTING);
+
+        //then
+        assertEquals(3, postSlice.getNumberOfElements());
+        assertEquals(savedPost3.getContent(), postSlice.getContent().get(0).getContent());
+        assertEquals(savedPost2.getContent(), postSlice.getContent().get(1).getContent());
+        assertEquals(savedPost1.getContent(), postSlice.getContent().get(2).getContent());
+        assertEquals(image1.getUrl(), postSlice.getContent().get(2).getPostImages().get(0).getUrl());
+        assertEquals(image2.getUrl(), postSlice.getContent().get(1).getPostImages().get(0).getUrl());
+        assertEquals(image3.getUrl(), postSlice.getContent().get(0).getPostImages().get(0).getUrl());
+    }
+
 
 }

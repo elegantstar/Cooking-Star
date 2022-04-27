@@ -33,7 +33,7 @@ public class PostCommentRestController {
     }
 
     @GetMapping
-    public ResponseEntity<Slice<PostCommentDto>> getCommentsByPostId(@RequestParam Long postId, @RequestParam int page,
+    public ResponseEntity<?> getCommentsByPostId(@RequestParam Long postId, @RequestParam int page,
                                                                      @RequestParam int size) {
 
         Slice<PostCommentDto> commentDtoPage = postCommentService.getCommentsByPostId(postId, page, size)

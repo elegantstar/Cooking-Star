@@ -116,6 +116,11 @@
   <div class="mt-3 mb-1">
     <span class="nickname" th:text="${userPageInfo.nickname}">유저 닉네임</span>
   </div>
+  <div>
+    <a class="website" th:href="@{${userPageInfo.website}}" th:text="${userPageInfo.website}"
+       style="font-size: 15px; font-weight: bold; text-decoration: none; color: #1d2362">유저 홈페이지</a>
+  </div>
+  <div class="mb-2"></div>
   <div class="introduction-scroll">
     <span class="introduction" style="word-wrap: break-word;"
           th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(userPageInfo.introduction),'\n','&lt;br /&gt;'))}">유저 소개글</span>
@@ -123,12 +128,16 @@
 
 </div>
 
+<!-- 게시물 이미지 노출 영역 -->
 <div class="container" id="content-box">
   <hr class="mt-2 mb-5">
   <div class="img-layer" style="text-align: center">
-    <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
-      <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
-    </a>
+    <span id="last-read-post-id" style="display: none;"></span>
+    <div id="post-image-area">
+      <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
+        <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
+      </a>
+    </div>
   </div>
 </div>
 
@@ -157,6 +166,58 @@
 </div>
 
 <script th:inline="javascript" type="text/javascript">
+
+  /**
+   * 게시글 무한 스크롤 관련 코드
+   */
+  let postImageSize = 6;
+  let infiniteScrollSwitch = "on";
+
+  $(function () {
+    if ([[${postIds.size}]] >= 2) {
+      const postIdArray = [[${postIds}]];
+      $('#last-read-post-id').text(postIdArray[postIdArray.length - 1]);
+    }
+  });
+
+  async function getPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "POSTING";
+    const lastReadPostId = $('#last-read-post-id').text();
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&postId=${lastReadPostId}&size=${postImageSize}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+
+    const { content, last } = slice;
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="/image/${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+
+    setTimeout(function () {
+      infiniteScrollSwitch = "on";
+    }, 100);
+
+    if (last) {
+      $(window).unbind('scroll');
+    }
+  }
+
+  //스크롤 최하단 도달 시 게시글 추가 조회
+  $(window).scroll(function () {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if (infiniteScrollSwitch === "on") {
+        infiniteScrollSwitch = "off";
+        getPostImageUrls();
+      }
+    }
+  });
 
   /**
    * 팔로잉 기능 관련 코드

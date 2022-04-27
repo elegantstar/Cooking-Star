@@ -34,20 +34,20 @@ public class FollowingRestController {
     }
 
     @GetMapping("/{userId}/count/followers")
-    public ResponseEntity<Integer> countFollowers(@PathVariable("userId") String userId) throws Exception {
+    public ResponseEntity<?> countFollowers(@PathVariable("userId") String userId) throws Exception {
         int count = followingService.countFollowersByUserId(userId);
         return ResponseEntity.ok().body(count);
     }
 
     @GetMapping("/{userId}/count/followings")
-    public ResponseEntity<Integer> countFollowings(@PathVariable("userId") String userId) throws Exception {
+    public ResponseEntity<?> countFollowings(@PathVariable("userId") String userId) throws Exception {
         int count = followingService.countFollowingsByUserId(userId);
         return ResponseEntity.ok().body(count);
     }
 
     // 팔로워 리스트 조회
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<Slice<UserSearchDto>> getFollowers(@PathVariable("userId") String userId,
+    public ResponseEntity<?> getFollowers(@PathVariable("userId") String userId,
                                                              @RequestParam int page, @RequestParam int size) throws Exception {
         Slice<UserSearchDto> followerSlice = followingService.getFollowers(userId, page, size).map(UserSearchDto::of);
         return ResponseEntity.ok().body(followerSlice);
@@ -55,7 +55,7 @@ public class FollowingRestController {
 
     // 팔로잉 리스트 조회
     @GetMapping("/{userId}/followings")
-    public ResponseEntity<Slice<UserSearchDto>> getFollowings(@PathVariable("userId") String userId,
+    public ResponseEntity<?> getFollowings(@PathVariable("userId") String userId,
                                                               @RequestParam int page, @RequestParam int size) throws Exception {
         Slice<UserSearchDto> followingSlice = followingService.getFollowings(userId, page, size).map(UserSearchDto::of);
         return ResponseEntity.ok().body(followingSlice);
@@ -63,7 +63,7 @@ public class FollowingRestController {
 
     // 팔로잉 관계 확인(로그인 유저의 특정 유저 팔로잉 여부, 특정 유저의 로그인 유저 팔로잉 여부)
     @GetMapping
-    public ResponseEntity<FollowingRelationshipDto> checkForFollowingRelationship(@Login Member loginUser,
+    public ResponseEntity<?> checkForFollowingRelationship(@Login Member loginUser,
                                                                                   @RequestParam String userId) throws Exception {
         // loginUser가 user를 팔로잉 하는지 여부
         boolean following = followingService.checkForFollowing(loginUser.getId(), userId);

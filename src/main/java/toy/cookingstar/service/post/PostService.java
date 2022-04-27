@@ -10,12 +10,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StopWatch;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
 import toy.cookingstar.entity.PostImage;
@@ -132,7 +134,7 @@ public class PostService {
      */
     public List<Post> getTemporaryStorage(Long memberId, StatusType statusType, int offset, int limit) {
         Member user = memberRepository.findById(memberId).orElseThrow(IllegalArgumentException::new);
-        Pageable pageable = PageRequest.of(offset, limit, Sort.by(Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(offset, limit, Sort.by(Direction.DESC, "createdDate"));
 
         List<Post> posts = postRepository.findPosts(user.getId(), statusType, pageable).getContent();
         posts.forEach(post -> post.getPostImages().get(0).getId());
@@ -140,4 +142,25 @@ public class PostService {
         return posts;
     }
 
+    public Slice<Post> getUserPagePostImageSlice(String userId, Long lastReadPostId,
+                                                 int page, int size, StatusType statusType) throws Exception {
+
+        Member user = memberRepository.findByUserId(userId);
+        if (user == null) {
+            throw new IllegalArgumentException();
+        }
+
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdDate"));
+
+        if (lastReadPostId == null) {
+            Slice<Post> slice = postRepository.findPosts(user.getId(), statusType, pageable);
+            slice.forEach(post -> post.getPostImages().get(0).getUrl());
+            return slice;
+        }
+
+        Slice<Post> slice = postRepository.findPostsByLastReadPostId(user.getId(), lastReadPostId, pageable, statusType);
+        slice.forEach(post -> post.getPostImages().get(0).getUrl());
+
+        return slice;
+    }
 }

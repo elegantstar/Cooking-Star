@@ -24,20 +24,20 @@ public class PostLikerRestController {
     }
 
     @GetMapping("/{postId}/count")
-    public ResponseEntity<Integer> countPostLiker(@PathVariable("postId") Long postId) {
+    public ResponseEntity<?> countPostLiker(@PathVariable("postId") Long postId) {
         int count = postLikerService.countLikers(postId);
         return ResponseEntity.ok().body(count);
     }
 
     @GetMapping("/{postId}")
-    public ResponseEntity<Slice<UserSearchDto>> getPostLikers(@PathVariable("postId") Long postId,
+    public ResponseEntity<?> getPostLikers(@PathVariable("postId") Long postId,
                                                               @RequestParam int page, @RequestParam int size) {
         Slice<UserSearchDto> postLikerSlice = postLikerService.getLikers(postId, page, size).map(UserSearchDto::of);
         return ResponseEntity.ok().body(postLikerSlice);
     }
 
     @GetMapping
-    public ResponseEntity<Boolean> checkForLikes(@Login Member loginUser, @RequestParam Long postId) {
+    public ResponseEntity<?> checkForLikes(@Login Member loginUser, @RequestParam Long postId) {
         boolean likeOrNot = postLikerService.checkForLikes(loginUser.getId(), postId);
         return ResponseEntity.ok().body(likeOrNot);
     }
