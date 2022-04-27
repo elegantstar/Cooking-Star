@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,19 +13,16 @@ import toy.cookingstar.entity.Post;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostInfoDto;
 import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.form.DeleteForm;
 import toy.cookingstar.web.controller.post.form.PostEditForm;
 import toy.cookingstar.web.controller.post.form.PostForm;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -116,7 +112,7 @@ public class PostController {
 
         if (bindingResult.hasErrors()) {
             log.error("errors={}", bindingResult);
-            return "post/createForm";
+            return "error-page/404";
         }
 
         Post post = postService.findById(postId);
