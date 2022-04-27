@@ -163,10 +163,14 @@
     </li>
   </ul>
 
+  <!-- 게시물 이미지 노출 영역 -->
   <div class="img-layer" style="text-align: center">
-    <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
-      <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
-    </a>
+    <span id="last-read-post-id" style="display: none;"></span>
+    <div id="post-image-area">
+      <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
+        <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
+      </a>
+    </div>
   </div>
 </div>
 
@@ -268,6 +272,59 @@
   $('#profileImg-upload').change(uploadProfileImg);
 
   /**
+   * 게시글 무한 스크롤 관련 코드
+   */
+  let postImageSize = 6;
+  let infiniteScrollSwitch = "on";
+
+  $(function () {
+    if ([[${postIds.size}]] >= 2) {
+      const postIdArray = [[${postIds}]];
+      $('#last-read-post-id').text(postIdArray[postIdArray.length - 1]);
+    }
+  });
+
+  //게시글 id, 게시글 이미지 url 조회
+  async function getPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "POSTING";
+    const lastReadPostId = $('#last-read-post-id').text();
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&postId=${lastReadPostId}&size=${postImageSize}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+
+    const { content, last } = slice;
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="/image/${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+
+    setTimeout(function () {
+      infiniteScrollSwitch = "on";
+    }, 100);
+
+    if (last) {
+      $(window).unbind('scroll');
+    }
+  }
+
+  //스크롤 최하단 도달 시 게시글 추가 조회
+  $(window).scroll(function () {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if (infiniteScrollSwitch === "on") {
+        infiniteScrollSwitch = "off";
+        getPostImageUrls();
+      }
+    }
+  });
+
+  /**
    * 팔로잉 기능 관련 코드
    */
   let followerPage = 0;
@@ -289,15 +346,23 @@
       content.forEach((follower) => {
         const {userId, nickname, profileImage} = follower;
 
-        $('#follower-list-modal .modal-body').append('<div class="follower-list">' +
-                '<div class="dropdown-item container" style="float: left; width: 85%;">' +
-                '<div class="following-profile-box">' +
-                '<img class="following-profile-img rounded-circle" alt="유저 프로필" /></div>' +
-                '<div class="follower-area" style="margin-top: -1%;">' +
-                '<span class="follower-user-id" style="font-weight: bold; font-size: 15px; cursor: pointer;"></span></div>' +
-                '<div style="margin-top: -2%;"><span class="follower-user-nickname" style="color: gray; font-size: 14px;"></span></div></div>' +
-                '<div class="delete-button-box" style="float: left; padding-top: 2.5%">' +
-                '<button id="follower-deletion-btn" type="button" class="btn btn-outline-dark btn-sm">삭제</button></div></div>');
+        $('#follower-list-modal .modal-body').append(
+            `<div class="follower-list">
+                <div class="dropdown-item container" style="float: left; width: 85%;">
+                    <div class="following-profile-box">
+                        <img class="following-profile-img rounded-circle" alt="유저 프로필" />
+                    </div>
+                    <div class="follower-area" style="margin-top: -1%;">
+                        <span class="follower-user-id" style="font-weight: bold; font-size: 15px; cursor: pointer;"></span>
+                    </div>
+                    <div style="margin-top: -2%;">
+                        <span class="follower-user-nickname" style="color: gray; font-size: 14px;"></span>
+                    </div>
+                </div>
+                <div class="delete-button-box" style="float: left; padding-top: 2.5%">
+                    <button id="follower-deletion-btn" type="button" class="btn btn-outline-dark btn-sm">삭제</button>
+                </div>
+            </div>`);
 
         if (profileImage === null) {
           $('#follower-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
@@ -483,14 +548,16 @@
       content.forEach((following) => {
         const { userId, nickname, profileImage } = following;
 
-        $('#following-list-modal .modal-body').append('<div class="following-list">' +
+        $('#following-list-modal .modal-body').append(
+            '<div class="following-list">' +
                 '<div class="dropdown-item container" style="float: left; width: 83%;">' +
                 '<div class="following-profile-box">' +
                 '<img class="following-profile-img rounded-circle" alt="유저 프로필" /></div>' +
                 '<div style="margin-top: -1%;"><span class="following-user-id" style="font-weight: bold; font-size: 15px; cursor: pointer"></span></div>' +
                 '<div style="margin-top: -2%;"><span class="following-user-nickname" style="color: gray; font-size: 14px;"></span></div></div>' +
                 '<div class="delete-button-box" style="float: left; padding-top: 2.5%">' +
-                '<button id="following-deletion-btn" type="button" class="btn btn-primary btn-sm">팔로잉</button></div></div>');
+                '<button id="following-deletion-btn" type="button" class="btn btn-primary btn-sm">팔로잉</button></div>' +
+            '</div>');
 
         if (profileImage === null) {
           $('#following-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
@@ -538,7 +605,6 @@
     location.replace(`/user/${userId}`);
   })
 
-  //TODO: 다음 페이지 조회 후 모달 창을 새로 열었을 때 followingPage가 초기화 되지 않는 현상 발생... ㅅㅂ
   //팔로잉 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
   $('.following-list-scroll').scroll(function () {
     const modalScroll = $('.following-list-scroll');

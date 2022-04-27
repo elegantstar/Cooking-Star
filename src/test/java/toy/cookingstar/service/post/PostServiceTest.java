@@ -10,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.domain.Sort;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
@@ -376,6 +377,56 @@ class PostServiceTest {
         }
     }
 
+    @Nested
+    @DisplayName("유저 페이지 게시물 Slice 조회 테스트")
+    class GetUserPagePostImageSliceTest {
+
+        @Test
+        @DisplayName("성공")
+        void getUserPagePostImageSliceSuccessTest() throws Exception {
+            //given
+            Member user = mock(Member.class);
+            given(user.getId()).willReturn(1L);
+
+            Post post = mock(Post.class);
+            PostImage postImage = mock(PostImage.class);
+
+            given(post.getPostImages()).willReturn(Arrays.asList(postImage, postImage, postImage));
+            Slice<Post> pages = new SliceImpl<>(Arrays.asList(post, post, post));
+
+            given(memberRepository.findByUserId(anyString())).willReturn(user);
+            given(postRepository.findPostsByLastReadPostId(eq(user.getId()), eq(1L), any(Pageable.class), eq(StatusType.POSTING)))
+                    .willReturn(pages);
+
+            ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
+
+            //when
+            Slice<Post> slice = postService.getUserPagePostImageSlice("test_user", 1L, 0, 3, StatusType.POSTING);
+
+            //then
+            then(memberRepository).should(times(1)).findByUserId(anyString());
+            then(postRepository).should(times(1))
+                    .findPostsByLastReadPostId(anyLong(), anyLong(), captor.capture(), any(StatusType.class));
+            Pageable capturedPageable = captor.getValue();
+            assertEquals(0, capturedPageable.getOffset());
+            assertEquals(3, capturedPageable.getPageSize());
+            assertEquals(Sort.by(Sort.Direction.DESC, "createdDate"), capturedPageable.getSort());
+
+            assertEquals(3, slice.getNumberOfElements());
+        }
+
+        @Test
+        @DisplayName("실패_존재하지 않는 userId")
+        void getUserPagePostImageSliceFailureTest_UserIdDoesNotExist() throws Exception {
+            //given
+            given(memberRepository.findByUserId(anyString())).willReturn(null);
+            //when & then
+            assertThrows(IllegalArgumentException.class,
+                    () -> postService.getUserPagePostImageSlice("test_user", 1L, 0, 6, StatusType.POSTING));
+            then(memberRepository).should(times(1)).findByUserId(anyString());
+            then(postRepository).should(never()).findPostsByLastReadPostId(anyLong(), anyLong(), any(Pageable.class), any(StatusType.class));
+        }
+    }
 
 
 }

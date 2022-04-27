@@ -65,7 +65,7 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        PostImageUrlDto postImageUrls = getPostImageUrls(userPageInfo, totalPost, StatusType.POSTING);
+        PostImageUrlDto postImageUrls = getPostImageUrls(userPageInfo, StatusType.POSTING);
         if (postImageUrls == null) {
             return "user/userPage";
         }
@@ -96,7 +96,7 @@ public class UserController {
         model.addAttribute("totalPost", totalPost);
 
         //getPostImageUrls로 ImageUrl과 postId을 받음
-        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, totalPost, StatusType.POSTING);
+        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, StatusType.POSTING);
         if (postImageUrls == null) {
             return "user/myPage";
         }
@@ -204,7 +204,7 @@ public class UserController {
         model.addAttribute("totalPost", totalPost);
 
         //getPostImageUrls로 ImageUrl과 postId을 받음
-        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, totalPost, StatusType.PRIVATE);
+        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, StatusType.PRIVATE);
 
         if (postImageUrls == null) {
             return "user/privatePage";
@@ -213,11 +213,16 @@ public class UserController {
         model.addAttribute("imageUrls", postImageUrls.getImageUrls());
         model.addAttribute("postIds", postImageUrls.getPostIds());
 
+        int totalFollower = followingService.countFollowers(userInfo.getId());
+        int totalFollowing = followingService.countFollowings(userInfo.getId());
+        model.addAttribute("totalFollower", totalFollower);
+        model.addAttribute("totalFollowing", totalFollowing);
+
         return "user/privatePage";
     }
 
     // 페이지 구성 이미지 조회
-    private PostImageUrlDto getPostImageUrls(UserInfoDto userInfoDto, int totalPost, StatusType statusType) {
+    private PostImageUrlDto getPostImageUrls(UserInfoDto userInfoDto, StatusType statusType) {
         int page = 0;
         int size = 12;
 
