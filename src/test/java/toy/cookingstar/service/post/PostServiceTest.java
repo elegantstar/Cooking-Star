@@ -57,34 +57,34 @@ class PostServiceTest {
         @DisplayName("성공")
         void createSuccessTest() throws Exception {
             //given
-            PostCreateDto dto = new PostCreateDto("test_user", "content in post", StatusType.POSTING,
-                    Arrays.asList("pasta", "steak", "salad"));
+            PostCreateDto dto = new PostCreateDto(1L, "content in post",
+                    Arrays.asList("pasta", "steak", "salad"), StatusType.POSTING);
             Member user = mock(Member.class);
-
-            given(memberRepository.findByUserId(dto.getUserId())).willReturn(user);
+            given(memberRepository.findById(dto.getMemberId())).willReturn(Optional.of(user));
 
             ArgumentCaptor<Post> captor = ArgumentCaptor.forClass(Post.class);
+            Post post = mock(Post.class);
+            given(post.getId()).willReturn(1L);
+            given(postRepository.save(any(Post.class))).willReturn(post);
 
             //when
-            postService.create(dto);
+            Long postId = postService.create(dto);
 
             //then
-            then(memberRepository).should(times(1)).findByUserId("test_user");
-            then(postRepository).should(times(1)).save(any(Post.class));
+            then(memberRepository).should(times(1)).findById(1L);
+            then(postRepository).should(times(1)).save(captor.capture());
 
-            then(postRepository).should().save(captor.capture());
-            Post post = captor.getValue();
-
-            assertEquals(user, post.getMember());
-            assertEquals(dto.getContent(), post.getContent());
-            assertEquals(dto.getStatus(), post.getStatus());
-            assertEquals(3, post.getPostImages().size());
-            assertEquals("pasta", post.getPostImages().get(0).getUrl());
-            assertEquals(1, post.getPostImages().get(0).getPriority());
-            assertEquals("steak", post.getPostImages().get(1).getUrl());
-            assertEquals(2, post.getPostImages().get(1).getPriority());
-            assertEquals("salad", post.getPostImages().get(2).getUrl());
-            assertEquals(3, post.getPostImages().get(2).getPriority());
+            Post capturedPost = captor.getValue();
+            assertEquals(user, capturedPost.getMember());
+            assertEquals(dto.getContent(), capturedPost.getContent());
+            assertEquals(dto.getStatus(), capturedPost.getStatus());
+            assertEquals(3, capturedPost.getPostImages().size());
+            assertEquals("pasta", capturedPost.getPostImages().get(0).getUrl());
+            assertEquals(1, capturedPost.getPostImages().get(0).getPriority());
+            assertEquals("steak", capturedPost.getPostImages().get(1).getUrl());
+            assertEquals(2, capturedPost.getPostImages().get(1).getPriority());
+            assertEquals("salad", capturedPost.getPostImages().get(2).getUrl());
+            assertEquals(3, capturedPost.getPostImages().get(2).getPriority());
         }
 
         @Test
@@ -92,12 +92,12 @@ class PostServiceTest {
         void createdFailureTest() throws Exception {
             //given
             PostCreateDto dto = mock(PostCreateDto.class);
-            given(dto.getUserId()).willReturn("test_user");
-            given(memberRepository.findByUserId("test_user")).willReturn(null);
+            given(dto.getMemberId()).willReturn(1L);
+            given(memberRepository.findById(1L)).willReturn(Optional.empty());
 
             //when & then
             assertThrows(IllegalArgumentException.class, () -> postService.create(dto));
-            then(memberRepository).should(times(1)).findByUserId("test_user");
+            then(memberRepository).should(times(1)).findById(1L);
             then(postRepository).should(never()).save(any(Post.class));
         }
     }

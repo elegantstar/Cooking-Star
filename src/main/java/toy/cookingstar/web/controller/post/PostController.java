@@ -40,35 +40,7 @@ public class PostController {
 
     @GetMapping("/post/create")
     public String createForm(@ModelAttribute("post") PostForm form) {
-        return "post/createForm";
-    }
-
-    @PostMapping("/post/create")
-    public String create(@Validated @ModelAttribute("post") PostForm form, BindingResult bindingResult,
-                         @Login Member loginUser) throws IOException {
-
-        form.removeEmptyImage();
-
-        if (CollectionUtils.isEmpty(form.getImages())) {
-            bindingResult.reject("post.images.empty");
-        }
-
-        if (bindingResult.hasErrors()) {
-            log.error("errors={}", bindingResult);
-            return "post/createForm";
-        }
-
-        Member member = userService.getUserInfoByUserId(loginUser.getUserId());
-
-        // 서버에 이미지 업로드
-        List<String> storedImages = imageStoreService.storeImages(form.getImages());
-
-        PostCreateDto postCreateDto = new PostCreateDto(loginUser.getUserId(), form.getContent(), form.getStatus(), storedImages);
-
-        // DB에 post 데이터 저장 + postImage 데이터 저장
-        postService.create(postCreateDto);
-
-        return "redirect:/myPage";
+        return "post/createPage";
     }
 
     @GetMapping("/post/{postId}")
@@ -182,5 +154,10 @@ public class PostController {
         }
 
         return dayDiff + "일";
+    }
+
+    @GetMapping("/post/create-sample-page")
+    public String createSamplePage() {
+        return "post/createPage";
     }
 }
