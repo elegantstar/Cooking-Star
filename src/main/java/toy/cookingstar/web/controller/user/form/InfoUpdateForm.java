@@ -1,22 +1,20 @@
 package toy.cookingstar.web.controller.user.form;
 
-import java.util.List;
+import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.validator.constraints.Length;
-import org.springframework.web.multipart.MultipartFile;
-
-import lombok.Data;
+import javax.validation.constraints.Pattern;
 
 @Data
 public class InfoUpdateForm {
 
     @Length(min = 1, max = 20)
     private String nickname;
+
+    @Pattern(regexp = "^((https?):\\/\\/([^:\\/\\s]+)(:([^\\/]*))?((\\/[^\\s/\\/]+)*)?\\/?([^#\\s\\?]*)(\\?([^#\\s]*))?(#(\\w*))?)?")
+    private String website;
 
     @Length(max = 200)
     private String introduction;

@@ -29,8 +29,9 @@
       color: black;
       text-decoration: none;
     }
-    .num-of-post {
+    .num-of-post, .num-of-follower, .num-of-following {
       font-size: 18px;
+      margin-right: 37px;
     }
     .nickname {
       font-size: 20px;
@@ -47,13 +48,13 @@
       height: 15%;
       margin: 10px;
     }
-    .searched-profile-box {
+    .searched-profile-box, .following-profile-box {
       position: relative;
       width: 12%;
       margin-bottom: 10px;
       float: left;
     }
-    .searched-profile-img {
+    .searched-profile-img, .following-profile-img {
       width: 90%;
       height: 90%;
     }
@@ -84,6 +85,25 @@
       margin-bottom: 5px;
       padding: 30px 150px 30px 30px;
     }
+    .introduction-scroll {
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+      height: 100px;
+    }
+    .introduction-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .follower-list-scroll, .following-list-scroll {
+      -ms-overflow-style: none;
+      overflow-y: scroll;
+      height: 300px;
+    }
+    .follower-list-scroll::-webkit-scrollbar {
+      display: none;
+    }
+    .following-list-scroll::-webkit-scrollbar {
+      display: none;
+    }
   </style>
 
 </head>
@@ -109,16 +129,25 @@
             th:onclick="|location.href='@{/myPage/edit}'|"
             th:text="#{button.myPage.editProfile}">프로필 수정</button>
   </div>
-  <div class="mt-3 mb-3">
-    <span class="num-of-post" th:text="|#{label.myPage.numPost} ${totalPost}|">게시물 0</span><br/>
+  <div class="following-area mt-3 mb-3">
+    <span class="num-of-post" th:text="|#{label.myPage.numPost} ${totalPost}|">게시물 0</span>
+    <span class="num-of-follower" data-bs-toggle="modal" data-bs-target="#follower-list-modal"
+          th:text="|#{label.myPage.numFollower} ${totalFollower}|" style="cursor: pointer;">팔로워 0</span>
+    <span class="num-of-following" data-bs-toggle="modal" data-bs-target="#following-list-modal"
+          th:text="|#{label.myPage.numFollowing} ${totalFollowing}|" style="cursor: pointer;">팔로우 0</span>
   </div>
   <div class="mt-3 mb-1">
     <span class="nickname" th:text="${userPageInfo.nickname}">유저 닉네임</span>
   </div>
   <div>
-    <span class="introduction" th:text="${userPageInfo.introduction}">유저 소개글</span>
+    <a class="website" th:href="@{${userPageInfo.website}}" th:text="${userPageInfo.website}"
+       style="font-size: 15px; font-weight: bold; text-decoration: none; color: #1d2362">유저 홈페이지</a>
   </div>
-
+  <div class="mb-2"></div>
+  <div class="introduction-scroll">
+    <span class="introduction" style="word-wrap: break-word;"
+          th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(userPageInfo.introduction),'\n','&lt;br /&gt;'))}">유저 소개글</span>
+  </div>
 </div>
 
 <div class="container" id="content-box">
@@ -134,10 +163,14 @@
     </li>
   </ul>
 
+  <!-- 게시물 이미지 노출 영역 -->
   <div class="img-layer" style="text-align: center">
-    <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
-      <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
-    </a>
+    <span id="last-read-post-id" style="display: none;"></span>
+    <div id="post-image-area">
+      <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
+        <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
+      </a>
+    </div>
   </div>
 </div>
 
@@ -163,7 +196,35 @@
   </div>
 </div>
 
-<script>
+<!-- 팔로워 리스트 모달 -->
+<div class="modal fade" id="follower-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content: center; height: 43px;">
+        <p class="modal-title" style="font-weight: bold;">팔로워</p>
+      </div>
+      <div class="modal-body follower-list-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 팔로우 리스트 모달 -->
+<div class="modal fade" id="following-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content: center; height: 43px;">
+        <p class="modal-title" style="font-weight: bold;">팔로잉</p>
+      </div>
+      <div class="modal-body following-list-scroll"></div>
+    </div>
+  </div>
+</div>
+
+<script th:inline="javascript" type="text/javascript">
+
+  /**
+   * 프로필 이미지 관련 코드
+   */
   async function deleteProfileImg() {
     try {
       await fetch("http://localhost:8080/myPage/profile-delete", {
@@ -209,6 +270,351 @@
 
   $('#profile-deletion').on('click', deleteProfileImg);
   $('#profileImg-upload').change(uploadProfileImg);
+
+  /**
+   * 게시글 무한 스크롤 관련 코드
+   */
+  let postImageSize = 6;
+  let infiniteScrollSwitch = "on";
+
+  $(function () {
+    if ([[${postIds.size}]] >= 2) {
+      const postIdArray = [[${postIds}]];
+      $('#last-read-post-id').text(postIdArray[postIdArray.length - 1]);
+    }
+  });
+
+  //게시글 id, 게시글 이미지 url 조회
+  async function getPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "POSTING";
+    const lastReadPostId = $('#last-read-post-id').text();
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&postId=${lastReadPostId}&size=${postImageSize}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+
+    const { content, last } = slice;
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="/image/${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+
+    setTimeout(function () {
+      infiniteScrollSwitch = "on";
+    }, 100);
+
+    if (last) {
+      $(window).unbind('scroll');
+    }
+  }
+
+  //스크롤 최하단 도달 시 게시글 추가 조회
+  $(window).scroll(function () {
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+      if (infiniteScrollSwitch === "on") {
+        infiniteScrollSwitch = "off";
+        getPostImageUrls();
+      }
+    }
+  });
+
+  /**
+   * 팔로잉 기능 관련 코드
+   */
+  let followerPage = 0;
+  let followerSize = 6;
+  let followingPage = 0;
+  let followingSize = 6;
+
+  //팔로워 리스트 조회
+  async function getFollowers() {
+    try {
+      const userId = [[${userPageInfo.userId}]];
+      const res = await fetch(`http://localhost:8080/following/${userId}/followers?page=${followerPage}&size=${followerSize}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const followerSlice = JSON.parse(text);
+      const { content } = followerSlice;
+
+      content.forEach((follower) => {
+        const {userId, nickname, profileImage} = follower;
+
+        $('#follower-list-modal .modal-body').append(
+            `<div class="follower-list">
+                <div class="dropdown-item container" style="float: left; width: 85%;">
+                    <div class="following-profile-box">
+                        <img class="following-profile-img rounded-circle" alt="유저 프로필" />
+                    </div>
+                    <div class="follower-area" style="margin-top: -1%;">
+                        <span class="follower-user-id" style="font-weight: bold; font-size: 15px; cursor: pointer;"></span>
+                    </div>
+                    <div style="margin-top: -2%;">
+                        <span class="follower-user-nickname" style="color: gray; font-size: 14px;"></span>
+                    </div>
+                </div>
+                <div class="delete-button-box" style="float: left; padding-top: 2.5%">
+                    <button id="follower-deletion-btn" type="button" class="btn btn-outline-dark btn-sm">삭제</button>
+                </div>
+            </div>`);
+
+        if (profileImage === null) {
+          $('#follower-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#follower-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+        }
+
+        $('#follower-list-modal .follower-area').last().addClass(`follower-${userId}`);
+        $('#follower-list-modal .modal-body .follower-user-id').last().text(`${userId}`);
+        $('#follower-list-modal .follower-user-nickname').last().text(`${nickname}`);
+
+        const followingRelationshipPromise = checkForFollowingRelationship(userId);
+        followingRelationshipPromise.then((value => {
+          const {following} = value;
+          if (!following) {
+            $(`#follower-list-modal .follower-${userId}`).last().append('<span class="dot" style="font-weight: bold; font-size: 15px;"> · </span>' +
+                    '<span class="follow-btn-in-follower-list"' +
+                    ' style="font-weight: bold; font-size: 14px; cursor: pointer; color: #279ae3">팔로우</span>');
+          }
+        }))
+      })
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //팔로워 표시 영역 클릭 시 팔로워 리스트 조회
+  $('.following-area').on('click', '.num-of-follower', function() {
+    $('#follower-list-modal .modal-body').empty();
+    followerPage = 0;
+    getFollowers();
+  });
+
+  //팔로워 리스트 내 유저 프로필 클릭 시 해당 유저 페이지로 이동
+  $(document).on('click', '.follower-user-id', function() {
+    const userId = $(this).text();
+    console.log(userId);
+    location.replace(`/user/${userId}`);
+  })
+
+  //팔로워 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
+  $('.follower-list-scroll').scroll(function () {
+    const modalScroll = $('.follower-list-scroll');
+    if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
+      followerPage++;
+      console.log("scroll bottom");
+      getFollowers();
+    }
+  });
+
+  //유저 팔로우
+  async function follow(userId) {
+    try {
+      await fetch(`http://localhost:8080/following`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          followedUserId: userId
+        })
+      });
+
+      $(`.follower-${userId} .dot`).remove();
+      $(`.follower-${userId} .follow-btn-in-follower-list`).remove();
+
+      const countPromise = countFollowings([[${session.loginMember.userId}]]);
+      countPromise.then((count) => {
+        $('.num-of-following').text(`팔로우 ` + count);
+      })
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //팔로워 리스트 내 팔로우 버튼 클릭 시 팔로우
+  $(document).on('click', '.follow-btn-in-follower-list', function() {
+    const userId = $(this).prev().prev().text();
+    follow(userId);
+  })
+
+  // 팔로잉 관계 삭제
+  async function deleteFollowing(followingUserId, followedUserId) {
+    try {
+      await fetch(`http://localhost:8080/following/deletion`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          followingUserId: followingUserId,
+          followedUserId: followedUserId
+        })
+      });
+
+      const loginUserId = [[${session.loginMember.userId}]];
+      if (loginUserId === followedUserId) {
+        const countFollowerPromise = countFollowers(followedUserId);
+        console.log(countFollowerPromise);
+        countFollowerPromise.then((count) => {
+          console.log(count);
+          $('.num-of-follower').text(`팔로워 ` + count);
+        })
+
+
+      } else if (loginUserId === followingUserId) {
+        const countFollowingPromise = countFollowings(followingUserId);
+        console.log(countFollowingPromise);
+        countFollowingPromise.then((count) => {
+          console.log(count);
+          $('.num-of-following').text(`팔로우 ` + count);
+        })
+      }
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  // 팔로워 리스트 유저의 팔로우 끊기
+  $(document).on('click', '#follower-deletion-btn', function() {
+    const followingUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
+    const followedUserId = [[${session.loginMember.userId}]];
+    deleteFollowing(followingUserId, followedUserId);
+    $(this).parent().parent().remove();
+  })
+
+  //팔로워 수 조회
+  async function countFollowers(userId) {
+    try {
+      const res = await fetch(`http://localhost:8080/following/${userId}/count/followers`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      return JSON.parse(text);
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //팔로우 수 조회
+  async function countFollowings(userId) {
+    try {
+      const res = await fetch(`http://localhost:8080/following/${userId}/count/followings`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      return JSON.parse(text);
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  // 팔로잉 관계 확인
+  async function checkForFollowingRelationship(userId) {
+    const res = await fetch(`http://localhost:8080/following?userId=${userId}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    return JSON.parse(text);
+  }
+
+  //팔로잉 리스트 조회
+  async function getFollowings() {
+    try {
+      const userId = [[${userPageInfo.userId}]];
+      const res = await fetch(`http://localhost:8080/following/${userId}/followings?page=${followingPage}&size=${followingSize}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const followingSlice = JSON.parse(text);
+      const { content } = followingSlice;
+
+      content.forEach((following) => {
+        const { userId, nickname, profileImage } = following;
+
+        $('#following-list-modal .modal-body').append(
+            '<div class="following-list">' +
+                '<div class="dropdown-item container" style="float: left; width: 83%;">' +
+                '<div class="following-profile-box">' +
+                '<img class="following-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+                '<div style="margin-top: -1%;"><span class="following-user-id" style="font-weight: bold; font-size: 15px; cursor: pointer"></span></div>' +
+                '<div style="margin-top: -2%;"><span class="following-user-nickname" style="color: gray; font-size: 14px;"></span></div></div>' +
+                '<div class="delete-button-box" style="float: left; padding-top: 2.5%">' +
+                '<button id="following-deletion-btn" type="button" class="btn btn-primary btn-sm">팔로잉</button></div>' +
+            '</div>');
+
+        if (profileImage === null) {
+          $('#following-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#following-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+        }
+
+        $('#following-list-modal .modal-body .following-user-id').last().text(`${userId}`);
+        $('#following-list-modal .following-user-nickname').last().text(`${nickname}`);
+      })
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //팔로잉 표시 영역 클릭 시 팔로잉 리스트 조회
+  $('.following-area').on('click', '.num-of-following', function() {
+    $('#following-list-modal .modal-body').empty();
+    followingPage = 0;
+    getFollowings();
+  });
+
+  // 팔로잉 리스트 내 유저 언팔로우 / 리팔로우
+  $(document).on('click', '#following-deletion-btn', function() {
+    const followingUserId = [[${session.loginMember.userId}]];
+    const followedUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
+
+    if ($(this).hasClass('.follow-btn')) {
+      follow(followedUserId);
+      $(this).text('팔로잉');
+      $(this).removeClass('.follow-btn');
+
+    } else {
+      deleteFollowing(followingUserId, followedUserId);
+      $(this).addClass('.follow-btn');
+      $(this).text('팔로우');
+    }
+  })
+
+  //팔로잉 리스트 내 유저 프로필 클릭 시 해당 유저 페이지로 이동
+  $(document).on('click', '.following-user-id', function() {
+    const userId = $(this).text();
+    console.log(userId);
+    location.replace(`/user/${userId}`);
+  })
+
+  //팔로잉 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
+  $('.following-list-scroll').scroll(function () {
+    const modalScroll = $('.following-list-scroll');
+    if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
+      followingPage++;
+      console.log("scroll bottom");
+      getFollowings();
+    }
+  });
+
 
 </script>
 

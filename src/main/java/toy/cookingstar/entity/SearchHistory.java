@@ -1,15 +1,13 @@
 package toy.cookingstar.entity;
 
-import static javax.persistence.FetchType.*;
-
-import java.time.LocalDateTime;
-
-import javax.persistence.*;
-
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.time.LocalDateTime;
+
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -28,7 +26,7 @@ public class SearchHistory {
     @JoinColumn(name = "searched_member_id")
     private Member searchedUser;
 
-    @Column(name = "last_search_date")
+    @Column(name = "last_search_date", insertable = false)
     private LocalDateTime lastSearchDate;
 
     public SearchHistory(Member member, Member searchedUser) {

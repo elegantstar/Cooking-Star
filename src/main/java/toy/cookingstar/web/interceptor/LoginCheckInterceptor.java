@@ -14,7 +14,9 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+//        if (1 == 1) {
+//            return true;
+//        }
         String requestURI = request.getRequestURI();
 
         log.info("인증 체크 인터셉터 실행 {}", requestURI);

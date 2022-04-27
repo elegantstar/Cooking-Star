@@ -18,7 +18,7 @@ public class LogInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-
+//        if (1 == 1) return true;
         String requestURI = request.getRequestURI();
 
         String logId = UUID.randomUUID().toString();
@@ -37,6 +37,7 @@ public class LogInterceptor implements HandlerInterceptor {
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
                            ModelAndView modelAndView) throws Exception {
+//        if (1 == 1) return;
         // 예외가 발생할 경우 postHandle은 호출되지 않음.
         log.info("REQUEST [{}]", modelAndView);
     }

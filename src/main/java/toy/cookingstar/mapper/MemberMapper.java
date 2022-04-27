@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import toy.cookingstar.domain.Member;
-import toy.cookingstar.service.user.UserUpdateParam;
+import toy.cookingstar.mybatisservice.user.UserUpdateParam;
 
 @Mapper
 public interface MemberMapper {

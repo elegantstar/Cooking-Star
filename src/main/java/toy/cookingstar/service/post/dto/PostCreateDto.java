@@ -10,9 +10,9 @@ import toy.cookingstar.service.post.StatusType;
 @AllArgsConstructor
 public class PostCreateDto {
 
-    private String userId;
+    private Long memberId;
     private String content;
+    private List<String> postImageUrls;
     private StatusType status;
-    private List<String> storedImages;
 
 }

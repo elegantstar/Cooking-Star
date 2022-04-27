@@ -1,22 +1,14 @@
 package toy.cookingstar.entity;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import toy.cookingstar.service.user.dto.UserInfoDto;
-
-@Getter @Setter
+@Getter
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseTimeEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -28,17 +20,12 @@ public class Member {
     private String email;
     private String salt;
     private String nickname;
+    private String website;
     private String introduction;
     private String gender;
 
     @Column(name = "profile_image")
     private String profileImage;
-
-    @Column(name = "created_date")
-    private LocalDateTime createdDate;
-
-    @Column(name = "updated_date")
-    private LocalDateTime updatedDate;
 
     @Builder
     public Member(String userId, String password, String name, String email, String salt, String nickname) {
@@ -50,12 +37,12 @@ public class Member {
         this.nickname = nickname;
     }
 
-    public void updateInfo(UserInfoDto dto) {
-        this.name = dto.getName();
-        this.email = dto.getEmail();
-        this.nickname = dto.getNickname();
-        this.introduction = dto.getIntroduction();
-        this.gender = dto.getGender();
+    public void updateInfo(String email, String nickname, String website, String introduction, String gender) {
+        this.email = email;
+        this.nickname = nickname;
+        this.website = website;
+        this.introduction = introduction;
+        this.gender = gender;
     }
 
     public void updatePwd(String newPassword, String newSalt) {

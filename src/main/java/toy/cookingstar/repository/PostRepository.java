@@ -17,4 +17,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     int countByMemberId(Long memberId);
 
+    @Query("select p from Post p join fetch p.postImages where p.member.id = :memberId and p.status = :status and p.id < :postId")
+    Slice<Post> findPostsByLastReadPostId(@Param("memberId") Long memberId, @Param("postId") Long lastReadPostId,
+                                          Pageable pageable, @Param("status") StatusType statusType);
 }
