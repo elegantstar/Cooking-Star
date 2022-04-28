@@ -1,166 +1,166 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"/>
-    <title>Cooking Star</title>
+  <meta charset="UTF-8"/>
+  <title>Cooking Star</title>
 
-    <link th:replace="fragment/bootstrap :: bootstrapCss">
-    <link th:replace="fragment/bootstrap :: bootstrapIcon">
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
 
-    <script type="text/javascript">
-        function button_deletion() {
-            const result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
-            if (result) {
-                document.getElementById('deletion').submit();
-            } else {
-                return false;
-            }
-        }
-    </script>
+  <script type="text/javascript">
+    function button_deletion() {
+      const result = confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?");
+      if (result) {
+        document.getElementById('deletion').submit();
+      } else {
+        return false;
+      }
+    }
+  </script>
 
-    <style>
-        .img-layer-box {
-            position: relative;
-            width: 55%;
-            padding-bottom: 55%;
-            margin: 1px -9px 10px 10px;
-            float: left;
-        }
+  <style>
+      .img-layer-box {
+          position: relative;
+          width: 55%;
+          padding-bottom: 55%;
+          margin: 1px -9px 10px 10px;
+          float: left;
+      }
 
-        .img-box {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
-            margin-left: -10px;
-            text-align: center;
-            width: 100%;
-            height: 100%;
-        }
+      .img-box {
+          position: absolute;
+          top: 0;
+          right: 0;
+          bottom: 0;
+          left: 0;
+          margin-left: -10px;
+          text-align: center;
+          width: 100%;
+          height: 100%;
+      }
 
-        .profile-img-box {
-            position: relative;
-            width: 2%;
-            padding-bottom: 2%;
-            margin: 18px 5px 10px 20px;
-            float: left;
-        }
+      .profile-img-box {
+          position: relative;
+          width: 2%;
+          padding-bottom: 2%;
+          margin: 18px 5px 10px 20px;
+          float: left;
+      }
 
-        .content-profile-img-box {
-            position: relative;
-            width: 4.7%;
-            padding-bottom: 4.7%;
-            margin: 0 13px 0 12px;
-            float: left;
-        }
+      .content-profile-img-box {
+          position: relative;
+          width: 4.7%;
+          padding-bottom: 4.7%;
+          margin: 0 13px 0 12px;
+          float: left;
+      }
 
-        .profile-img {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-        }
+      .profile-img {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+      }
 
-        .post-content-box, .post-comment-box {
-            height: 565px;
-        }
+      .post-content-box, .post-comment-box {
+          height: 565px;
+      }
 
-        .img-standard {
-            width: 100%;
-            height: 100%;
-        }
+      .img-standard {
+          width: 100%;
+          height: 100%;
+      }
 
-        .user-id {
-            margin-right: 5px;
-            font-size: 16px;
-            font-weight: bold;
-            color: rgba(31, 30, 30, 0.91);
-            text-decoration: none;
-            cursor: pointer;
-        }
+      .user-id {
+          margin-right: 5px;
+          font-size: 16px;
+          font-weight: bold;
+          color: rgba(31, 30, 30, 0.91);
+          text-decoration: none;
+          cursor: pointer;
+      }
 
-        .three-dot {
-            float: right;
-        }
+      .three-dot {
+          float: right;
+      }
 
-        .img-preview {
-            width: 15%;
-            height: 15%;
-            margin: 10px;
-        }
+      .img-preview {
+          width: 15%;
+          height: 15%;
+          margin: 10px;
+      }
 
-        .searched-profile-box, .liker-list-profile-box {
-            position: relative;
-            width: 12%;
-            margin-bottom: 10px;
-            float: left;
-        }
+      .searched-profile-box, .liker-list-profile-box {
+          position: relative;
+          width: 12%;
+          margin-bottom: 10px;
+          float: left;
+      }
 
-        .searched-profile-img, .liker-list-profile-img {
-            width: 90%;
-            height: 90%;
-        }
+      .searched-profile-img, .liker-list-profile-img {
+          width: 90%;
+          height: 90%;
+      }
 
-        #post-box {
-            height: 727px;
-            margin-bottom: 5px;
-            padding: 15px 0 30px 0;
-        }
+      #post-box {
+          height: 727px;
+          margin-bottom: 5px;
+          padding: 15px 0 30px 0;
+      }
 
-        .content-scroll {
-            -ms-overflow-style: none;
-            overflow-y: scroll;
-            height: 450px;
-        }
+      .content-scroll {
+          -ms-overflow-style: none;
+          overflow-y: scroll;
+          height: 450px;
+      }
 
-        .content-scroll::-webkit-scrollbar {
-            display: none;
-        }
+      .content-scroll::-webkit-scrollbar {
+          display: none;
+      }
 
-        #comment-input-area {
-            text-align: left;
-            width: 460px;
-            border: none;
-            outline: none;
-            resize: none;
-            font-size: small;
-            letter-spacing: 1px;
-        }
+      #comment-input-area {
+          text-align: left;
+          width: 460px;
+          border: none;
+          outline: none;
+          resize: none;
+          font-size: small;
+          letter-spacing: 1px;
+      }
 
-        .post-comment-box {
-            height: 565px;
-        }
+      .post-comment-box {
+          height: 565px;
+      }
 
-        .more-comments-btn {
-            font-weight: bold;
-            font-size: 14px;
-            color: gray;
-            text-decoration: none;
-        }
+      .more-comments-btn {
+          font-weight: bold;
+          font-size: 14px;
+          color: gray;
+          text-decoration: none;
+      }
 
-        .post-liker-list-scroll, .comment-liker-list-scroll {
-            -ms-overflow-style: none;
-            overflow-y: scroll;
-            height: 300px;
-        }
+      .post-liker-list-scroll, .comment-liker-list-scroll {
+          -ms-overflow-style: none;
+          overflow-y: scroll;
+          height: 300px;
+      }
 
-        .post-liker-list-scroll::-webkit-scrollbar {
-            display: none;
-        }
+      .post-liker-list-scroll::-webkit-scrollbar {
+          display: none;
+      }
 
-        .comment-liker-list-scroll::-webkit-scrollbar {
-            display: none;
-        }
+      .comment-liker-list-scroll::-webkit-scrollbar {
+          display: none;
+      }
 
-        .liker-profile-img-box {
-            position: relative;
-            width: 4.7%;
-            padding-bottom: 4.7%;
-            float: left;
-        }
+      .liker-profile-img-box {
+          position: relative;
+          width: 4.7%;
+          padding-bottom: 4.7%;
+          float: left;
+      }
 
-    </style>
+  </style>
 
 </head>
 <body>
@@ -171,43 +171,43 @@
 <div class="mb-4"></div>
 <div class="container border" id="post-box">
 
-    <div class="mb-3">
+  <div class="mb-3">
 
-        <!-- Post Image 영역(캐러셀 적용) -->
-        <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel"
-             data-bs-interval="false">
-            <div class="carousel-inner img-box">
-                <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
-                    <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지"/>
-                </div>
-            </div>
-            <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
-                    data-bs-slide="prev">
-                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Previous</span>
-            </button>
-            <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
-                    data-bs-slide="next">
-                <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                <span class="visually-hidden">Next</span>
-            </button>
+    <!-- Post Image 영역(캐러셀 적용) -->
+    <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel"
+         data-bs-interval="false">
+      <div class="carousel-inner img-box">
+        <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
+          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지"/>
         </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
+              data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval"
+              data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    </div>
 
-        <!-- 우측 상단 Profile 영역 -->
-        <div class="profile-img-box">
-            <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-                <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지"/>
-            </div>
-            <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
-                <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지"/>
-            </div>
-        </div>
+    <!-- 우측 상단 Profile 영역 -->
+    <div class="profile-img-box">
+      <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지"/>
+      </div>
+      <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+        <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지"/>
+      </div>
+    </div>
 
-        <div class="row g-3 align-items-center">
-            <div class="col-12">
-                <a class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}">유저 아이디</a>
+    <div class="row g-3 align-items-center">
+      <div class="col-12">
+        <a class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}">유저 아이디</a>
 
-                <span class="dropdown justify-content-end three-dot" style="margin-right: 10px;">
+        <span class="dropdown justify-content-end three-dot" style="margin-right: 10px;">
           <a class="bi bi-three-dots" style="font-size: 1rem; color: black;"
              href="#" id="myPageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
           </a>
@@ -216,7 +216,8 @@
               <form name="deletion" th:action="@{/post/deletion}" method="post"
                     onsubmit="return confirm('게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?');">
                 <button type="submit" name="postId" th:value="${postInfo.getId()}"
-                        class="dropdown-item" th:text="#{label.post.delete}" style="color: #db0505; font-weight: bold;">삭제</button>
+                        class="dropdown-item" th:text="#{label.post.delete}"
+                        style="color: #db0505; font-weight: bold;">삭제</button>
               </form>
             </li>
             <li><hr class="dropdown-divider"></li>
@@ -227,693 +228,694 @@
             <li><a class="dropdown-item" href="#" th:text="#{label.post.linkCopy}">링크 복사</a></li>
           </ul>
         </span>
-            </div>
-        </div>
+      </div>
     </div>
+  </div>
 
+  <hr style="color: gray">
+
+  <!-- 컨텐츠 영역 -->
+  <div>
+    <div>
+      <div class="row g-3">
+        <div class="content-scroll">
+
+          <!-- 게시자 프로필 이미지 영역 -->
+          <div class="col content-profile-img-box">
+            <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
+              <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|"
+                   alt="프로필 이미지"/>
+            </div>
+            <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
+              <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지"/>
+            </div>
+          </div>
+
+          <div class="col offset-md-1">
+            <a th:class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}"
+               class="post-content-box">유저 아이디</a>
+            <span th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(postInfo.content),'\n','&lt;br /&gt;'))}"
+                  class="post-content-box" style="word-wrap: break-word; font-size: 14px;">텍스트 영역</span>
+            <div th:if="${postInfo.createdDate.equals(postInfo.updatedDate)}">
+              <div th:text="${createdDateTimeDiff}" style="font-size: 10px; color: gray;"></div>
+            </div>
+            <div th:if="${not postInfo.createdDate.equals(postInfo.updatedDate)}">
+              <div th:text="|수정됨 · ${updatedDateTimeDiff} 전|" style="font-size: 10px; color: gray;"></div>
+            </div>
+          </div>
+
+          <div class="mb-4"></div>
+
+          <!-- 댓글 표시 영역 -->
+          <div id="comments-area"></div>
+          <div id="selected-comment-id" style="display:none;"></div>
+        </div>
+      </div>
+    </div>
     <hr style="color: gray">
 
-    <!-- 컨텐츠 영역 -->
-    <div>
-        <div>
-            <div class="row g-3">
-                <div class="content-scroll">
-
-                    <!-- 게시자 프로필 이미지 영역 -->
-                    <div class="col content-profile-img-box">
-                        <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-                            <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|"
-                                 alt="프로필 이미지"/>
-                        </div>
-                        <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
-                            <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지"/>
-                        </div>
-                    </div>
-
-                    <div class="col offset-md-1">
-                        <a th:class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}"
-                           class="post-content-box">유저 아이디</a>
-                        <span th:utext="${#strings.unescapeJava(#strings.replace(#strings.escapeJava(postInfo.content),'\n','&lt;br /&gt;'))}"
-                              class="post-content-box" style="word-wrap: break-word; font-size: 14px;">텍스트 영역</span>
-                        <div th:if="${postInfo.createdDate.equals(postInfo.updatedDate)}">
-                            <div th:text="${createdDateTimeDiff}" style="font-size: 10px; color: gray;"></div>
-                        </div>
-                        <div th:if="${not postInfo.createdDate.equals(postInfo.updatedDate)}">
-                            <div th:text="|수정됨 · ${updatedDateTimeDiff} 전|" style="font-size: 10px; color: gray;"></div>
-                        </div>
-                    </div>
-
-                    <div class="mb-4"></div>
-
-                    <!-- 댓글 표시 영역 -->
-                    <div id="comments-area"></div>
-                    <div id="selected-comment-id" style="display:none;"></div>
-                </div>
-            </div>
+    <!-- 게시글 좋아요 및 상호작용 버튼 영역 -->
+    <div class="container interaction-btns">
+      <div class="row g-3" style="margin-top: -25px; padding-left: 20px;">
+        <div class="col-1 post-like-area"></div>
+        <div class="col-1">
+          <a class="bi bi-chat comment-input-btn" style="font-size: 1.5rem; color: black;" href="#"
+             role="button"></a>
         </div>
-        <hr style="color: gray">
-
-        <!-- 게시글 좋아요 및 상호작용 버튼 영역 -->
-        <div class="container interaction-btns">
-            <div class="row g-3" style="margin-top: -25px; padding-left: 20px;">
-                <div class="col-1 post-like-area"></div>
-                <div class="col-1">
-                    <a class="bi bi-chat comment-input-btn" style="font-size: 1.5rem; color: black;" href="#"
-                       role="button"></a>
-                </div>
-                <div class="likers-area"></div>
-            </div>
-        </div>
-        <hr style="color: gray">
-
-        <div class="container">
-            <div class="row g-3" style="margin-top: -25px; padding-left: 20px;">
-                <div class="col-10">
-                    <label style="margin-left: 40px">
-                        <textarea id="comment-input-area" name="textfield" rows="3" placeholder="댓글 달기..."></textarea>
-                    </label>
-                </div>
-                <div class="col-2" style="text-align: right">
-                    <div class="comment-btn" th:text="게시"
-                         style="color: #a7cef5; font-weight: bold; font-size: 15px;"></div>
-                </div>
-            </div>
-        </div>
+        <div class="likers-area"></div>
+      </div>
     </div>
+    <hr style="color: gray">
 
-    <!-- 게시글 '좋아요' 클릭 유저 리스트 모달 -->
-    <div class="modal fade" id="post-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
-            <div class="modal-content">
-                <div class="modal-header" style="justify-content: center; height: 43px;">
-                    <p class="modal-title" style="font-weight: bold;">좋아요</p>
-                </div>
-                <div class="modal-body post-liker-list-scroll"></div>
-            </div>
+    <div class="container">
+      <div class="row g-3" style="margin-top: -25px; padding-left: 20px;">
+        <div class="col-10">
+          <label style="margin-left: 40px">
+            <textarea id="comment-input-area" name="textfield" rows="3" placeholder="댓글 달기..."></textarea>
+          </label>
         </div>
+        <div class="col-2" style="text-align: right">
+          <div class="comment-btn" th:text="게시"
+               style="color: #a7cef5; font-weight: bold; font-size: 15px;"></div>
+        </div>
+      </div>
     </div>
+  </div>
 
-    <!-- 댓글 '좋아요' 클릭 유저 리스트 모달 -->
-    <div class="modal fade" id="comment-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
-            <div class="modal-content">
-                <div class="modal-header" style="justify-content: center; height: 43px;">
-                    <p class="modal-title" style="font-weight: bold;">좋아요</p>
-                </div>
-                <div class="modal-body comment-liker-list-scroll"></div>
-            </div>
+  <!-- 게시글 '좋아요' 클릭 유저 리스트 모달 -->
+  <div class="modal fade" id="post-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+      <div class="modal-content">
+        <div class="modal-header" style="justify-content: center; height: 43px;">
+          <p class="modal-title" style="font-weight: bold;">좋아요</p>
         </div>
+        <div class="modal-body post-liker-list-scroll"></div>
+      </div>
     </div>
+  </div>
+
+  <!-- 댓글 '좋아요' 클릭 유저 리스트 모달 -->
+  <div class="modal fade" id="comment-liker-list-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+      <div class="modal-content">
+        <div class="modal-header" style="justify-content: center; height: 43px;">
+          <p class="modal-title" style="font-weight: bold;">좋아요</p>
+        </div>
+        <div class="modal-body comment-liker-list-scroll"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script th:inline="javascript" type="text/javascript">
 
-    $('.carousel-item').filter(':first').addClass('active');
+  $('.carousel-item').filter(':first').addClass('active');
 
-    let commentPage = 0;
-    let commentSize = 4;
-    let postLikerPage = 0;
-    let postLikerSize = 6;
-    let commentLikerPage = 0;
-    let commentLikerSize = 6;
+  let commentPage = 0;
+  let commentSize = 4;
+  let postLikerPage = 0;
+  let postLikerSize = 6;
+  let commentLikerPage = 0;
+  let commentLikerSize = 6;
 
-    /**
-     * 댓글 기능 관련 코드
-     */
-    //댓글 게시 버튼 활성화
-    async function activateCommentBtn() {
-        try {
-            const comment = $(this).val();
+  /**
+   * 댓글 기능 관련 코드
+   */
+  //댓글 게시 버튼 활성화
+  async function activateCommentBtn() {
+    try {
+      const comment = $(this).val();
 
-            if (comment === '') {
-                $('.comment-btn').css('color', '#a7cef5');
-                $('.comment-btn').css('cursor', 'default');
-                return;
-            }
-            $('.comment-btn').css('color', '#049efd');
-            $('.comment-btn').css('cursor', 'pointer');
+      if (comment === '') {
+        $('.comment-btn').css('color', '#a7cef5');
+        $('.comment-btn').css('cursor', 'default');
+        return;
+      }
+      $('.comment-btn').css('color', '#049efd');
+      $('.comment-btn').css('cursor', 'pointer');
 
-        } catch (e) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    } catch (e) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //댓글 게시
+  async function saveComment() {
+    try {
+      const comment = $('#comment-input-area').val();
+      if (comment === '') {
+        return;
+      }
+
+      await fetch(`http://localhost:8080/comment/post`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          postId: [[${postInfo.id}]],
+          parentCommentId: null,
+          content: comment
+        })
+      });
+
+      document.getElementById('comment-input-area').value = '';
+
+    } catch (e) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //게시글 댓글 조회
+  async function getPostComments(page, size) {
+    try {
+      $('.more-comments-btn').remove();
+
+      const postId = [[${postInfo.id}]];
+
+      const res = await fetch(`http://localhost:8080/comment/post?postId=${postId}&page=${page}&size=${size}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const commentSlice = JSON.parse(text);
+
+      const {content} = commentSlice;
+      for (const comment of content) {
+        const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate,
+          createdDateTimeDiff, updatedDateTimeDiff, deletedDateTimeDiff} = comment;
+        const {userId, profileImage} = userSimpleInfoDto;
+
+        $('#comments-area').append('<div class="col content-profile-img-box">' +
+          '<img class="profile-img rounded-circle" alt="프로필 이미지" /></div>' +
+          '<div class="col offset-md-1">' +
+          '<a class="user-id post-comment-box comment-user-id"></a>' +
+          '<span class="post-comment-box comment-content" style="word-wrap: break-word; font-size: 14px;"></span>' +
+          '<div style="float: right;">' +
+          '<span class="bi comment-like-btn" style="font-size: 1rem; color: black;" href="#" role="button"></span></div>' +
+          '<div class="comment-tail-area">' +
+          '<span class="comment-date" style="font-size: 10px; color: gray; margin-right: 15px;"></span>' +
+          '<span class="comment-likers" data-bs-toggle="modal" data-bs-target="#comment-liker-list-modal"' +
+          ' style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;"></span> ' +
+          '<span class="nested-comment-input-btn" ' +
+          'style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;">답글 달기</span></div>' +
+          '<span class="post-comment-id" style="display: none;"></span></div>' +
+          '<div class="mb-4"></div>');
+
+        $('#comments-area .comment-like-btn').last().addClass(`comment-like-btn-${id}`);
+        $('#comments-area .post-comment-id').last().text(id);
+        $('#comments-area .comment-likers').last().addClass(`comment-likers-${id}`);
+
+        const countPromise = countPostCommentLikers(id);
+        countPromise.then((count) => {
+          $(`#comments-area .comment-likers-${id}`).css('margin-right', '-5px');
+
+          if (count !== 0) {
+            $(`#comments-area .comment-likers-${id}`).last().append('<span>좋아요 </span>' +
+              '<span class="comment-liker-list"></span><span>개</span>');
+            $(`#comments-area .comment-likers-${id} .comment-liker-list`).last().text(count);
+            $(`#comments-area .comment-likers-${id}`).css('margin-right', '10px');
+          }
+
+        })
+
+        const likePromise = checkForLikeComment(id);
+        likePromise.then((like) => {
+          if (!like) {
+            $(`#comments-area .comment-like-btn-${id}`).last().addClass('bi-heart');
+          } else {
+            $(`#comments-area .comment-like-btn-${id}`).last().addClass('bi-heart-fill');
+          }
+        });
+
+        if (deletedDate !== null) {
+          $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
+          $('#comments-area .comment-user-id').last().text('');
+          $('#comments-area .comment-content').last().text('삭제된 댓글입니다.');
+          $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDateTimeDiff);
+          return;
         }
+
+        if (userSimpleInfoDto.profileImage === null) {
+          $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#comments-area img').last().attr('src', `/profile/${profileImage}`);
+        }
+
+        $('#comments-area .comment-user-id').last().text(userId);
+        $('#comments-area .comment-user-id').last().attr('href', `/user/${userId}`)
+
+        const commentContent = content.replace(/(\n|\r\n)/g, '<br/>');
+        $('#comments-area .comment-content').last().text(commentContent);
+
+        if (createdDate === updatedDate) {
+          $('#comments-area .comment-date').last().text(createdDateTimeDiff);
+        } else {
+          $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDateTimeDiff);
+        }
+      }
+
+      const {last} = commentSlice;
+      if (!last) {
+        $('#comments-area').append('<div style="margin: 0 auto; text-align: center;">' +
+          '<a class="more-comments-btn" style="cursor: pointer;"></a></div>');
+        $('#comments-area .more-comments-btn').last().text('댓글 더 보기');
+      } else {
+        $('.more-comments-btn').remove();
+      }
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //댓글 작성 시 게시 버튼 활성화
+  $('#comment-input-area').on('input', activateCommentBtn);
+
+  //댓글 게시 버튼 클릭 시 댓글 게시
+  $('.comment-btn').on('click', saveComment);
+
+  //페이지 로딩 시 댓글 첫 페이지 조회
+  $(function () {
+    $('#comments-area').empty();
+    getPostComments(commentPage, commentSize);
+    commentPage++;
+  });
+
+  //댓글 더 보기 버튼 클릭 시 다음 페이지 조회
+  $('#comments-area').on('click', '.more-comments-btn', function () {
+    getPostComments(commentPage, commentSize);
+    commentPage++;
+  });
+
+  //말풍선 아이콘 클릭 시 댓글 입력 창으로 커서 이동
+  $('.comment-input-btn').click(function () {
+    $('#comment-input-area').focus();
+  });
+
+
+  /**
+   * '좋아요' 관련 코드
+   */
+  // 좋아요 클릭 여부 확인
+  async function checkForLike() {
+    try {
+      const postId = [[${postInfo.id}]];
+      const res = await fetch(`http://localhost:8080/like/post?postId=${postId}`, {
+        method: "GET"
+      });
+
+      const text = await res.text();
+      const like = JSON.parse(text);
+
+      if (like) {
+        $('.interaction-btns .post-like-area').append('<a class="bi bi-heart-fill post-like-btn" ' +
+          'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+      } else {
+        $('.interaction-btns .post-like-area').append('<a class="bi bi-heart post-like-btn" ' +
+          'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+      }
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  // 게시글 '좋아요' 로직
+  async function likePost() {
+    try {
+      const postId = [[${postInfo.id}]];
+      const res = await fetch(`http://localhost:8080/like/post?postId=${postId}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const like = JSON.parse(text);
+
+      if (!like) {
+        await fetch(`http://localhost:8080/like/post`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postId: [[${postInfo.id}]],
+          })
+        });
+
+        $('.post-like-btn').removeClass('bi-heart');
+        $('.post-like-btn').addClass('bi-heart-fill');
+
+      } else {
+        await fetch(`http://localhost:8080/like/post/${postId}/deletion`, {
+          method: "POST"
+        });
+
+        $('.post-like-btn').removeClass('bi-heart-fill');
+        $('.post-like-btn').addClass('bi-heart');
+      }
+
+      countPostLikers();
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  //'좋아요' 클릭 유저 수 조회
+  async function countPostLikers() {
+    try {
+      const postId = [[${postInfo.id}]];
+      const res = await fetch(`http://localhost:8080/like/post/${postId}/count`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const count = JSON.parse(text);
+
+      if (count === 0) {
+        $('.likers-area').empty();
+        $('.likers-area').append('<div class="like-inducement">' +
+          '<span style="font-size: 14px;">가장 먼저 </span>' +
+          '<span id="like-btn-in-inducement" style="font-weight: bold; font-size: 14px; cursor: pointer;">좋아요</span>' +
+          '<span style="font-size: 14px;">를 눌러보세요!</span>' +
+          '</div>');
+      } else {
+        $('.likers-area').empty();
+
+        const res = await fetch(`http://localhost:8080/like/post/${postId}?page=${0}&size=${3}`, {
+          method: "GET"
+        });
+        const text = await res.text();
+        const likerSlice = JSON.parse(text);
+        const {content} = likerSlice;
+
+        $('.likers-area').append('<div id="likers-profile-area" style="cursor: pointer;"' +
+          ' data-bs-toggle="modal" data-bs-target="#post-liker-list-modal"></div>')
+
+        content.forEach((likerInfo) => {
+          const {profileImage} = likerInfo;
+          $('.likers-area #likers-profile-area').append('<div class="col liker-profile-img-box">' +
+            '<img class="profile-img rounded-circle" alt="프로필 이미지" /></div>');
+
+          if (profileImage === null) {
+            $('.likers-area img').last().attr('src', `/images/home/sample5.jpg`);
+          } else {
+            $('.likers-area img').last().attr('src', `/profile/${profileImage}`);
+          }
+        })
+
+        $('.likers-area .liker-profile-img-box').last().css('margin-right', '15px');
+
+        const liker = content[0];
+        const {userId} = liker;
+
+        if (count === 1) {
+          $('.likers-area').append('<span id="representative-user-id" ' +
+            'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
+            '<span style="font-size: 14px;">님이 </span>' +
+            '<span style="font-size: 14px;">좋아합니다.</span>');
+          $('#representative-user-id').text(`${userId}`);
+        } else {
+          $('.likers-area').append('<div class="col"><span id="representative-user-id" ' +
+            'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
+            '<span style="font-size: 14px;">님 </span>' +
+            '<span id="number-of-likers" data-bs-toggle="modal" data-bs-target="#post-liker-list-modal" ' +
+            'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
+            '<span id="liker-list" style="font-size: 14px;">이 좋아합니다.</span></div>');
+
+          const num = count - 1;
+          $('#representative-user-id').text(`${userId}`);
+          $('#number-of-likers').text(`외 ${num}명`);
+        }
+      }
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
 
-    //댓글 게시
-    async function saveComment() {
-        try {
-            const comment = $('#comment-input-area').val();
-            if (comment === '') {
-                return;
-            }
+  }
 
-            await fetch(`http://localhost:8080/comment/post`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    postId: [[${postInfo.id}]],
-                    parentCommentId: null,
-                    content: comment
-                })
-            });
+  //'좋아요' 클릭 유저 리스트 조회
+  async function getPostLikers() {
+    try {
+      const postId = [[${postInfo.id}]];
+      const res = await fetch(`http://localhost:8080/like/post/${postId}?page=${postLikerPage}&size=${postLikerSize}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const likerSlice = JSON.parse(text);
+      const {content} = likerSlice;
 
-            document.getElementById('comment-input-area').value = '';
+      content.forEach((likerInfo) => {
+        const {userId, nickname, profileImage} = likerInfo;
 
-        } catch (e) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+        $('#post-liker-list-modal .modal-body').append('<div class="liker-list">' +
+          '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
+          '<div class="liker-list-profile-box">' +
+          '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+          '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
+          '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
+
+        if (profileImage === null) {
+          $('#post-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#post-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
         }
+
+        $('#post-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
+        $('#post-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
+      })
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    //게시글 댓글 조회
-    async function getPostComments(page, size) {
-        try {
-            $('.more-comments-btn').remove();
+  // '좋아요' 여부 확인 및 '좋아요' 누른 유저 조회
+  $(function () {
+    checkForLike();
+    countPostLikers();
+  });
 
-            const postId = [[${postInfo.id}]];
+  // '좋아요' 누른 유저 아이디 클릭 시 해당 유저의 페이지로 이동
+  $('.likers-area').on('click', '#representative-user-id', function () {
+    const userId = $('#representative-user-id').text();
+    location.replace(`/user/${userId}`);
+  });
 
-            const res = await fetch(`http://localhost:8080/comment/post?postId=${postId}&page=${page}&size=${size}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const commentSlice = JSON.parse(text);
+  // '좋아요' 버튼 클릭
+  $('.post-like-area').on('click', '.post-like-btn', likePost);
+  // 좋아요 0개 일 시, '좋아요' 유도 문구 내 버튼 클릭
+  $('.likers-area').on('click', '#like-btn-in-inducement', likePost);
 
-            const {content} = commentSlice;
-            for (const comment of content) {
-                const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate} = comment;
-                const {userId, profileImage} = userSimpleInfoDto;
+  // '좋아요' 클릭 유저 조회
+  $('.likers-area').on('click', '#number-of-likers', function () {
+    $('#post-liker-list-modal .modal-body').empty();
+    postLikerPage = 0;
+    getPostLikers();
+  });
+  $('.likers-area').on('click', '#likers-profile-area', function () {
+    $('#post-liker-list-modal .modal-body').empty();
+    postLikerPage = 0;
+    getPostLikers();
+  });
 
-                $('#comments-area').append('<div class="col content-profile-img-box">' +
-                    '<img class="profile-img rounded-circle" alt="프로필 이미지" /></div>' +
-                    '<div class="col offset-md-1">' +
-                    '<a class="user-id post-comment-box comment-user-id"></a>' +
-                    '<span class="post-comment-box comment-content" style="word-wrap: break-word; font-size: 14px;"></span>' +
-                    '<div style="float: right;">' +
-                    '<span class="bi comment-like-btn" style="font-size: 1rem; color: black;" href="#" role="button"></span></div>' +
-                    '<div class="comment-tail-area">' +
-                    '<span class="comment-date" style="font-size: 10px; color: gray; margin-right: 15px;"></span>' +
-                    '<span class="comment-likers" data-bs-toggle="modal" data-bs-target="#comment-liker-list-modal"' +
-                    ' style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;"></span> ' +
-                    '<span class="nested-comment-input-btn" ' +
-                    'style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;">답글 달기</span></div>' +
-                    '<span class="post-comment-id" style="display: none;"></span></div>' +
-                    '<div class="mb-4"></div>');
+  //'좋아요' 클릭 유저 리스트 내 유저 프로필 클릭 시 해당 유저 페이지로 이동
+  $(document).on('click', '.liker-list', function () {
+    const userId = $(this).find('span:first').text();
+    console.log(userId);
+    location.replace(`/user/${userId}`);
+  })
 
-                $('#comments-area .comment-like-btn').last().addClass(`comment-like-btn-${id}`);
-                $('#comments-area .post-comment-id').last().text(id);
-                $('#comments-area .comment-likers').last().addClass(`comment-likers-${id}`);
-
-                const countPromise = countPostCommentLikers(id);
-                countPromise.then((count) => {
-                    $(`#comments-area .comment-likers-${id}`).css('margin-right', '-5px');
-
-                    if (count !== 0) {
-                        $(`#comments-area .comment-likers-${id}`).last().append('<span>좋아요 </span>' +
-                            '<span class="comment-liker-list"></span><span>개</span>');
-                        $(`#comments-area .comment-likers-${id} .comment-liker-list`).last().text(count);
-                        $(`#comments-area .comment-likers-${id}`).css('margin-right', '10px');
-                    }
-
-                })
-
-                const likePromise = checkForLikeComment(id);
-                likePromise.then((like) => {
-                    if (!like) {
-                        $(`#comments-area .comment-like-btn-${id}`).last().addClass('bi-heart');
-                    } else {
-                        $(`#comments-area .comment-like-btn-${id}`).last().addClass('bi-heart-fill');
-                    }
-                });
-
-                if (deletedDate !== null) {
-                    $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
-                    $('#comments-area .comment-user-id').last().text('');
-                    $('#comments-area .comment-content').last().text('삭제된 댓글입니다.');
-                    $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDate);
-                    return;
-                }
-
-                if (userSimpleInfoDto.profileImage === null) {
-                    $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
-                } else {
-                    $('#comments-area img').last().attr('src', `/profile/${profileImage}`);
-                }
-
-                $('#comments-area .comment-user-id').last().text(userId);
-                $('#comments-area .comment-user-id').last().attr('href', `/user/${userId}`)
-
-                const commentContent = content.replace(/(\n|\r\n)/g, '<br/>');
-                $('#comments-area .comment-content').last().text(commentContent);
-
-                if (createdDate === updatedDate) {
-                    $('#comments-area .comment-date').last().text(createdDate);
-                } else {
-                    $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDate);
-                }
-            }
-
-            const {last} = commentSlice;
-            if (!last) {
-                $('#comments-area').append('<div style="margin: 0 auto; text-align: center;">' +
-                    '<a class="more-comments-btn" style="cursor: pointer;"></a></div>');
-                $('#comments-area .more-comments-btn').last().text('댓글 더 보기');
-            } else {
-                $('.more-comments-btn').remove();
-            }
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
+  //'좋아요' 클릭 유저 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
+  $('.post-liker-list-scroll').scroll(function () {
+    const modalScroll = $('.post-liker-list-scroll');
+    if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
+      postLikerPage++;
+      console.log("scroll bottom");
+      getPostLikers();
     }
+  });
 
-    //댓글 작성 시 게시 버튼 활성화
-    $('#comment-input-area').on('input', activateCommentBtn);
+  /**
+   * 댓글 좋아요 기능 관련 코드
+   */
+  async function checkForLikeComment(postCommentId) {
+    try {
+      const res = await fetch(`http://localhost:8080/like/post-comment?postCommentId=${postCommentId}`, {
+        method: "GET"
+      });
 
-    //댓글 게시 버튼 클릭 시 댓글 게시
-    $('.comment-btn').on('click', saveComment);
+      const text = await res.text();
+      return JSON.parse(text);
 
-    //페이지 로딩 시 댓글 첫 페이지 조회
-    $(function () {
-        $('#comments-area').empty();
-        getPostComments(commentPage, commentSize);
-        commentPage++;
-    });
-
-    //댓글 더 보기 버튼 클릭 시 다음 페이지 조회
-    $('#comments-area').on('click', '.more-comments-btn', function () {
-        getPostComments(commentPage, commentSize);
-        commentPage++;
-    });
-
-    //말풍선 아이콘 클릭 시 댓글 입력 창으로 커서 이동
-    $('.comment-input-btn').click(function () {
-        $('#comment-input-area').focus();
-    });
-
-
-    /**
-     * '좋아요' 관련 코드
-     */
-    // 좋아요 클릭 여부 확인
-    async function checkForLike() {
-        try {
-            const postId = [[${postInfo.id}]];
-            const res = await fetch(`http://localhost:8080/like/post?postId=${postId}`, {
-                method: "GET"
-            });
-
-            const text = await res.text();
-            const like = JSON.parse(text);
-
-            if (like) {
-                $('.interaction-btns .post-like-area').append('<a class="bi bi-heart-fill post-like-btn" ' +
-                    'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
-            } else {
-                $('.interaction-btns .post-like-area').append('<a class="bi bi-heart post-like-btn" ' +
-                    'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
-            }
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    // 게시글 '좋아요' 로직
-    async function likePost() {
-        try {
-            const postId = [[${postInfo.id}]];
-            const res = await fetch(`http://localhost:8080/like/post?postId=${postId}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const like = JSON.parse(text);
+  async function likePostComment() {
+    try {
+      const postCommentId = $(this).parents('.offset-md-1').find('span:last').text();
 
-            if (!like) {
-                await fetch(`http://localhost:8080/like/post`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        postId: [[${postInfo.id}]],
-                    })
-                });
+      const res = await fetch(`http://localhost:8080/like/post-comment?postCommentId=${postCommentId}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const like = JSON.parse(text);
 
-                $('.post-like-btn').removeClass('bi-heart');
-                $('.post-like-btn').addClass('bi-heart-fill');
+      if (!like) {
+        await fetch(`http://localhost:8080/like/post-comment`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            postCommentId: postCommentId,
+          })
+        });
 
-            } else {
-                await fetch(`http://localhost:8080/like/post/${postId}/deletion`, {
-                    method: "POST"
-                });
+        $(this).removeClass('bi-heart');
+        $(this).addClass('bi-heart-fill');
 
-                $('.post-like-btn').removeClass('bi-heart-fill');
-                $('.post-like-btn').addClass('bi-heart');
-            }
+      } else {
+        await fetch(`http://localhost:8080/like/post-comment/${postCommentId}/deletion`, {
+          method: "POST"
+        });
 
-            countPostLikers();
+        $(this).removeClass('bi-heart-fill');
+        $(this).addClass('bi-heart');
+      }
 
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      const countPromise = countPostCommentLikers(postCommentId);
+      countPromise.then((count) => {
+        $(`#comments-area .comment-likers-${postCommentId}`).last().empty();
+        $(`#comments-area .comment-likers-${postCommentId}`).css('margin-right', '-5px');
+
+        if (count !== 0) {
+          $(`#comments-area .comment-likers-${postCommentId}`).last().append('<span>좋아요 </span>' +
+            '<span class="comment-liker-list"></span><span>개</span>');
+          $(`#comments-area .comment-likers-${postCommentId} .comment-liker-list`).last().text(count);
+          $(`#comments-area .comment-likers-${postCommentId}`).css('margin-right', '10px');
         }
+      })
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    //'좋아요' 클릭 유저 수 조회
-    async function countPostLikers() {
-        try {
-            const postId = [[${postInfo.id}]];
-            const res = await fetch(`http://localhost:8080/like/post/${postId}/count`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const count = JSON.parse(text);
+  async function countPostCommentLikers(postCommentId) {
+    try {
+      const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}/count`, {
 
-            if (count === 0) {
-                $('.likers-area').empty();
-                $('.likers-area').append('<div class="like-inducement">' +
-                    '<span style="font-size: 14px;">가장 먼저 </span>' +
-                    '<span id="like-btn-in-inducement" style="font-weight: bold; font-size: 14px; cursor: pointer;">좋아요</span>' +
-                    '<span style="font-size: 14px;">를 눌러보세요!</span>' +
-                    '</div>');
-            } else {
-                $('.likers-area').empty();
-
-                const res = await fetch(`http://localhost:8080/like/post/${postId}?page=${0}&size=${3}`, {
-                    method: "GET"
-                });
-                const text = await res.text();
-                const likerSlice = JSON.parse(text);
-                const {content} = likerSlice;
-
-                $('.likers-area').append('<div id="likers-profile-area" style="cursor: pointer;"' +
-                    ' data-bs-toggle="modal" data-bs-target="#post-liker-list-modal"></div>')
-
-                content.forEach((likerInfo) => {
-                    const {profileImage} = likerInfo;
-                    $('.likers-area #likers-profile-area').append('<div class="col liker-profile-img-box">' +
-                        '<img class="profile-img rounded-circle" alt="프로필 이미지" /></div>');
-
-                    if (profileImage === null) {
-                        $('.likers-area img').last().attr('src', `/images/home/sample5.jpg`);
-                    } else {
-                        $('.likers-area img').last().attr('src', `/profile/${profileImage}`);
-                    }
-                })
-
-                $('.likers-area .liker-profile-img-box').last().css('margin-right', '15px');
-
-                const liker = content[0];
-                const {userId} = liker;
-
-                if (count === 1) {
-                    $('.likers-area').append('<span id="representative-user-id" ' +
-                        'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
-                        '<span style="font-size: 14px;">님이 </span>' +
-                        '<span style="font-size: 14px;">좋아합니다.</span>');
-                    $('#representative-user-id').text(`${userId}`);
-                } else {
-                    $('.likers-area').append('<div class="col"><span id="representative-user-id" ' +
-                        'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
-                        '<span style="font-size: 14px;">님 </span>' +
-                        '<span id="number-of-likers" data-bs-toggle="modal" data-bs-target="#post-liker-list-modal" ' +
-                        'style="font-weight: bold; font-size: 14px; cursor: pointer;"></span>' +
-                        '<span id="liker-list" style="font-size: 14px;">이 좋아합니다.</span></div>');
-
-                    const num = count - 1;
-                    $('#representative-user-id').text(`${userId}`);
-                    $('#number-of-likers').text(`외 ${num}명`);
-                }
-            }
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
-
+        method: "GET"
+      });
+      const text = await res.text();
+      return JSON.parse(text);
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    //'좋아요' 클릭 유저 리스트 조회
-    async function getPostLikers() {
-        try {
-            const postId = [[${postInfo.id}]];
-            const res = await fetch(`http://localhost:8080/like/post/${postId}?page=${postLikerPage}&size=${postLikerSize}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const likerSlice = JSON.parse(text);
-            const { content } = likerSlice;
+  async function getFirstCommentLikers(postCommentId) {
+    try {
+      commentLikerPage = 0;
+      const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}?page=${commentLikerPage}&size=${commentLikerSize}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const likerSlice = JSON.parse(text);
 
-            content.forEach((likerInfo) => {
-                const { userId, nickname, profileImage } = likerInfo;
+      const {content} = likerSlice;
 
-                $('#post-liker-list-modal .modal-body').append('<div class="liker-list">' +
-                    '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
-                    '<div class="liker-list-profile-box">' +
-                    '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
-                    '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
-                    '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
+      $('#comment-liker-list-modal .modal-body').empty();
+      content.forEach((likerInfo) => {
+        const {userId, nickname, profileImage} = likerInfo;
 
-                if (profileImage === null) {
-                    $('#post-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
-                } else {
-                    $('#post-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
-                }
+        $('#comment-liker-list-modal .modal-body').append('<div class="liker-list">' +
+          '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
+          '<div class="liker-list-profile-box">' +
+          '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+          '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
+          '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
 
-                $('#post-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
-                $('#post-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
-            })
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+        if (profileImage === null) {
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
         }
+
+        $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
+        $('#comment-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
+      })
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    // '좋아요' 여부 확인 및 '좋아요' 누른 유저 조회
-    $(function () {
-        checkForLike();
-        countPostLikers();
-    });
+  async function getAdditionalCommentLikers(postCommentId) {
+    try {
+      const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}?page=${commentLikerPage}&size=${commentLikerSize}`, {
+        method: "GET"
+      });
+      const text = await res.text();
+      const likerSlice = JSON.parse(text);
 
-    // '좋아요' 누른 유저 아이디 클릭 시 해당 유저의 페이지로 이동
-    $('.likers-area').on('click', '#representative-user-id', function () {
-        const userId = $('#representative-user-id').text();
-        location.replace(`/user/${userId}`);
-    });
+      const {content} = likerSlice;
 
-    // '좋아요' 버튼 클릭
-    $('.post-like-area').on('click', '.post-like-btn', likePost);
-    // 좋아요 0개 일 시, '좋아요' 유도 문구 내 버튼 클릭
-    $('.likers-area').on('click', '#like-btn-in-inducement', likePost);
+      content.forEach((likerInfo) => {
+        const {userId, nickname, profileImage} = likerInfo;
 
-    // '좋아요' 클릭 유저 조회
-    $('.likers-area').on('click', '#number-of-likers', function() {
-        $('#post-liker-list-modal .modal-body').empty();
-        postLikerPage = 0;
-        getPostLikers();
-    });
-    $('.likers-area').on('click', '#likers-profile-area', function() {
-        $('#post-liker-list-modal .modal-body').empty();
-        postLikerPage = 0;
-        getPostLikers();
-    });
+        $('#comment-liker-list-modal .modal-body').append('<div class="liker-list">' +
+          '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
+          '<div class="liker-list-profile-box">' +
+          '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+          '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
+          '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
 
-    //'좋아요' 클릭 유저 리스트 내 유저 프로필 클릭 시 해당 유저 페이지로 이동
-    $(document).on('click', '.liker-list', function() {
-        const userId = $(this).find('span:first').text();
-        console.log(userId);
-        location.replace(`/user/${userId}`);
-    })
-
-    //'좋아요' 클릭 유저 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
-    $('.post-liker-list-scroll').scroll(function () {
-        const modalScroll = $('.post-liker-list-scroll');
-        if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
-            postLikerPage++;
-            console.log("scroll bottom");
-            getPostLikers();
+        if (profileImage === null) {
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
+        } else {
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
         }
-    });
 
-    /**
-     * 댓글 좋아요 기능 관련 코드
-     */
-    async function checkForLikeComment(postCommentId) {
-        try {
-            const res = await fetch(`http://localhost:8080/like/post-comment?postCommentId=${postCommentId}`, {
-                method: "GET"
-            });
+        $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
+        $('#comment-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
+      })
 
-            const text = await res.text();
-            return JSON.parse(text);
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
     }
+  }
 
-    async function likePostComment() {
-        try {
-            const postCommentId = $(this).parents('.offset-md-1').find('span:last').text();
+  // 댓글 '좋아요' 버튼 클릭
+  $('#comments-area').on('click', '.comment-like-btn', likePostComment);
+  $('#comments-area').on('click', '.comment-likers', function () {
+    $("#selected-comment-id").val($(this).parents('.offset-md-1').find('span:last').text())
+    const postCommentId = $("#selected-comment-id").val()
+    getFirstCommentLikers(postCommentId);
+  });
 
-            const res = await fetch(`http://localhost:8080/like/post-comment?postCommentId=${postCommentId}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const like = JSON.parse(text);
+  // 댓글 '좋아요' 클릭 유저 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
+  $('.comment-liker-list-scroll').scroll(function () {
+    const modalScroll = $('.comment-liker-list-scroll');
 
-            if (!like) {
-                await fetch(`http://localhost:8080/like/post-comment`, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify({
-                        postCommentId: postCommentId,
-                    })
-                });
-
-                $(this).removeClass('bi-heart');
-                $(this).addClass('bi-heart-fill');
-
-            } else {
-                await fetch(`http://localhost:8080/like/post-comment/${postCommentId}/deletion`, {
-                    method: "POST"
-                });
-
-                $(this).removeClass('bi-heart-fill');
-                $(this).addClass('bi-heart');
-            }
-
-            const countPromise = countPostCommentLikers(postCommentId);
-            countPromise.then((count) => {
-                $(`#comments-area .comment-likers-${postCommentId}`).last().empty();
-                $(`#comments-area .comment-likers-${postCommentId}`).css('margin-right', '-5px');
-
-                if (count !== 0) {
-                    $(`#comments-area .comment-likers-${postCommentId}`).last().append('<span>좋아요 </span>' +
-                        '<span class="comment-liker-list"></span><span>개</span>');
-                    $(`#comments-area .comment-likers-${postCommentId} .comment-liker-list`).last().text(count);
-                    $(`#comments-area .comment-likers-${postCommentId}`).css('margin-right', '10px');
-                }
-            })
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
+    if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
+      commentLikerPage++;
+      console.log("scroll bottom");
+      getAdditionalCommentLikers($("#selected-comment-id").val());
     }
-
-    async function countPostCommentLikers(postCommentId) {
-        try {
-            const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}/count`, {
-
-                method: "GET"
-            });
-            const text = await res.text();
-            return JSON.parse(text);
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
-    }
-
-    async function getFirstCommentLikers(postCommentId) {
-        try {
-            commentLikerPage = 0;
-            const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}?page=${commentLikerPage}&size=${commentLikerSize}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const likerSlice = JSON.parse(text);
-
-            const { content } = likerSlice;
-
-            $('#comment-liker-list-modal .modal-body').empty();
-            content.forEach((likerInfo) => {
-                const { userId, nickname, profileImage } = likerInfo;
-
-                $('#comment-liker-list-modal .modal-body').append('<div class="liker-list">' +
-                    '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
-                    '<div class="liker-list-profile-box">' +
-                    '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
-                    '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
-                    '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
-
-                if (profileImage === null) {
-                    $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
-                } else {
-                    $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
-                }
-
-                $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
-                $('#comment-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
-            })
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
-    }
-
-    async function getAdditionalCommentLikers(postCommentId) {
-        try {
-            const res = await fetch(`http://localhost:8080/like/post-comment/${postCommentId}?page=${commentLikerPage}&size=${commentLikerSize}`, {
-                method: "GET"
-            });
-            const text = await res.text();
-            const likerSlice = JSON.parse(text);
-
-            const { content } = likerSlice;
-
-            content.forEach((likerInfo) => {
-                const { userId, nickname, profileImage } = likerInfo;
-
-                $('#comment-liker-list-modal .modal-body').append('<div class="liker-list">' +
-                    '<div class="dropdown-item container" style="float: left; cursor: pointer">' +
-                    '<div class="liker-list-profile-box">' +
-                    '<img class="liker-list-profile-img rounded-circle" alt="유저 프로필" /></div>' +
-                    '<div style="margin-top: -1%;"><span class="liker-user-id" style="font-weight: bold; font-size: 15px;"></span></div>' +
-                    '<div style="margin-top: -2%;"><span class="liker-user-nickname" style="color: gray; font-size: 14px;"></span></div></div></div>');
-
-                if (profileImage === null) {
-                    $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
-                } else {
-                    $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
-                }
-
-                $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
-                $('#comment-liker-list-modal .liker-user-nickname').last().text(`${nickname}`);
-            })
-
-        } catch (err) {
-            console.log(err);
-            alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
-        }
-    }
-
-    // 댓글 '좋아요' 버튼 클릭
-    $('#comments-area').on('click', '.comment-like-btn', likePostComment);
-    $('#comments-area').on('click', '.comment-likers', function () {
-        $("#selected-comment-id").val($(this).parents('.offset-md-1').find('span:last').text())
-        const postCommentId = $("#selected-comment-id").val()
-        getFirstCommentLikers(postCommentId);
-    });
-
-    // 댓글 '좋아요' 클릭 유저 리스트 모달 창 내 스크롤 최하단 도달 시 다음 페이지 조회
-    $('.comment-liker-list-scroll').scroll(function () {
-        const modalScroll = $('.comment-liker-list-scroll');
-
-        if (Math.floor(modalScroll[0].scrollHeight - modalScroll.scrollTop()) === modalScroll.outerHeight()) {
-            commentLikerPage++;
-            console.log("scroll bottom");
-            getAdditionalCommentLikers($("#selected-comment-id").val());
-        }
-    });
+  });
 </script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>

@@ -344,7 +344,8 @@
 
       const {content} = commentSlice;
       for (const comment of content) {
-        const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate} = comment;
+        const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate,
+          createdDateTimeDiff, updatedDateTimeDiff, deletedDateTimeDiff} = comment;
         const {userId, profileImage} = userSimpleInfoDto;
 
         $('#comments-area').append('<div class="col content-profile-img-box">' +
@@ -393,7 +394,7 @@
           $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
           $('#comments-area .comment-user-id').last().text('');
           $('#comments-area .comment-content').last().text('삭제된 댓글입니다.');
-          $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDate);
+          $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDateTimeDiff);
           return;
         }
 
@@ -410,15 +411,11 @@
         $('#comments-area .comment-content').last().text(commentContent);
 
         if (createdDate === updatedDate) {
-          $('#comments-area .comment-date').last().text(createdDate);
+          $('#comments-area .comment-date').last().text(createdDateTimeDiff);
         } else {
-          $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDate);
+          $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDateTimeDiff);
         }
       }
-      // content.forEach((comment) => {
-      //
-      //
-      // });
 
       const {last} = commentSlice;
       if (!last) {

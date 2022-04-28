@@ -10,14 +10,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.StopWatch;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
 import toy.cookingstar.entity.PostImage;
@@ -26,6 +24,7 @@ import toy.cookingstar.repository.PostImageRepository;
 import toy.cookingstar.repository.PostRepository;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostImageUrlDto;
+import toy.cookingstar.web.controller.post.dto.PostSaveDto;
 
 @Slf4j
 @Service
@@ -41,25 +40,21 @@ public class PostService {
      * 포스트 생성
      */
     @Transactional
-    public void create(PostCreateDto postCreateDto) throws IllegalArgumentException {
+    public Long create(PostCreateDto postCreateDto) throws IllegalArgumentException {
 
-        Member user = memberRepository.findByUserId(postCreateDto.getUserId());
-
-        if (user == null) {
-            throw new IllegalArgumentException();
-        }
+        Member user = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(IllegalArgumentException::new);
 
         //게시물 이미지 생성
         AtomicInteger priority = new AtomicInteger(1);
-        List<PostImage> postImages = postCreateDto.getStoredImages().stream()
-                .map(image -> PostImage.createPostImage(image, priority.getAndIncrement()))
+        List<PostImage> postImages = postCreateDto.getPostImageUrls().stream()
+                .map(url -> PostImage.createPostImage(url, priority.getAndIncrement()))
                 .collect(Collectors.toList());
 
         //게시물 생성
         Post post = Post.createPost(user, postCreateDto.getContent(), postCreateDto.getStatus(), postImages);
 
         //게시물 저장
-        postRepository.save(post);
+        return postRepository.save(post).getId();
     }
 
     /**

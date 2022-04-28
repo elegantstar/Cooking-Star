@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.CollectionUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -14,19 +13,16 @@ import toy.cookingstar.entity.Post;
 import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostInfoDto;
 import toy.cookingstar.service.user.UserService;
-import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.form.DeleteForm;
 import toy.cookingstar.web.controller.post.form.PostEditForm;
 import toy.cookingstar.web.controller.post.form.PostForm;
+import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.List;
 import java.util.Objects;
 
 @Slf4j
@@ -40,35 +36,7 @@ public class PostController {
 
     @GetMapping("/post/create")
     public String createForm(@ModelAttribute("post") PostForm form) {
-        return "post/createForm";
-    }
-
-    @PostMapping("/post/create")
-    public String create(@Validated @ModelAttribute("post") PostForm form, BindingResult bindingResult,
-                         @Login Member loginUser) throws IOException {
-
-        form.removeEmptyImage();
-
-        if (CollectionUtils.isEmpty(form.getImages())) {
-            bindingResult.reject("post.images.empty");
-        }
-
-        if (bindingResult.hasErrors()) {
-            log.error("errors={}", bindingResult);
-            return "post/createForm";
-        }
-
-        Member member = userService.getUserInfoByUserId(loginUser.getUserId());
-
-        // 서버에 이미지 업로드
-        List<String> storedImages = imageStoreService.storeImages(form.getImages());
-
-        PostCreateDto postCreateDto = new PostCreateDto(loginUser.getUserId(), form.getContent(), form.getStatus(), storedImages);
-
-        // DB에 post 데이터 저장 + postImage 데이터 저장
-        postService.create(postCreateDto);
-
-        return "redirect:/myPage";
+        return "post/createPage";
     }
 
     @GetMapping("/post/{postId}")
@@ -144,7 +112,7 @@ public class PostController {
 
         if (bindingResult.hasErrors()) {
             log.error("errors={}", bindingResult);
-            return "post/createForm";
+            return "error-page/404";
         }
 
         Post post = postService.findById(postId);
@@ -182,5 +150,10 @@ public class PostController {
         }
 
         return dayDiff + "일";
+    }
+
+    @GetMapping("/post/create-sample-page")
+    public String createSamplePage() {
+        return "post/createPage";
     }
 }

@@ -68,17 +68,18 @@
       <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
     </div>
 
-    <div class="img-upload-box">
-      <div class="img-box">
-        <div class="mb-3" style="font-size: 20px;">이미지를 선택해 주세요!</div>
-        <div>이미지 크기 제한 30MB</div>
-        <div class="mb-3">업로드 개수 제한 10개</div>
-        <input type="file" multiple="multiple" name="images" accept=".jpg, .gif, .png">
-      </div>
-    </div>
-
     <div class="row g-3 align-items-center">
-      <div class="col-12">
+
+      <div class="d-grid img-upload-box">
+        <div class="img-box">
+          <div class="mb-3" style="font-size: 20px;">이미지를 선택해 주세요!</div>
+          <div>이미지 크기 제한 30MB</div>
+          <div class="mb-3">업로드 개수 제한 10개</div>
+          <input type="file" multiple="multiple" name="images" accept=".jpg, .gif, .png">
+        </div>
+      </div>
+
+      <div class="col">
         <textarea id="content" th:field="*{content}" th:errorclass="field-error" class="form-control content-upload-box" placeholder="내용을 입력해 주세요!"></textarea>
       </div>
       <div class="field-error" th:errors="*{content}">
