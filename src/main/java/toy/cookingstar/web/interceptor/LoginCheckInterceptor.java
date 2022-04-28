@@ -26,7 +26,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
         if (session == null || session.getAttribute(SessionConst.LOGIN_MEMBER) == null) {
             log.info("미인증 사용자 요청");
             //로그인 후에는 다시 기존 화면으로 되돌아 올 수 있도록, 원래 요청 경로인 RequestURI를 파라미터로 전달
-            response.sendRedirect("/login?redirectURL=" + requestURI);
+            response.sendRedirect("/?redirectURL=" + requestURI);
 
             //미인증 사용자는 더이상 다음으로 진행하지 않고 끝낸다.
             return false;

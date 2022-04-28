@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -23,18 +22,13 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @GetMapping("/login")
-    public String loginForm(@ModelAttribute("loginForm") LoginForm form) {
-        return "login/loginForm";
-    }
-
-    @PostMapping("/login")
+    @PostMapping("/")
     public String login(@Validated @ModelAttribute LoginForm form, BindingResult bindingResult,
                         @RequestParam(defaultValue = "/") String redirectURL,
                         HttpServletRequest request) {
 
         if (bindingResult.hasErrors()) {
-            return "login/loginForm";
+            return "home";
         }
 
         //로그인 로직
@@ -42,7 +36,7 @@ public class LoginController {
 
         if (loginMember == null) {
             bindingResult.reject("login.fail");
-            return "login/loginForm";
+            return "home";
         }
 
         //세션이 있으면 세션 반환,없으면 신규 세션 생성
