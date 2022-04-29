@@ -14,6 +14,14 @@
       .img-standard {
         width: 100%;
       }
+      #footer {
+          position:absolute;
+          bottom: 0;
+          width:100%;
+          height: 50px;
+          line-height: 50px;
+          background: #000000;
+      }
   </style>
 
 </head>
@@ -79,11 +87,11 @@
 
         <li class="p-3 border" style="background-color: white;">
           <div class="mb-2"></div>
-          <div style="text-align: center; margin-bottom: 4px; color: gray;">아이디 또는 비밀번호를 잊으셨다면?</div>
+          <div style="text-align: center; margin-bottom: 4px; color: gray;">테스트용 계정을 원하신다면👇🏻</div>
           <div class="mb-2" style="text-align: center">
-            <a th:href="@{/member/join}" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px;">아이디 찾기</a>
+            <a class="test-id" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px; cursor: pointer;">tester</a>
             <a style="text-decoration: none; font-weight: bold; color: #a1a0a0; font-size: 17px;">/</a>
-            <a th:href="@{/member/join}" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px;">비밀번호 찾기</a>
+            <a class="test-pw" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px; cursor: pointer;">123TESTpassword!@</a>
           </div>
         </li>
       </ul>
@@ -91,6 +99,36 @@
     </div>
   </div>
 </div>
+
+<div id="footer" style="display: none;">
+  <p class="text-area" style="color: white; padding-left: 2%"></p>
+</div>
+
+<script>
+  function copyText(text) {
+    navigator.clipboard.writeText(text);
+  }
+
+  $('.test-id').on('click', function () {
+    const text = $(this).text();
+    copyText(text);
+    $('.text-area').text('테스트 아이디를 클립보드에 복사했습니다.');
+    $('#footer').slideDown('slow');
+    setTimeout(function () {
+      $('#footer').slideUp('slow');
+    }, 2000);
+  });
+
+  $('.test-pw').on('click', function () {
+    const text = $(this).text();
+    copyText(text);
+    $('.text-area').text('테스트 비밀번호를 클립보드에 복사했습니다.');
+    $('#footer').slideDown('slow');
+    setTimeout(function () {
+      $('#footer').slideUp('slow');
+    }, 2000);
+  });
+</script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
 <script th:replace="fragment/nav :: navbarScript"></script>
