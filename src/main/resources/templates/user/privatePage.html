@@ -443,7 +443,7 @@
   // 팔로잉 관계 삭제
   async function deleteFollowing(followingUserId, followedUserId) {
     try {
-      await fetch(`http://localhost:8080/following/deletion`, {
+      await fetch(`http://localhost:8080/following/unfollow`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

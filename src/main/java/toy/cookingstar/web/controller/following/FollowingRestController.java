@@ -74,7 +74,7 @@ public class FollowingRestController {
     }
 
     // 언팔로잉
-    @PostMapping("/deletion")
+    @PostMapping("/unfollow")
     public ResponseEntity<?> deleteFollowing(@Login Member loginUser,
                                              @RequestBody FollowingDeleteDto followingDeleteDto) throws Exception {
         if (!StringUtils.equals(loginUser.getUserId(), followingDeleteDto.getFollowingUserId())
