@@ -24,7 +24,7 @@ public class PostCommentService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void create(Long loginMemberId, Long postId, Long parentCommentId, String content) {
+    public Long create(Long loginMemberId, Long postId, Long parentCommentId, String content) {
 
         Member loginUser = memberRepository.findById(loginMemberId).orElseThrow(IllegalArgumentException::new);
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
@@ -33,7 +33,7 @@ public class PostCommentService {
         //PostComment 생성
         PostComment comment = PostComment.createComment(loginUser, post, parentComment, content);
 
-        postCommentRepository.save(comment);
+        return postCommentRepository.save(comment).getId();
     }
 
     public Slice<PostComment> getCommentsByPostId(Long postId, int page, int size) {
@@ -78,5 +78,11 @@ public class PostCommentService {
 
         //대댓글이 없는 경우 db 테이블에서 삭제.
         postCommentRepository.delete(postComment);
+    }
+
+    public PostComment getCommentByPostId(Long postCommentId) throws Exception {
+        PostComment comment = postCommentRepository.findById(postCommentId).orElseThrow(IllegalArgumentException::new);
+        comment.getMember().getUserId();
+        return comment;
     }
 }

@@ -132,7 +132,7 @@
         // 검색 결과 노출
         recentHistory.forEach((searchedUser) => {
           const { userId, nickname, profileImage } = searchedUser;
-          $('#search-bar-dropdown').append('<div class="search-history">' +
+          $('#search-bar-dropdown').append('<div class="search-history" style="cursor: pointer;">' +
                                            '<div class="dropdown-item container search-result" style="float: left; width: 90%; cursor: pointer">' +
                                            '<div class="searched-profile-box">' +
                                            '<img class="searched-profile-img rounded-circle" alt="유저 프로필" /></div>' +

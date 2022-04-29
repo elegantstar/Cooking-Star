@@ -26,13 +26,19 @@ public class PostCommentRestController {
                                                @RequestBody PostCommentSaveDto postCommentSaveDto) throws Exception {
 
         if (postCommentSaveDto.getParentCommentId() == null) {
-            postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(), 0L, postCommentSaveDto.getContent());
-            return ResponseEntity.ok().build();
+            Long postCommentId = postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(), 0L, postCommentSaveDto.getContent());
+            return ResponseEntity.ok().body(postCommentId);
         }
 
-        postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(),
+        Long postCommentId = postCommentService.create(loginUser.getId(), postCommentSaveDto.getPostId(),
                 postCommentSaveDto.getParentCommentId(), postCommentSaveDto.getContent());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok().body(postCommentId);
+    }
+
+    @GetMapping("/postComment")
+    public ResponseEntity<?> getCommentByPostId(@RequestParam Long postCommentId) throws Exception {
+        PostCommentDto postCommentDto = PostCommentDto.of(postCommentService.getCommentByPostId(postCommentId));
+        return ResponseEntity.ok().body(postCommentDto);
     }
 
     @GetMapping
@@ -46,13 +52,13 @@ public class PostCommentRestController {
     }
 
     @GetMapping("/{postId}/count")
-    public ResponseEntity<Integer> countCommentsByPostId(@PathVariable("postId") Long postId) {
+    public ResponseEntity<?> countCommentsByPostId(@PathVariable("postId") Long postId) {
         int count = postCommentService.countComments(postId);
         return ResponseEntity.ok().body(count);
     }
 
     @GetMapping("/nested")
-    public ResponseEntity<Slice<PostNestedCommentDto>> getNestedCommentsById(@RequestParam Long postId,
+    public ResponseEntity<?> getNestedCommentsById(@RequestParam Long postId,
                                                                              @RequestParam("postCommentId") Long parentCommentId,
                                                                              @RequestParam int page, @RequestParam int size) {
 

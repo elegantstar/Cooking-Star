@@ -34,7 +34,7 @@
     <h1>신규 회원 가입을 축하합니다!</h1>
   </div>
 
-  <form class="mb-5" action="/templates/login/loginForm.html" th:action="@{/login}" th:object="${member}" method="get">
+  <form class="mb-5" action="/templates/home.html" th:action="@{/}" th:object="${member}" method="get">
 
     <label for="userId" th:text="#{label.welcome.userId}" class="form-label">회원 ID</label>
     <input type="text" id="userId" th:field="*{userId}"
