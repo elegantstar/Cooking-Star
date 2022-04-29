@@ -85,7 +85,15 @@
     .following-list-scroll::-webkit-scrollbar {
       display: none;
     }
-
+    .unfollow-btn {
+        text-align: center;
+        color: #db0505;
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: -1%;
+        margin-bottom: -1%;
+        cursor: pointer;
+    }
   </style>
 
 </head>
@@ -165,7 +173,33 @@
   </div>
 </div>
 
+<!-- 언팔로우 모달 -->
+<div class="modal fade" id="unfollow-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content: center;">
+        <div class="modal-title" id="exampleModalLabel" th:text="|${userPageInfo.getUserId()}님을 언팔로우 할까요?|"></div>
+      </div>
+      <div class="modal-body">
+        <div class="unfollow-btn" data-bs-dismiss="modal">언팔로우</div>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <div data-bs-dismiss="modal" style="font-size: 14px; cursor: pointer;">취소</div>
+      </div>
+    </div>
+  </div>
+
 <script th:inline="javascript" type="text/javascript">
+
+  /**
+   * 팔로잉 아이콘 클릭 시 나타나는 모달에서 언팔로우 버튼 클릭 시 언팔로우
+   */
+  $(document).on('click', '.unfollow-btn', function () {
+    const followingUserId = [[${session.loginMember.userId}]];
+    const followedUserId = [[${userPageInfo.userId}]];
+    unfollow(followingUserId, followedUserId);
+  });
+
 
   /**
    * 게시글 무한 스크롤 관련 코드
@@ -245,8 +279,8 @@
                 ' type="button" style="margin-bottom: 15px;">맞팔로우</button>');
       } else {
         //TODO: 팔로잉 체크 아이콘
-        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" ' +
-                'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" data-bs-toggle="modal" ' +
+          'data-bs-target="#unfollow-modal" style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
       }
     }));
   });
@@ -331,7 +365,7 @@
       $(this).removeClass('follow-btn');
 
     } else {
-      deleteFollowing(followingUserId, followedUserId);
+      unfollow(followingUserId, followedUserId);
       $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
@@ -478,8 +512,8 @@
 
         $('button').remove('.follow-btn');
 
-        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" ' +
-            'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" data-bs-toggle="modal" ' +
+          'data-bs-target="#unfollow-modal" style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
       }
     }));
   });
@@ -494,9 +528,9 @@
   }
 
   // 팔로잉 관계 삭제
-  async function deleteFollowing(followingUserId, followedUserId) {
+  async function unfollow(followingUserId, followedUserId) {
     try {
-      await fetch(`http://localhost:8080/following/deletion`, {
+      await fetch(`http://localhost:8080/following/unfollow`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -506,6 +540,31 @@
           followedUserId: followedUserId
         })
       });
+
+      if (followedUserId === [[${userPageInfo.userId}]]) {
+        const countPromise = countFollowers(followedUserId);
+        countPromise.then((count) => {
+          $('.num-of-follower').text(`팔로워 ` + count);
+        });
+
+        $('.follow-btn-area').children('a').remove();
+
+        const followingRelationshipPromise = checkForFollowingRelationship(followedUserId);
+        followingRelationshipPromise.then((value => {
+          const {following, followed} = value;
+
+          if (!following && !followed) {
+            //TODO: 팔로우 버튼
+            $('.follow-btn-area').append('<button class="btn btn-primary btn-sm follow-btn"' +
+              ' type="button" style="margin-bottom: 15px;">팔로우</button>');
+
+          } else if (!following && followed) {
+            //TODO: 맞팔로우 버튼
+            $('.follow-btn-area').append('<button class="btn btn-primary btn-sm follow-btn"' +
+              ' type="button" style="margin-bottom: 15px;">맞팔로우</button>');
+          }
+        }))
+      }
 
     } catch (err) {
       console.log(err);
@@ -524,7 +583,7 @@
       $(this).removeClass('follow-btn');
 
     } else {
-      deleteFollowing(followingUserId, followedUserId);
+      unfollow(followingUserId, followedUserId);
       $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
