@@ -296,7 +296,7 @@
             $(`#follower-list-modal .follower-${userId}`).text('팔로잉');
           } else {
             $(`#follower-list-modal .follower-${userId}`).text('팔로우');
-            $(`#follower-list-modal .follower-${userId}`).addClass('follow-btn-in-list');
+            $(`#follower-list-modal .follower-${userId}`).addClass('follow-btn');
           }
         }))
       })
@@ -325,14 +325,14 @@
     const followingUserId = [[${session.loginMember.userId}]];
     const followedUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
 
-    if ($(this).hasClass('.follow-btn')) {
+    if ($(this).hasClass('follow-btn')) {
       follow(followedUserId);
       $(this).text('팔로잉');
-      $(this).removeClass('.follow-btn');
+      $(this).removeClass('follow-btn');
 
     } else {
       deleteFollowing(followingUserId, followedUserId);
-      $(this).addClass('.follow-btn');
+      $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
   })
@@ -392,7 +392,7 @@
             $(`#following-list-modal .following-${userId}`).text('팔로잉');
           } else {
             $(`#following-list-modal .following-${userId}`).text('팔로우');
-            $(`#following-list-modal .following-${userId}`).addClass('follow-btn-in-list');
+            $(`#following-list-modal .following-${userId}`).addClass('follow-btn');
           }
         }))
       })
@@ -518,14 +518,14 @@
     const followingUserId = [[${session.loginMember.userId}]];
     const followedUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
 
-    if ($(this).hasClass('.follow-btn')) {
+    if ($(this).hasClass('follow-btn')) {
       follow(followedUserId);
       $(this).text('팔로잉');
-      $(this).removeClass('.follow-btn');
+      $(this).removeClass('follow-btn');
 
     } else {
       deleteFollowing(followingUserId, followedUserId);
-      $(this).addClass('.follow-btn');
+      $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
   })
