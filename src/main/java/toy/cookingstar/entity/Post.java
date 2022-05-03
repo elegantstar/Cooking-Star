@@ -32,6 +32,12 @@ public class Post extends BaseTimeEntity {
     @Column(name = "status")
     private StatusType status;
 
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<PostLiker> postLikers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post", orphanRemoval = true)
+    private List<PostComment> postComments = new ArrayList<>();
+
     //연관 관계 편의 메서드
     public void addPostImage(PostImage postImage) {
         postImages.add(postImage);

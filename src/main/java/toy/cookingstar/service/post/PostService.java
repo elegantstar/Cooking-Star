@@ -83,7 +83,7 @@ public class PostService {
             throw new IllegalArgumentException();
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdDate"));
         Slice<Post> pages = postRepository.findPosts(user.getId(), statusType, pageable);
 
         List<Long> postIds = pages.getContent().stream().map(Post::getId).collect(Collectors.toList());
