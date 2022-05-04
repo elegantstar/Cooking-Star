@@ -204,16 +204,25 @@
 
   // 등록 버튼 클릭 시 게시글 등록 후 게시물 페이지로 이동
   $(document).on('click', '#post-btn', function () {
-    const promise = posting("POSTING");
-    promise.then((postId) => {
-      location.replace(`/post/${postId}`);
-    })
 
+    if (storedImageUrls.length !== 0) {
+      const promise = posting("POSTING");
+      promise.then((postId) => {
+        location.replace(`/post/${postId}`);
+      })
+    } else {
+      alert("게시글 등록을 위해서 이미지는 적어도 한 개 이상 업로드 해야 합니다.");
+    }
   });
 
+  // 임시저장 버튼 클릭 시 게시글 임시 저장 후 마이페이지로 이동
   $(document).on('click', '#temp-store-btn', function () {
-    posting("TEMPORARY_STORAGE");
-    location.replace('/myPage');
+    if (storedImageUrls.length !== 0) {
+      posting("TEMPORARY_STORAGE");
+      location.replace('/myPage');
+    } else {
+      alert("이미지는 적어도 한 개 이상 업로드 해야 합니다.");
+    }
   });
 
   // 취소 버튼 클릭 시 마이 페이지로 이동

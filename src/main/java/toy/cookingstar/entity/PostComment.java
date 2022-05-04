@@ -5,12 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static javax.persistence.FetchType.*;
+import static javax.persistence.FetchType.LAZY;
 
 @Entity
 @Getter
@@ -37,6 +36,9 @@ public class PostComment extends BaseTimeEntity {
 
     @Column(name = "deleted_date")
     private LocalDateTime deletedDate;
+
+    @OneToMany(mappedBy = "postComment", orphanRemoval = true)
+    private List<PostCommentLiker> postCommentLikers = new ArrayList<>();
 
     public static PostComment createComment(Member member, Post post, PostComment parentComment, String content) {
         PostComment postComment = new PostComment();
