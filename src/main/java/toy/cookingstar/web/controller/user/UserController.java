@@ -236,7 +236,7 @@ public class UserController {
     @GetMapping("/profile/{imageUrl}")
     public Resource userProfileImage(@PathVariable String imageUrl, HttpServletResponse response)
             throws MalformedURLException {
-        response.setHeader("Cache-Control", "max-age=60");
+        response.setHeader("Cache-Control", "max-age=120");
         return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
                 .getFullPath(ImageType.PROFILE, imageUrl));
     }
@@ -248,7 +248,7 @@ public class UserController {
     @GetMapping("/image/{imageUrl}")
     public Resource userPageImage(@PathVariable String imageUrl, HttpServletResponse response)
             throws MalformedURLException {
-        response.setHeader("Cache-Control", "max-age=60");
+        response.setHeader("Cache-Control", "max-age=120");
         return new UrlResource("https://d9voyddk1ma4s.cloudfront.net/" + imageStoreService
                 .getFullPath(ImageType.POST, imageUrl));
     }
