@@ -137,6 +137,9 @@ public class PostService {
         return posts;
     }
 
+    /**
+     * 유저 페이지 포스트 이미지 조회
+     */
     public Slice<Post> getUserPagePostImageSlice(String userId, Long lastReadPostId,
                                                  int page, int size, StatusType statusType) throws Exception {
 

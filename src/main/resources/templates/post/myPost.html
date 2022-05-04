@@ -195,7 +195,7 @@
          data-bs-interval="false">
       <div class="carousel-inner img-box">
         <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
-          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지"/>
+          <img th:src="|${image.getUrl()}|" class="img-standard" alt="포스트 이미지"/>
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval"
@@ -213,7 +213,7 @@
     <!-- 우측 상단 Profile 영역 -->
     <div class="profile-img-box">
       <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-        <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지"/>
+        <img class="profile-img rounded-circle" th:src="|${userInfo.profileImage}|" alt="프로필 이미지"/>
       </div>
       <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
         <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지"/>
@@ -260,7 +260,7 @@
           <!-- 게시자 프로필 이미지 영역 -->
           <div class="col content-profile-img-box">
             <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-              <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|"
+              <img class="profile-img rounded-circle" th:src="|${userInfo.profileImage}|"
                    alt="프로필 이미지"/>
             </div>
             <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
@@ -533,7 +533,7 @@
         if (userSimpleInfoDto.profileImage === null) {
           $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comments-area img').last().attr('src', `/profile/${profileImage}`);
+          $('#comments-area img').last().attr('src', `${profileImage}`);
         }
 
         $('#comments-area .comment-user-id').last().text(userId);
@@ -620,7 +620,7 @@
       if (userSimpleInfoDto.profileImage === null) {
         $('#comments-area img').first().attr('src', `/images/home/sample5.jpg`);
       } else {
-        $('#comments-area img').first().attr('src', `/profile/${profileImage}`);
+        $('#comments-area img').first().attr('src', `${profileImage}`);
       }
 
       $('#comments-area .comment-user-id').first().text(userId);
@@ -805,7 +805,7 @@
           if (profileImage === null) {
             $('.likers-area img').last().attr('src', `/images/home/sample5.jpg`);
           } else {
-            $('.likers-area img').last().attr('src', `/profile/${profileImage}`);
+            $('.likers-area img').last().attr('src', `${profileImage}`);
           }
         })
 
@@ -864,7 +864,7 @@
         if (profileImage === null) {
           $('#post-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#post-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#post-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#post-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
@@ -1031,7 +1031,7 @@
         if (profileImage === null) {
           $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
@@ -1067,7 +1067,7 @@
         if (profileImage === null) {
           $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);

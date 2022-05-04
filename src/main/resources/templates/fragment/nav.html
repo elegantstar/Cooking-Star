@@ -142,7 +142,7 @@
           if (profileImage === null) {
             $('#search-bar-dropdown img').last().attr('src', `/images/home/sample5.jpg`);
           } else {
-            $('#search-bar-dropdown img').last().attr('src', `/profile/${profileImage}`);
+            $('#search-bar-dropdown img').last().attr('src', `${profileImage}`);
           }
           $('#search-bar-dropdown .searched-user-id').last().text(`${userId}`);
           $('#search-bar-dropdown .searched-user-nickname').last().text(`${nickname}`);
@@ -231,7 +231,7 @@
           if (profileImage === null) {
             $('#search-bar-dropdown img').last().attr('src', `/images/home/sample5.jpg`);
           } else {
-            $('#search-bar-dropdown img').last().attr('src', `/profile/${profileImage}`);
+            $('#search-bar-dropdown img').last().attr('src', `${profileImage}`);
           }
           $('#search-bar-dropdown .searched-user-id').last().text(`${userId}`);
           $('#search-bar-dropdown .searched-user-nickname').last().text(`${nickname}`);
@@ -297,16 +297,16 @@
                                         '<a><img class="img-preview" alt="임시보관 이미지" /></a>' +
                                         '<span class="temp-stored-date" style="margin-right: 1em;"></span>' +
                                         '<span class="temp-stored-content"></span></div>');
-          $('#temp-stored-list img').last().attr('src', `/image/${imageUrl}`);
+          $('#temp-stored-list img').last().attr('src', `${imageUrl}`);
           $('#temp-stored-list input').last().attr('value', `${id}`);
 
           if (content.length >= 15) {
-            $('#temp-stored-list .temp-stored-content').last().text(`${content.substr(0, 30)}...`);
+            $('#temp-stored-list .temp-stored-content').last().text(`${content.substring(0, 30)}...`);
           } else {
             $('#temp-stored-list .temp-stored-content').last().text(`${content}`);
           }
 
-          $('#temp-stored-list .temp-stored-date').last().text(`${createdDate.substr(0, 10)}`);
+          $('#temp-stored-list .temp-stored-date').last().text(`${createdDate.substring(0, 10)}`);
         });
 
         $('#temp-stored-list input').first().attr('checked', true);

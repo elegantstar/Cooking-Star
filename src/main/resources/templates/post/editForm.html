@@ -76,7 +76,7 @@
     <div id="carouselExampleInterval" class="carousel slide img-upload-box" data-bs-ride="carousel" data-bs-interval="false">
       <div class="carousel-inner img-box">
         <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
-          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+          <img th:src="|${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">

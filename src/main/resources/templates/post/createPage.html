@@ -111,6 +111,7 @@
 
   // 이미지 업로드 후 이미지 Url 배열에 저장
   let storedImageUrls = [];
+  let storedImageUris = [];
   let hasError = false;
 
   // 이미지 업로드
@@ -161,9 +162,10 @@
         </div>`);
 
       storedImageUrls.forEach((storedImageUrl) => {
+        storedImageUris.push(storedImageUrl.substring(60));
         $('.carousel-inner').append(`
           <a class="carousel-item">
-            <img src="/image/${storedImageUrl}" class="img-standard" alt="포스트 이미지"/>
+            <img src="${storedImageUrl}" class="img-standard" alt="포스트 이미지"/>
           </a>`)
       });
 
@@ -179,7 +181,6 @@
 
   async function posting(status) {
     const content = $('.content-input-area').val();
-
     try {
       const res = await fetch(`http://localhost:8080/posting`, {
         method: "POST",
@@ -188,7 +189,7 @@
         },
         body: JSON.stringify({
           content: content,
-          postImageUrls: storedImageUrls,
+          postImageUris: storedImageUris,
           status: status
         })
       });

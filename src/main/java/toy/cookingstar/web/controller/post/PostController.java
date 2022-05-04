@@ -10,12 +10,11 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
-import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.post.dto.PostInfoDto;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
+import toy.cookingstar.web.controller.post.dto.PostInfoDto;
 import toy.cookingstar.web.controller.post.form.DeleteForm;
 import toy.cookingstar.web.controller.post.form.PostEditForm;
 import toy.cookingstar.web.controller.post.form.PostForm;
@@ -32,7 +31,6 @@ public class PostController {
 
     private final UserService userService;
     private final PostService postService;
-    private final ImageStoreService imageStoreService;
 
     @GetMapping("/post/create")
     public String createForm(@ModelAttribute("post") PostForm form) {

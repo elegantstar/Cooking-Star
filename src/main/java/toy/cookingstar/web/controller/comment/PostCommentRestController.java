@@ -38,6 +38,13 @@ public class PostCommentRestController {
     @GetMapping("/postComment")
     public ResponseEntity<?> getCommentByPostId(@RequestParam Long postCommentId) throws Exception {
         PostCommentDto postCommentDto = PostCommentDto.of(postCommentService.getCommentByPostId(postCommentId));
+        String dir = postCommentDto.getUserSimpleInfoDto().getProfileImage().substring(0, 10);
+
+        if (postCommentDto.getUserSimpleInfoDto().getProfileImage() != null) {
+            postCommentDto.getUserSimpleInfoDto().setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir
+                    + "/" + postCommentDto.getUserSimpleInfoDto().getProfileImage());
+        }
+
         return ResponseEntity.ok().body(postCommentDto);
     }
 
@@ -47,6 +54,14 @@ public class PostCommentRestController {
 
         Slice<PostCommentDto> commentDtoPage = postCommentService.getCommentsByPostId(postId, page, size)
                 .map(PostCommentDto::of);
+
+        for (PostCommentDto dto : commentDtoPage) {
+            if (dto.getUserSimpleInfoDto().getProfileImage() != null) {
+                String dir = dto.getUserSimpleInfoDto().getProfileImage().substring(0, 10);
+                dto.getUserSimpleInfoDto().setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir
+                        + "/" + dto.getUserSimpleInfoDto().getProfileImage());
+            }
+        }
 
         return ResponseEntity.ok().body(commentDtoPage);
     }
@@ -65,6 +80,14 @@ public class PostCommentRestController {
         Slice<PostNestedCommentDto> nestedCommentDtoPage = postCommentService
                 .getNestedCommentsByPostId(postId, parentCommentId, page, size)
                 .map(PostNestedCommentDto::of);
+
+        for (PostNestedCommentDto dto : nestedCommentDtoPage) {
+            if (dto.getUserSimpleInfoDto().getProfileImage() != null) {
+                String dir = dto.getUserSimpleInfoDto().getProfileImage().substring(0, 10);
+                dto.getUserSimpleInfoDto().setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir
+                        + "/" + dto.getUserSimpleInfoDto().getProfileImage());
+            }
+        }
 
         return ResponseEntity.ok().body(nestedCommentDtoPage);
     }

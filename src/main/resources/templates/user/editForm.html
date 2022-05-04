@@ -277,7 +277,7 @@
       });
       const data = await res.json();
       const { imageUrl } = data;
-      $('.profile-img').attr('src', `/profile/${imageUrl}`);
+      $('.profile-img').attr('src', `${imageUrl}`);
 
     } catch (err) {
       console.log(err);
