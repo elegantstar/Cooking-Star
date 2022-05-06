@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,10 +17,10 @@ import toy.cookingstar.service.imagestore.ImageStoreService;
 import toy.cookingstar.service.imagestore.ImageType;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
-import toy.cookingstar.service.post.dto.PostImageUrlDto;
 import toy.cookingstar.service.user.GenderType;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.service.user.dto.PwdUpdateDto;
+import toy.cookingstar.web.controller.post.dto.PostAndImageUrlDto;
 import toy.cookingstar.web.controller.user.dto.UserInfoDto;
 import toy.cookingstar.service.user.dto.UserInfoUpdateDto;
 import toy.cookingstar.utils.HashUtil;
@@ -33,6 +34,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.util.List;
 
 @Slf4j
 @Controller
@@ -49,7 +51,7 @@ public class UserController {
      * 유저 페이지
      */
     @GetMapping("/user/{userId}")
-    public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) {
+    public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) throws Exception {
 
         // 요청 받은 userId와 일치하는 회원이 있는지 확인 후 데이터 가져오기 -> 일치하는 회원이 없을 경우 exception 처리 필요함.
         Member member = userService.getUserInfoByUserId(userId);
@@ -65,12 +67,8 @@ public class UserController {
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        PostImageUrlDto postImageUrls = getPostImageUrls(userPageInfo, StatusType.POSTING);
-        if (postImageUrls == null) {
-            return "user/userPage";
-        }
-        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postIds", postImageUrls.getPostIds());
+        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userPageInfo.getUserId(), StatusType.POSTING);
+        model.addAttribute("postImageUrls", postImageUrls);
 
         int totalFollower = followingService.countFollowers(member.getId());
         int totalFollowing = followingService.countFollowings(member.getId());
@@ -85,7 +83,7 @@ public class UserController {
      * 마이 페이지
      */
     @GetMapping("/myPage")
-    public String myPage(@Login Member loginUser, Model model) {
+    public String myPage(@Login Member loginUser, Model model) throws Exception {
 
         Member member = userService.getUserInfoByUserId(loginUser.getUserId());
         UserInfoDto userInfo = UserInfoDto.of(member);
@@ -95,13 +93,8 @@ public class UserController {
         int totalPost = postService.countPosts(userInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        //getPostImageUrls로 ImageUrl과 postId을 받음
-        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, StatusType.POSTING);
-        if (postImageUrls == null) {
-            return "user/myPage";
-        }
-        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postIds", postImageUrls.getPostIds());
+        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userInfo.getUserId(), StatusType.POSTING);
+        model.addAttribute("postImageUrls", postImageUrls);
 
         int totalFollower = followingService.countFollowers(userInfo.getId());
         int totalFollowing = followingService.countFollowings(userInfo.getId());
@@ -193,7 +186,7 @@ public class UserController {
     }
 
     @GetMapping("/myPage/private")
-    public String privatePage(@Login Member loginUser, Model model) {
+    public String privatePage(@Login Member loginUser, Model model) throws Exception {
 
         Member member = userService.getUserInfoByUserId(loginUser.getUserId());
         UserInfoDto userInfo = UserInfoDto.of(member);
@@ -203,15 +196,8 @@ public class UserController {
         int totalPost = postService.countPosts(userInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        //getPostImageUrls로 ImageUrl과 postId을 받음
-        PostImageUrlDto postImageUrls = getPostImageUrls(userInfo, StatusType.PRIVATE);
-
-        if (postImageUrls == null) {
-            return "user/privatePage";
-        }
-
-        model.addAttribute("imageUrls", postImageUrls.getImageUrls());
-        model.addAttribute("postIds", postImageUrls.getPostIds());
+        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userInfo.getUserId(), StatusType.PRIVATE);
+        model.addAttribute("postImageUrls", postImageUrls);
 
         int totalFollower = followingService.countFollowers(userInfo.getId());
         int totalFollowing = followingService.countFollowings(userInfo.getId());
@@ -222,11 +208,20 @@ public class UserController {
     }
 
     // 페이지 구성 이미지 조회
-    private PostImageUrlDto getPostImageUrls(UserInfoDto userInfoDto, StatusType statusType) {
+    private List<PostAndImageUrlDto> getPostImageUrls(String userId, StatusType statusType) throws Exception {
         int page = 0;
         int size = 12;
+        Long lastReadPostId = null;
 
-        return postService.getUserPagePostImages(userInfoDto.getUserId(), page, size, statusType);
+        Slice<PostAndImageUrlDto> postSlice = postService.getUserPagePostImageSlice(userId, lastReadPostId, page, size, statusType)
+                .map(PostAndImageUrlDto::of);
+
+        for (PostAndImageUrlDto dto : postSlice) {
+            String dir = dto.getImageUrl().substring(0, 10);
+            dto.setImageUrl("https://d9voyddk1ma4s.cloudfront.net/images/post/" + dir + "/" + dto.getImageUrl());
+        }
+
+        return postSlice.getContent();
     }
 
     /**

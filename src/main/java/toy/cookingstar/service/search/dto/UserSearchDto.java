@@ -1,11 +1,11 @@
 package toy.cookingstar.service.search.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.SearchHistory;
 
-@Getter
+@Data
 @AllArgsConstructor
 public class UserSearchDto {
     private String userId;

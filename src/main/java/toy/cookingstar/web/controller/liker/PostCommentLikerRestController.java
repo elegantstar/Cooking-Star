@@ -30,9 +30,15 @@ public class PostCommentLikerRestController {
     }
 
     @GetMapping("/{postCommentId}")
-    public ResponseEntity<Slice<UserSearchDto>> getPostLikers(@PathVariable("postCommentId") Long postCommentId, int page, int size) {
-        Slice<UserSearchDto> postLikerSlice = postCommentLikerService.getLikers(postCommentId, page, size).map(UserSearchDto::of);
-        return ResponseEntity.ok().body(postLikerSlice);
+    public ResponseEntity<Slice<UserSearchDto>> getPostCommentLikers(@PathVariable("postCommentId") Long postCommentId, int page, int size) {
+        Slice<UserSearchDto> postCommentLikerSlice = postCommentLikerService.getLikers(postCommentId, page, size).map(UserSearchDto::of);
+        for (UserSearchDto userSearchDto : postCommentLikerSlice) {
+            if (userSearchDto.getProfileImage() != null) {
+                String dir = userSearchDto.getProfileImage().substring(0, 10);
+                userSearchDto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + userSearchDto.getProfileImage());
+            }
+        }
+        return ResponseEntity.ok().body(postCommentLikerSlice);
     }
 
     @GetMapping

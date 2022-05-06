@@ -32,10 +32,18 @@ public class PostRestController {
     @GetMapping("/post/temporary-storage")
     public List<TempStoredPostDto> temporaryStorage(@Login Member loginUser) {
         Member member = userService.getUserInfoByUserId(loginUser.getUserId());
-        return postService.getTemporaryStorage(member.getId(), StatusType.TEMPORARY_STORAGE, 0, 7)
+
+        List<TempStoredPostDto> tempStoredPosts = postService.getTemporaryStorage(member.getId(), StatusType.TEMPORARY_STORAGE, 0, 7)
                 .stream()
                 .map(TempStoredPostDto::of)
                 .collect(Collectors.toList());
+
+        for (TempStoredPostDto tempStoredPost : tempStoredPosts) {
+            String dir = tempStoredPost.getImageUrl().substring(0, 10);
+            tempStoredPost.setImageUrl("https://d9voyddk1ma4s.cloudfront.net/images/post/" + dir + "/" + tempStoredPost.getImageUrl());
+        }
+
+        return tempStoredPosts;
     }
 
     @GetMapping("/post")
@@ -46,6 +54,13 @@ public class PostRestController {
 
         Slice<PostAndImageUrlDto> postSlice = postService.getUserPagePostImageSlice(userId, lastReadPostId, 0, size, statusType)
                 .map(PostAndImageUrlDto::of);
+
+        for (PostAndImageUrlDto dto : postSlice) {
+            if (dto.getImageUrl() != null) {
+                String dir = dto.getImageUrl().substring(0, 10);
+                dto.setImageUrl("https://d9voyddk1ma4s.cloudfront.net/images/post/" + dir + "/" + dto.getImageUrl());
+            }
+        }
         return ResponseEntity.ok().body(postSlice);
     }
 
@@ -59,7 +74,7 @@ public class PostRestController {
     @PostMapping("/posting")
     public ResponseEntity<?> createPost(@Login Member loginUser, @RequestBody PostSaveDto postSaveDto) throws Exception {
         PostCreateDto postCreateDto = new PostCreateDto(loginUser.getId(), postSaveDto.getContent(),
-                postSaveDto.getPostImageUrls(), postSaveDto.getStatus());
+                postSaveDto.getPostImageUris(), postSaveDto.getStatus());
         Long postId = postService.create(postCreateDto);
         return ResponseEntity.ok().body(postId);
     }
