@@ -2,7 +2,6 @@ package toy.cookingstar.service.post;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Async;
@@ -28,9 +27,6 @@ public class PostDeleteService {
     private final PostCommentRepository postCommentRepository;
     private final PostCommentLikerRepository postCommentLikerRepository;
 
-    /**
-     * Transaction 애너테이션 제거 -> 굳이 Rollback을 할 이유가 없음.
-     */
     @Transactional
     @Async(value = "postAsyncThreadPool")
     public void deletePost(Long loginMemberId, Long postId) throws Exception {
