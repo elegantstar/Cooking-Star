@@ -6,7 +6,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import toy.cookingstar.entity.Member;
+import toy.cookingstar.entity.Post;
+import toy.cookingstar.service.comment.PostCommentService;
 import toy.cookingstar.service.imagestore.ImageStoreService;
+import toy.cookingstar.service.liker.PostCommentLikerServiceImpl;
+import toy.cookingstar.service.liker.PostLikerServiceImpl;
+import toy.cookingstar.service.post.PostDeleteService;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
 import toy.cookingstar.service.post.dto.PostCreateDto;
@@ -14,11 +19,13 @@ import toy.cookingstar.service.post.dto.TempStoredPostDto;
 import toy.cookingstar.service.user.UserService;
 import toy.cookingstar.web.argumentresolver.Login;
 import toy.cookingstar.web.controller.post.dto.PostAndImageUrlDto;
+import toy.cookingstar.web.controller.post.dto.PostDeleteDto;
 import toy.cookingstar.web.controller.post.dto.PostSaveDto;
 import toy.cookingstar.web.controller.post.dto.UploadedImageUrlDto;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @RestController
@@ -28,6 +35,7 @@ public class PostRestController {
     private final UserService userService;
     private final PostService postService;
     private final ImageStoreService imageStoreService;
+    private final PostDeleteService postDeleteService;
 
     @GetMapping("/post/temporary-storage")
     public List<TempStoredPostDto> temporaryStorage(@Login Member loginUser) {
@@ -77,5 +85,16 @@ public class PostRestController {
                 postSaveDto.getPostImageUris(), postSaveDto.getStatus());
         Long postId = postService.create(postCreateDto);
         return ResponseEntity.ok().body(postId);
+    }
+
+    @DeleteMapping("/post")
+    public ResponseEntity<?> deletePost(@Login Member loginUser, @RequestBody PostDeleteDto postDeleteDto) throws Exception {
+        if (!Objects.equals(loginUser.getId(), postDeleteDto.getMemberId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        postService.changeIntoDeletedState(postDeleteDto.getPostId());
+        postDeleteService.deletePost(postDeleteDto.getMemberId(), postDeleteDto.getPostId());
+
+        return ResponseEntity.ok().build();
     }
 }

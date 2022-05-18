@@ -9,7 +9,8 @@ public enum StatusType implements StatusEnum {
 
     POSTING("POSTING"),
     TEMPORARY_STORAGE("TEMPORARY_STORAGE"),
-    PRIVATE("PRIVATE");
+    PRIVATE("PRIVATE"),
+    DELETED("DELETED");
 
     private final String status;
 

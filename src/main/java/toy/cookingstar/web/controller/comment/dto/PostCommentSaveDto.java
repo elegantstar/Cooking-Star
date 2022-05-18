@@ -1,8 +1,9 @@
 package toy.cookingstar.web.controller.comment.dto;
 
+import lombok.Data;
 import lombok.Getter;
 
-@Getter
+@Data
 public class PostCommentSaveDto {
 
     private Long postId;
