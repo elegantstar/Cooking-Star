@@ -4,7 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
+import toy.cookingstar.common.RedisCacheSets;
 import toy.cookingstar.entity.Member;
+
+import static toy.cookingstar.common.RedisCacheSets.*;
 
 @Data
 @NoArgsConstructor

@@ -372,7 +372,7 @@
 <script th:inline="javascript" type="text/javascript">
 
   //게시물 삭제
-  async function deletePost(memberId, postId) {
+  async function deletePost(memberId, postId, status) {
     await fetch(`http://localhost:8080/post`, {
       method: "DELETE",
       headers: {
@@ -380,7 +380,8 @@
       },
       body: JSON.stringify({
         memberId: memberId,
-        postId: postId
+        postId: postId,
+        status: status
       })
     });
   }
@@ -390,7 +391,8 @@
     if (confirm("게시물을 삭제하면 다시 복구할 수 없습니다. 정말로 삭제할까요?")) {
       const memberId = [[${session.loginMember.id}]];
       const postId = [[${postInfo.id}]];
-      deletePost(memberId, postId);
+      const status = [[${postInfo.status}]];
+      deletePost(memberId, postId, status);
       setTimeout(function () {
         location.replace(`/myPage`);
       }, 10);

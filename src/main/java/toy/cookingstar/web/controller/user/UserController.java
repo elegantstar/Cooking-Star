@@ -53,22 +53,19 @@ public class UserController {
     @GetMapping("/user/{userId}")
     public String userPage(@PathVariable String userId, @Login Member loginUser, Model model) throws Exception {
 
+        // 요청 받은 userId가 로그인 유저의 userId와 같으면 myPage로
+        if (StringUtils.equals(userId, loginUser.getUserId())) {
+            return "redirect:/myPage";
+        }
+
         // 요청 받은 userId와 일치하는 회원이 있는지 확인 후 데이터 가져오기 -> 일치하는 회원이 없을 경우 exception 처리 필요함.
         Member member = userService.getUserInfoByUserId(userId);
         UserInfoDto userPageInfo = UserInfoDto.of(member);
 
         model.addAttribute("userPageInfo", userPageInfo);
 
-        // 요청 받은 userId가 로그인 유저의 userId와 같으면 myPage로
-        if (StringUtils.equals(userId, loginUser.getUserId())) {
-            return "redirect:/myPage";
-        }
-
         int totalPost = postService.countPosts(userPageInfo.getId());
         model.addAttribute("totalPost", totalPost);
-
-        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userPageInfo.getUserId(), StatusType.POSTING);
-        model.addAttribute("postImageUrls", postImageUrls);
 
         int totalFollower = followingService.countFollowers(member.getId());
         int totalFollowing = followingService.countFollowings(member.getId());
@@ -92,9 +89,6 @@ public class UserController {
 
         int totalPost = postService.countPosts(userInfo.getId());
         model.addAttribute("totalPost", totalPost);
-
-        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userInfo.getUserId(), StatusType.POSTING);
-        model.addAttribute("postImageUrls", postImageUrls);
 
         int totalFollower = followingService.countFollowers(userInfo.getId());
         int totalFollowing = followingService.countFollowings(userInfo.getId());
@@ -196,32 +190,12 @@ public class UserController {
         int totalPost = postService.countPosts(userInfo.getId());
         model.addAttribute("totalPost", totalPost);
 
-        List<PostAndImageUrlDto> postImageUrls = getPostImageUrls(userInfo.getUserId(), StatusType.PRIVATE);
-        model.addAttribute("postImageUrls", postImageUrls);
-
         int totalFollower = followingService.countFollowers(userInfo.getId());
         int totalFollowing = followingService.countFollowings(userInfo.getId());
         model.addAttribute("totalFollower", totalFollower);
         model.addAttribute("totalFollowing", totalFollowing);
 
         return "user/privatePage";
-    }
-
-    // 페이지 구성 이미지 조회
-    private List<PostAndImageUrlDto> getPostImageUrls(String userId, StatusType statusType) throws Exception {
-        int page = 0;
-        int size = 12;
-        Long lastReadPostId = null;
-
-        Slice<PostAndImageUrlDto> postSlice = postService.getUserPagePostImageSlice(userId, lastReadPostId, page, size, statusType)
-                .map(PostAndImageUrlDto::of);
-
-        for (PostAndImageUrlDto dto : postSlice) {
-            String dir = dto.getImageUrl().substring(0, 10);
-            dto.setImageUrl("https://d9voyddk1ma4s.cloudfront.net/images/post/" + dir + "/" + dto.getImageUrl());
-        }
-
-        return postSlice.getContent();
     }
 
     /**

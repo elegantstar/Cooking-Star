@@ -11,6 +11,7 @@ import toy.cookingstar.service.post.StatusType;
 public class PostCreateDto {
 
     private Long memberId;
+    private String userId;
     private String content;
     private List<String> postImageUrls;
     private StatusType status;

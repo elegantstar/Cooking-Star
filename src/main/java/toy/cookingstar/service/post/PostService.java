@@ -1,19 +1,16 @@
 package toy.cookingstar.service.post;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections4.ListUtils;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -22,12 +19,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
-import toy.cookingstar.entity.PostComment;
 import toy.cookingstar.entity.PostImage;
 import toy.cookingstar.repository.*;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostImageUrlDto;
-import toy.cookingstar.web.controller.post.dto.PostSaveDto;
+
+import static toy.cookingstar.common.RedisCacheSets.*;
 
 @Slf4j
 @Service
@@ -38,14 +35,12 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
-    private final PostCommentLikerRepository postCommentLikerRepository;
-    private final PostCommentRepository postCommentRepository;
-    private final PostLikerRepository postLikerRepository;
 
     /**
      * 포스트 생성
      */
     @Transactional
+    @CacheEvict(cacheNames = POST_CACHE, key = "#postCreateDto.userId + 12 + #postCreateDto.status + null")
     public Long create(PostCreateDto postCreateDto) throws IllegalArgumentException {
 
         Member user = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(IllegalArgumentException::new);
@@ -121,7 +116,8 @@ public class PostService {
     }
 
     @Transactional
-    public void changeIntoDeletedState(Long postId) {
+    @CacheEvict(cacheNames = POST_CACHE, key = "#userId + #status + null + true")
+    public void changeIntoDeletedState(String userId, Long postId, StatusType status) {
         Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         post.deletePost(StatusType.DELETED);
     }
@@ -130,6 +126,7 @@ public class PostService {
      * 게시물 수정
      */
     @Transactional
+    @CacheEvict(cacheNames = POST_CACHE, key = "#userId + #status + null + true")
     public void updatePost(String userId, Long postId, String content, StatusType status) {
         Post foundPost = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         foundPost.updatePost(content, status);
@@ -152,24 +149,21 @@ public class PostService {
     /**
      * 유저 페이지 포스트 이미지 조회
      */
-    public Slice<Post> getUserPagePostImageSlice(String userId, Long lastReadPostId,
-                                                 int page, int size, StatusType statusType) throws Exception {
+    public Slice<Post> getUserPagePostImageSlice(String userId, Long lastReadPostId, int size, StatusType statusType) {
 
         Member user = memberRepository.findByUserId(userId);
         if (user == null) {
             throw new IllegalArgumentException();
         }
 
-        Pageable pageable = PageRequest.of(page, size, Sort.by(Direction.DESC, "createdDate"));
+        Pageable pageable = PageRequest.of(0, size, Sort.by(Direction.DESC, "createdDate"));
 
         if (lastReadPostId == null) {
             Slice<Post> slice = postRepository.findPosts(user.getId(), statusType, pageable);
-            slice.forEach(post -> post.getPostImages().get(0).getUrl());
             return slice;
         }
 
         Slice<Post> slice = postRepository.findPostsByLastReadPostId(user.getId(), lastReadPostId, pageable, statusType);
-        slice.forEach(post -> post.getPostImages().get(0).getUrl());
 
         return slice;
     }
