@@ -49,7 +49,7 @@ public class SearchRestController {
                 dto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + dto.getProfileImage());
             }
         }
-        return searchService.searchUsers(keyword);
+        return userSearchDtos;
     }
 
     @PostMapping("/search/history/add")

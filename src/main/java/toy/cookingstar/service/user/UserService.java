@@ -81,7 +81,6 @@ public class UserService {
         foundUser.updatePwd(newPassword, newSalt);
     }
 
-    //TODO: 공통 로직 private method로 추출 고려.
     /**
      * 유저 프로필 이미지 삭제
      */

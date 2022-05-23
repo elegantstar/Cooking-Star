@@ -1,15 +1,18 @@
 package toy.cookingstar.service.post;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -18,10 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import toy.cookingstar.entity.Member;
 import toy.cookingstar.entity.Post;
+import toy.cookingstar.entity.PostComment;
 import toy.cookingstar.entity.PostImage;
-import toy.cookingstar.repository.MemberRepository;
-import toy.cookingstar.repository.PostImageRepository;
-import toy.cookingstar.repository.PostRepository;
+import toy.cookingstar.repository.*;
 import toy.cookingstar.service.post.dto.PostCreateDto;
 import toy.cookingstar.service.post.dto.PostImageUrlDto;
 import toy.cookingstar.web.controller.post.dto.PostSaveDto;
@@ -35,6 +37,9 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final PostRepository postRepository;
     private final PostImageRepository postImageRepository;
+    private final PostCommentLikerRepository postCommentLikerRepository;
+    private final PostCommentRepository postCommentRepository;
+    private final PostLikerRepository postLikerRepository;
 
     /**
      * 포스트 생성
@@ -112,6 +117,12 @@ public class PostService {
         postImageRepository.deleteAllByPost(post);
         postRepository.delete(post);
         log.info("DELETE POST: userId=[{}], deletedPostId=[{}]", userId, postId);
+    }
+
+    @Transactional
+    public void changeIntoDeletedState(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
+        post.deletePost(StatusType.DELETED);
     }
 
     /**

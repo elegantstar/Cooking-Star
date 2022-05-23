@@ -228,7 +228,9 @@ class FollowingRepositoryTest {
         em.clear();
 
         //when
-        Following foundFollowing = followingRepository.findByFollowerAndFollowedMember(savedFollower, savedFollowedMember);
+        Long followingId = followingRepository.findIdByFollowerAndFollowedMember(savedFollower, savedFollowedMember);
+
+        Following foundFollowing = followingRepository.findById(followingId).orElseThrow(IllegalArgumentException::new);
 
         //then
         assertEquals(savedFollowing.getId(), foundFollowing.getId());
@@ -251,10 +253,10 @@ class FollowingRepositoryTest {
         em.flush();
         em.clear();
 
-        Following foundFollowing = followingRepository.findByFollowerAndFollowedMember(savedFollower, savedFollowedMember);
+        Long foundFollowingId = followingRepository.findIdByFollowerAndFollowedMember(savedFollower, savedFollowedMember);
 
         //when
-        followingRepository.delete(foundFollowing);
+        followingRepository.deleteById(foundFollowingId);
         Optional<Following> deletedFollowing = followingRepository.findById(savedFollowingId);
 
         //then

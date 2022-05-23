@@ -139,11 +139,11 @@ public class FollowingService {
             throw new IllegalArgumentException();
         }
 
-        Following following = followingRepository.findByFollowerAndFollowedMember(member, followedUser);
-        if (following == null) {
+        Long followingId = followingRepository.findIdByFollowerAndFollowedMember(member, followedUser);
+        if (followingId == null) {
             throw new IllegalArgumentException();
         }
 
-        followingRepository.delete(following);
+        followingRepository.deleteById(followingId);
     }
 }

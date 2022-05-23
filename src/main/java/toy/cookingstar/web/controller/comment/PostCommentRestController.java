@@ -38,9 +38,9 @@ public class PostCommentRestController {
     @GetMapping("/postComment")
     public ResponseEntity<?> getCommentByPostId(@RequestParam Long postCommentId) throws Exception {
         PostCommentDto postCommentDto = PostCommentDto.of(postCommentService.getCommentByPostId(postCommentId));
-        String dir = postCommentDto.getUserSimpleInfoDto().getProfileImage().substring(0, 10);
 
         if (postCommentDto.getUserSimpleInfoDto().getProfileImage() != null) {
+            String dir = postCommentDto.getUserSimpleInfoDto().getProfileImage().substring(0, 10);
             postCommentDto.getUserSimpleInfoDto().setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir
                     + "/" + postCommentDto.getUserSimpleInfoDto().getProfileImage());
         }
