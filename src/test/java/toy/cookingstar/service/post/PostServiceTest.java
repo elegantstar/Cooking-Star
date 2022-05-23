@@ -57,7 +57,7 @@ class PostServiceTest {
         @DisplayName("성공")
         void createSuccessTest() throws Exception {
             //given
-            PostCreateDto dto = new PostCreateDto(1L, "content in post",
+            PostCreateDto dto = new PostCreateDto(1L, "userId","content in post",
                     Arrays.asList("pasta", "steak", "salad"), StatusType.POSTING);
             Member user = mock(Member.class);
             given(memberRepository.findById(dto.getMemberId())).willReturn(Optional.of(user));
@@ -401,7 +401,7 @@ class PostServiceTest {
             ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
 
             //when
-            Slice<Post> slice = postService.getUserPagePostImageSlice("test_user", 1L, 0, 3, StatusType.POSTING);
+            Slice<Post> slice = postService.getUserPagePostImageSlice("test_user", 1L, 3, StatusType.POSTING);
 
             //then
             then(memberRepository).should(times(1)).findByUserId(anyString());
@@ -422,7 +422,7 @@ class PostServiceTest {
             given(memberRepository.findByUserId(anyString())).willReturn(null);
             //when & then
             assertThrows(IllegalArgumentException.class,
-                    () -> postService.getUserPagePostImageSlice("test_user", 1L, 0, 6, StatusType.POSTING));
+                    () -> postService.getUserPagePostImageSlice("test_user", 1L,6, StatusType.POSTING));
             then(memberRepository).should(times(1)).findByUserId(anyString());
             then(postRepository).should(never()).findPostsByLastReadPostId(anyLong(), anyLong(), any(Pageable.class), any(StatusType.class));
         }

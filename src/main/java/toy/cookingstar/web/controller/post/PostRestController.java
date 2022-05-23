@@ -1,16 +1,14 @@
 package toy.cookingstar.web.controller.post;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Slice;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import toy.cookingstar.common.CustomSlice;
 import toy.cookingstar.entity.Member;
-import toy.cookingstar.entity.Post;
-import toy.cookingstar.service.comment.PostCommentService;
 import toy.cookingstar.service.imagestore.ImageStoreService;
-import toy.cookingstar.service.liker.PostCommentLikerServiceImpl;
-import toy.cookingstar.service.liker.PostLikerServiceImpl;
+import toy.cookingstar.service.post.PostCacheService;
 import toy.cookingstar.service.post.PostDeleteService;
 import toy.cookingstar.service.post.PostService;
 import toy.cookingstar.service.post.StatusType;
@@ -34,6 +32,7 @@ public class PostRestController {
 
     private final UserService userService;
     private final PostService postService;
+    private final PostCacheService postCacheService;
     private final ImageStoreService imageStoreService;
     private final PostDeleteService postDeleteService;
 
@@ -55,21 +54,27 @@ public class PostRestController {
     }
 
     @GetMapping("/post")
-    public ResponseEntity<?> getPostAndImageUrls(@RequestParam("userId") String userId,
+    public ResponseEntity<?> getPostAndImageUrls(@Login Member loginUser, @RequestParam("userId") String userId,
                                                  @RequestParam(value = "postId", required = false) Long lastReadPostId,
-                                                 @RequestParam(value = "size", required = false, defaultValue = "6") int size,
-                                                 @RequestParam("status") StatusType statusType) throws Exception {
+                                                 @RequestParam(value = "size", required = false, defaultValue = "12") int size,
+                                                 @RequestParam("status") StatusType statusType) {
 
-        Slice<PostAndImageUrlDto> postSlice = postService.getUserPagePostImageSlice(userId, lastReadPostId, 0, size, statusType)
-                .map(PostAndImageUrlDto::of);
+        boolean isMyPage = isMyPage(loginUser.getUserId(), userId);
 
-        for (PostAndImageUrlDto dto : postSlice) {
+        CustomSlice<PostAndImageUrlDto> postSlice =
+                postCacheService.getUserPagePostImageSlice(userId, lastReadPostId, size, statusType, isMyPage);
+
+        for (PostAndImageUrlDto dto : postSlice.getContent()) {
             if (dto.getImageUrl() != null) {
                 String dir = dto.getImageUrl().substring(0, 10);
                 dto.setImageUrl("https://d9voyddk1ma4s.cloudfront.net/images/post/" + dir + "/" + dto.getImageUrl());
             }
         }
         return ResponseEntity.ok().body(postSlice);
+    }
+
+    private boolean isMyPage(String loginUserId, String userId) {
+        return StringUtils.equals(loginUserId, userId);
     }
 
     @PostMapping("/post/image-upload")
@@ -79,9 +84,10 @@ public class PostRestController {
         return ResponseEntity.ok().body(imageUrls);
     }
 
+
     @PostMapping("/posting")
     public ResponseEntity<?> createPost(@Login Member loginUser, @RequestBody PostSaveDto postSaveDto) throws Exception {
-        PostCreateDto postCreateDto = new PostCreateDto(loginUser.getId(), postSaveDto.getContent(),
+        PostCreateDto postCreateDto = new PostCreateDto(loginUser.getId(), loginUser.getUserId(), postSaveDto.getContent(),
                 postSaveDto.getPostImageUris(), postSaveDto.getStatus());
         Long postId = postService.create(postCreateDto);
         return ResponseEntity.ok().body(postId);
@@ -92,7 +98,7 @@ public class PostRestController {
         if (!Objects.equals(loginUser.getId(), postDeleteDto.getMemberId())) {
             return ResponseEntity.badRequest().build();
         }
-        postService.changeIntoDeletedState(postDeleteDto.getPostId());
+        postService.changeIntoDeletedState(loginUser.getUserId(), postDeleteDto.getPostId(), postDeleteDto.getStatus());
         postDeleteService.deletePost(postDeleteDto.getMemberId(), postDeleteDto.getPostId());
 
         return ResponseEntity.ok().build();

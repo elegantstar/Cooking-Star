@@ -1,9 +1,11 @@
 package toy.cookingstar.web.controller.post.dto;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import toy.cookingstar.entity.Post;
 
 @Data
+@NoArgsConstructor
 public class PostAndImageUrlDto {
 
     private Long postId;

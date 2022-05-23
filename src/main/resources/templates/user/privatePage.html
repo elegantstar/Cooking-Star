@@ -168,9 +168,6 @@
   <div class="img-layer" style="text-align: center">
     <span id="last-read-post-id" style="display: none;"></span>
     <div id="post-image-area">
-      <a th:each="postImageUrl : ${postImageUrls}" th:href="@{'/post/' + ${postImageUrl.getPostId()}}" style="text-decoration: none">
-        <img th:src="|${postImageUrl.getImageUrl()}|" class="img-standard" alt="포스트 이미지" />
-      </a>
     </div>
   </div>
 </div>
@@ -273,22 +270,41 @@
   $('#profileImg-upload').change(uploadProfileImg);
 
   /**
-   * 게시글 무한 스크롤 관련 코드
+   * 게시글 기본 목록 불러오기
    */
-  let postImageSize = 6;
-  let infiniteScrollSwitch = "on";
+  async function getInitialPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "PRIVATE";
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+
+    const { content } = slice;
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+  }
 
   $(function () {
-    if ([[${postImageUrls.size}]] >= 2) {
-      const array = [[${postImageUrls}]];
-      const lastReadPostId = array[array.length - 1];
-      $('#last-read-post-id').text(lastReadPostId.postId);
-    }
+    getInitialPostImageUrls();
   });
+
+  /**
+   * 게시글 무한 스크롤 관련 코드
+   */
+  let postImageSize = 12;
+  let infiniteScrollSwitch = "on";
 
   async function getPostImageUrls() {
     const userId = [[${userPageInfo.userId}]];
-    const status = "TEMPORARY_STORAGE";
+    const status = "PRIVATE";
     const lastReadPostId = $('#last-read-post-id').text();
     const res = await fetch(`http://localhost:8080/post?userId=${userId}&postId=${lastReadPostId}&size=${postImageSize}&status=${status}`, {
       method: "GET"
