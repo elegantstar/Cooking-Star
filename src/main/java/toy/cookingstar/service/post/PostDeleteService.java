@@ -27,9 +27,6 @@ public class PostDeleteService {
     private final PostCommentRepository postCommentRepository;
     private final PostCommentLikerRepository postCommentLikerRepository;
 
-    /**
-     * Transaction 애너테이션 제거 -> 굳이 Rollback을 할 이유가 없음.
-     */
     @Transactional
     @Async(value = "postAsyncThreadPool")
     public void deletePost(Long loginMemberId, Long postId) throws Exception {
