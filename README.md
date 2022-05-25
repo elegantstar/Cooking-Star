@@ -329,16 +329,16 @@ Fulltext Search가 앞선 테스트에서는 준수한 성능을 보이는듯 �
 
 이슈의 원인을 파악하기 위해 가장 먼저 아래 사항들을 체크해 보았습니다.
 
-1. MySQL의 Fulltext Search와 Boolean 모드를 **잘못 사용한 부분**은 없는지
+1. MySQL의 Fulltext Search와 Boolean 모드를 **잘못 사용한 부분**은 없는지  
    MySQL 8.0 공식 매뉴얼을 확인하였고, 필요한 기능들이 어떻게 동작하는지 꼼꼼히 확인해 보았으나, 잘못 사용하고 있거나 의도와 다르게 사용하고 있는 부분은 없었습니다.
 
-2. 어떠한 이유로 **Fulltext Index 자체에 문제**가 생긴 것은 아닌지
+2. 어떠한 이유로 **Fulltext Index 자체에 문제**가 생긴 것은 아닌지  
    Fulltext Index를 삭제 후 재생성하기도 하고, 테이블을 새로 만들어 데이터 삽입부터 다시 진행하여 테스트해 보았으나 동일한 현상이 발생했습니다.
 
-3. **InnoDB의 Default Stopword**로 인덱스가 적절하게 생성되지 못한 것은 아닌지
+3. **InnoDB의 Default Stopword**로 인덱스가 적절하게 생성되지 못한 것은 아닌지  
    Stopword 설정을 Off 하고 Index를 재생성하였으나 동일한 현상이 발생했습니다.
 
-4. **두 개의 컬럼(user_id, nickname)에 대해 Fulltext Index를 생성**하는 것이 성능 저하를 일으키지는 않는지
+4. **두 개의 컬럼(user_id, nickname)에 대해 Fulltext Index를 생성**하는 것이 성능 저하를 일으키지는 않는지  
    개별 컬럼에 대해 Fulltext Index를 생성하여 조회해 보았으나 동일한 현상이 발생했습니다.
 
 <br>
