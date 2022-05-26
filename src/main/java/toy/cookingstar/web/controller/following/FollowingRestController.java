@@ -50,6 +50,12 @@ public class FollowingRestController {
     public ResponseEntity<?> getFollowers(@PathVariable("userId") String userId,
                                                              @RequestParam int page, @RequestParam int size) throws Exception {
         Slice<UserSearchDto> followerSlice = followingService.getFollowers(userId, page, size).map(UserSearchDto::of);
+        for (UserSearchDto userSearchDto : followerSlice) {
+            if (userSearchDto.getProfileImage() != null) {
+                String dir = userSearchDto.getProfileImage().substring(0, 10);
+                userSearchDto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + userSearchDto.getProfileImage());
+            }
+        }
         return ResponseEntity.ok().body(followerSlice);
     }
 
@@ -58,6 +64,12 @@ public class FollowingRestController {
     public ResponseEntity<?> getFollowings(@PathVariable("userId") String userId,
                                                               @RequestParam int page, @RequestParam int size) throws Exception {
         Slice<UserSearchDto> followingSlice = followingService.getFollowings(userId, page, size).map(UserSearchDto::of);
+        for (UserSearchDto userSearchDto : followingSlice) {
+            if (userSearchDto.getProfileImage() != null) {
+                String dir = userSearchDto.getProfileImage().substring(0, 10);
+                userSearchDto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + userSearchDto.getProfileImage());
+            }
+        }
         return ResponseEntity.ok().body(followingSlice);
     }
 
@@ -74,7 +86,7 @@ public class FollowingRestController {
     }
 
     // 언팔로잉
-    @PostMapping("/deletion")
+    @PostMapping("/unfollow")
     public ResponseEntity<?> deleteFollowing(@Login Member loginUser,
                                              @RequestBody FollowingDeleteDto followingDeleteDto) throws Exception {
         if (!StringUtils.equals(loginUser.getUserId(), followingDeleteDto.getFollowingUserId())

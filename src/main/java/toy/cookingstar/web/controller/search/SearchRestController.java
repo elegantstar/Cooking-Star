@@ -21,10 +21,18 @@ public class SearchRestController {
     @GetMapping("/search/history")
     public List<UserSearchDto> recentHistory(@Login Member loginUser) {
         Member loginMember = userService.getUserInfoByUserId(loginUser.getUserId());
-        return searchService.getRecentSearchHistory(loginMember.getId())
+        List<UserSearchDto> userSearchDtos = searchService.getRecentSearchHistory(loginMember.getId())
                 .stream()
                 .map(UserSearchDto::of)
                 .collect(Collectors.toList());
+
+        for (UserSearchDto dto : userSearchDtos) {
+            if (dto.getProfileImage() != null) {
+                String dir = dto.getProfileImage().substring(0, 10);
+                dto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + dto.getProfileImage());
+            }
+        }
+        return userSearchDtos;
     }
 
     @DeleteMapping("/search/history/clearAll")
@@ -34,7 +42,14 @@ public class SearchRestController {
 
     @GetMapping("/search/users")
     public List<UserSearchDto> userSearch(@RequestParam String keyword) {
-        return searchService.searchUsers(keyword);
+        List<UserSearchDto> userSearchDtos = searchService.searchUsers(keyword);
+        for (UserSearchDto dto : userSearchDtos) {
+            if (dto.getProfileImage() != null) {
+                String dir = dto.getProfileImage().substring(0, 10);
+                dto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + dto.getProfileImage());
+            }
+        }
+        return userSearchDtos;
     }
 
     @PostMapping("/search/history/add")

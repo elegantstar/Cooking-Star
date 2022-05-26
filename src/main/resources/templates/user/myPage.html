@@ -116,7 +116,7 @@
   <div class="profile-img-box">
     <div th:if="${not #strings.isEmpty(userPageInfo.profileImage)}">
       <img class="profile-img rounded-circle" data-bs-toggle="modal" data-bs-target="#edit-profile-modal"
-           th:src="|/profile/${userPageInfo.profileImage}|" alt="프로필 이미지" />
+           th:src="|${userPageInfo.profileImage}|" alt="프로필 이미지" />
     </div>
     <div th:if="${#strings.isEmpty(userPageInfo.profileImage)}">
       <img class="profile-img rounded-circle" data-bs-toggle="modal" data-bs-target="#edit-profile-modal"
@@ -167,9 +167,6 @@
   <div class="img-layer" style="text-align: center">
     <span id="last-read-post-id" style="display: none;"></span>
     <div id="post-image-area">
-      <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
-        <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
-      </a>
     </div>
   </div>
 </div>
@@ -258,7 +255,7 @@
       });
       const data = await res.json();
       const { imageUrl } = data;
-      $('.profile-img').attr('src', `/profile/${imageUrl}`);
+      $('.profile-img').attr('src', `${imageUrl}`);
 
     } catch (err) {
       console.log(err);
@@ -272,17 +269,37 @@
   $('#profileImg-upload').change(uploadProfileImg);
 
   /**
-   * 게시글 무한 스크롤 관련 코드
+   * 게시글 기본 목록 불러오기
    */
-  let postImageSize = 6;
-  let infiniteScrollSwitch = "on";
+  async function getInitialPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "POSTING";
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+    const { content } = slice;
+
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+  }
 
   $(function () {
-    if ([[${postIds.size}]] >= 2) {
-      const postIdArray = [[${postIds}]];
-      $('#last-read-post-id').text(postIdArray[postIdArray.length - 1]);
-    }
+    getInitialPostImageUrls();
   });
+
+  /**
+   * 게시글 무한 스크롤 관련 코드
+   */
+  let postImageSize = 12;
+  let infiniteScrollSwitch = "on";
 
   //게시글 id, 게시글 이미지 url 조회
   async function getPostImageUrls() {
@@ -299,7 +316,7 @@
     content.forEach((postImageUrl) => {
       const { postId, imageUrl } = postImageUrl;
       $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
-                                   <img class="img-standard" alt="포스트 이미지" src="/image/${imageUrl}"/></a>`);
+                                   <img class="img-standard" alt="포스트 이미지" src="${imageUrl}"/></a>`);
     });
 
     const lastPostId = content[content.length - 1].postId;
@@ -367,7 +384,7 @@
         if (profileImage === null) {
           $('#follower-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#follower-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#follower-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#follower-list-modal .follower-area').last().addClass(`follower-${userId}`);
@@ -451,7 +468,7 @@
   // 팔로잉 관계 삭제
   async function deleteFollowing(followingUserId, followedUserId) {
     try {
-      await fetch(`http://localhost:8080/following/deletion`, {
+      await fetch(`http://localhost:8080/following/unfollow`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -562,7 +579,7 @@
         if (profileImage === null) {
           $('#following-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#following-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#following-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#following-list-modal .modal-body .following-user-id').last().text(`${userId}`);

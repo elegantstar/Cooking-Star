@@ -85,7 +85,15 @@
     .following-list-scroll::-webkit-scrollbar {
       display: none;
     }
-
+    .unfollow-btn {
+        text-align: center;
+        color: #db0505;
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: -1%;
+        margin-bottom: -1%;
+        cursor: pointer;
+    }
   </style>
 
 </head>
@@ -97,7 +105,7 @@
 <div class="container" id="profile-box">
   <div class="profile-img-box">
     <div th:if="${not #strings.isEmpty(userPageInfo.profileImage)}">
-      <img class="profile-img rounded-circle" th:src="|/profile/${userPageInfo.profileImage}|" alt="프로필 이미지" />
+      <img class="profile-img rounded-circle" th:src="|${userPageInfo.profileImage}|" alt="프로필 이미지" />
     </div>
     <div th:if="${#strings.isEmpty(userPageInfo.profileImage)}">
       <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
@@ -134,9 +142,6 @@
   <div class="img-layer" style="text-align: center">
     <span id="last-read-post-id" style="display: none;"></span>
     <div id="post-image-area">
-      <a th:each="imageUrl, index : ${imageUrls}" th:href="@{'/post/' + ${postIds.get(index.index)}}" style="text-decoration: none">
-        <img th:src="|/image/${imageUrl}|" class="img-standard" alt="포스트 이미지" />
-      </a>
     </div>
   </div>
 </div>
@@ -165,20 +170,66 @@
   </div>
 </div>
 
+<!-- 언팔로우 모달 -->
+<div class="modal fade" id="unfollow-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+    <div class="modal-content">
+      <div class="modal-header" style="justify-content: center;">
+        <div class="modal-title" id="exampleModalLabel" th:text="|${userPageInfo.getUserId()}님을 언팔로우 할까요?|"></div>
+      </div>
+      <div class="modal-body">
+        <div class="unfollow-btn" data-bs-dismiss="modal">언팔로우</div>
+      </div>
+      <div class="modal-footer" style="justify-content: center;">
+        <div data-bs-dismiss="modal" style="font-size: 14px; cursor: pointer;">취소</div>
+      </div>
+    </div>
+  </div>
+
 <script th:inline="javascript" type="text/javascript">
+
+  /**
+   * 팔로잉 아이콘 클릭 시 나타나는 모달에서 언팔로우 버튼 클릭 시 언팔로우
+   */
+  $(document).on('click', '.unfollow-btn', function () {
+    const followingUserId = [[${session.loginMember.userId}]];
+    const followedUserId = [[${userPageInfo.userId}]];
+    unfollow(followingUserId, followedUserId);
+  });
+
+  /**
+   * 게시글 기본 목록 불러오기
+   */
+  async function getInitialPostImageUrls() {
+    const userId = [[${userPageInfo.userId}]];
+    const status = "POSTING";
+    const res = await fetch(`http://localhost:8080/post?userId=${userId}&status=${status}`, {
+      method: "GET"
+    });
+    const text = await res.text();
+    const slice = JSON.parse(text);
+
+    const { content } = slice;
+    content.forEach((postImageUrl) => {
+      const { postId, imageUrl } = postImageUrl;
+      $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
+                                   <img class="img-standard" alt="포스트 이미지" src="${imageUrl}"/></a>`);
+    });
+
+    const lastPostId = content[content.length - 1].postId;
+    $('#last-read-post-id').text(lastPostId);
+  }
+
+  $(function () {
+    getInitialPostImageUrls();
+  });
+
 
   /**
    * 게시글 무한 스크롤 관련 코드
    */
-  let postImageSize = 6;
+  let postImageSize = 12;
   let infiniteScrollSwitch = "on";
-
-  $(function () {
-    if ([[${postIds.size}]] >= 2) {
-      const postIdArray = [[${postIds}]];
-      $('#last-read-post-id').text(postIdArray[postIdArray.length - 1]);
-    }
-  });
 
   async function getPostImageUrls() {
     const userId = [[${userPageInfo.userId}]];
@@ -194,7 +245,7 @@
     content.forEach((postImageUrl) => {
       const { postId, imageUrl } = postImageUrl;
       $('#post-image-area').append(`<a style="text-decoration: none;" href="/post/${postId}">
-                                   <img class="img-standard" alt="포스트 이미지" src="/image/${imageUrl}"/></a>`);
+                                   <img class="img-standard" alt="포스트 이미지" src="${imageUrl}"/></a>`);
     });
 
     const lastPostId = content[content.length - 1].postId;
@@ -245,8 +296,8 @@
                 ' type="button" style="margin-bottom: 15px;">맞팔로우</button>');
       } else {
         //TODO: 팔로잉 체크 아이콘
-        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" ' +
-                'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" data-bs-toggle="modal" ' +
+          'data-bs-target="#unfollow-modal" style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
       }
     }));
   });
@@ -277,7 +328,7 @@
         if (profileImage === null) {
           $('#follower-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#follower-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#follower-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#follower-list-modal #follower-deletion-btn').last().addClass(`follower-${userId}`);
@@ -296,7 +347,7 @@
             $(`#follower-list-modal .follower-${userId}`).text('팔로잉');
           } else {
             $(`#follower-list-modal .follower-${userId}`).text('팔로우');
-            $(`#follower-list-modal .follower-${userId}`).addClass('follow-btn-in-list');
+            $(`#follower-list-modal .follower-${userId}`).addClass('follow-btn');
           }
         }))
       })
@@ -325,14 +376,14 @@
     const followingUserId = [[${session.loginMember.userId}]];
     const followedUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
 
-    if ($(this).hasClass('.follow-btn')) {
+    if ($(this).hasClass('follow-btn')) {
       follow(followedUserId);
       $(this).text('팔로잉');
-      $(this).removeClass('.follow-btn');
+      $(this).removeClass('follow-btn');
 
     } else {
-      deleteFollowing(followingUserId, followedUserId);
-      $(this).addClass('.follow-btn');
+      unfollow(followingUserId, followedUserId);
+      $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
   })
@@ -373,7 +424,7 @@
         if (profileImage === null) {
           $('#following-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#following-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#following-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#following-list-modal #following-deletion-btn').last().addClass(`following-${userId}`);
@@ -392,7 +443,7 @@
             $(`#following-list-modal .following-${userId}`).text('팔로잉');
           } else {
             $(`#following-list-modal .following-${userId}`).text('팔로우');
-            $(`#following-list-modal .following-${userId}`).addClass('follow-btn-in-list');
+            $(`#following-list-modal .following-${userId}`).addClass('follow-btn');
           }
         }))
       })
@@ -478,8 +529,8 @@
 
         $('button').remove('.follow-btn');
 
-        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" ' +
-            'style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
+        $('.follow-btn-area').append('<a class="bi bi-person-check-fill following-icon" data-bs-toggle="modal" ' +
+          'data-bs-target="#unfollow-modal" style="font-size: 1.5rem; color: black;" href="#" role="button"></a>');
       }
     }));
   });
@@ -494,9 +545,9 @@
   }
 
   // 팔로잉 관계 삭제
-  async function deleteFollowing(followingUserId, followedUserId) {
+  async function unfollow(followingUserId, followedUserId) {
     try {
-      await fetch(`http://localhost:8080/following/deletion`, {
+      await fetch(`http://localhost:8080/following/unfollow`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -506,6 +557,31 @@
           followedUserId: followedUserId
         })
       });
+
+      if (followedUserId === [[${userPageInfo.userId}]]) {
+        const countPromise = countFollowers(followedUserId);
+        countPromise.then((count) => {
+          $('.num-of-follower').text(`팔로워 ` + count);
+        });
+
+        $('.follow-btn-area').children('a').remove();
+
+        const followingRelationshipPromise = checkForFollowingRelationship(followedUserId);
+        followingRelationshipPromise.then((value => {
+          const {following, followed} = value;
+
+          if (!following && !followed) {
+            //TODO: 팔로우 버튼
+            $('.follow-btn-area').append('<button class="btn btn-primary btn-sm follow-btn"' +
+              ' type="button" style="margin-bottom: 15px;">팔로우</button>');
+
+          } else if (!following && followed) {
+            //TODO: 맞팔로우 버튼
+            $('.follow-btn-area').append('<button class="btn btn-primary btn-sm follow-btn"' +
+              ' type="button" style="margin-bottom: 15px;">맞팔로우</button>');
+          }
+        }))
+      }
 
     } catch (err) {
       console.log(err);
@@ -518,14 +594,14 @@
     const followingUserId = [[${session.loginMember.userId}]];
     const followedUserId = $(this).parent().prev().children('div:eq(1)').children('span:eq(0)').text();
 
-    if ($(this).hasClass('.follow-btn')) {
+    if ($(this).hasClass('follow-btn')) {
       follow(followedUserId);
       $(this).text('팔로잉');
-      $(this).removeClass('.follow-btn');
+      $(this).removeClass('follow-btn');
 
     } else {
-      deleteFollowing(followingUserId, followedUserId);
-      $(this).addClass('.follow-btn');
+      unfollow(followingUserId, followedUserId);
+      $(this).addClass('follow-btn');
       $(this).text('팔로우');
     }
   })

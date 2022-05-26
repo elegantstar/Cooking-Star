@@ -33,6 +33,12 @@ public class PostLikerRestController {
     public ResponseEntity<?> getPostLikers(@PathVariable("postId") Long postId,
                                                               @RequestParam int page, @RequestParam int size) {
         Slice<UserSearchDto> postLikerSlice = postLikerService.getLikers(postId, page, size).map(UserSearchDto::of);
+        for (UserSearchDto userSearchDto : postLikerSlice) {
+            if (userSearchDto.getProfileImage() != null) {
+                String dir = userSearchDto.getProfileImage().substring(0, 10);
+                userSearchDto.setProfileImage("https://d9voyddk1ma4s.cloudfront.net/images/profile/" + dir + "/" + userSearchDto.getProfileImage());
+            }
+        }
         return ResponseEntity.ok().body(postLikerSlice);
     }
 

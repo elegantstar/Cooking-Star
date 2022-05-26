@@ -13,4 +13,3 @@ public class SessionUtils {
         session.setAttribute(SessionConst.LOGIN_MEMBER, loginMember);
     }
 }
-

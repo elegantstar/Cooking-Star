@@ -8,6 +8,6 @@ import java.util.List;
 @Data
 public class PostSaveDto {
     private String content;
-    private List<String> postImageUrls;
+    private List<String> postImageUris;
     private StatusType status;
 }

@@ -125,6 +125,23 @@
       padding-bottom: 4.7%;
       float: left;
     }
+    .delete-comment-btn {
+        text-align: center;
+        color: #db0505;
+        font-weight: bold;
+        font-size: 14px;
+        margin-top: -1%;
+        margin-bottom: -1%;
+        cursor: pointer;
+    }
+    #footer {
+        position:absolute;
+        bottom: 0;
+        width:100%;
+        height: 50px;
+        line-height: 50px;
+        background: #000000;
+    }
   </style>
 
 </head>
@@ -142,7 +159,7 @@
     <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
       <div class="carousel-inner img-box">
         <div th:each="image : ${postInfo.getPostImages()}" class="carousel-item">
-          <img th:src="|/image/${image.getUrl()}|" class="img-standard" alt="포스트 이미지" />
+          <img th:src="|${image.getUrl()}|" class="img-standard" alt="포스트 이미지"/>
         </div>
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
@@ -158,7 +175,7 @@
     <!-- 우측 상단 Profile 영역 -->
     <div class="profile-img-box">
       <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-        <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+        <img class="profile-img rounded-circle" th:src="|${userInfo.profileImage}|" alt="프로필 이미지" />
       </div>
       <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
         <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
@@ -168,6 +185,15 @@
     <div class="row g-3 align-items-center">
       <div class="col-12">
         <a class="user-id" th:href="|/user/${userInfo.userId}|" th:text="${userInfo.userId}">유저 아이디</a>
+
+        <span class="dropdown justify-content-end three-dot" style="margin-right: 10px; float: right;">
+          <a class="bi bi-three-dots" style="font-size: 1rem; color: black;"
+             href="#" id="myPageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item copy-link" th:text="#{label.post.linkCopy}" style="cursor: pointer;">링크 복사</a></li>
+          </ul>
+        </span>
       </div>
     </div>
   </div>
@@ -183,7 +209,7 @@
           <!-- 게시자 프로필 이미지 영역 -->
           <div class="col content-profile-img-box">
             <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-              <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+              <img class="profile-img rounded-circle" th:src="|${userInfo.profileImage}|" alt="프로필 이미지" />
             </div>
             <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
               <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
@@ -266,9 +292,41 @@
       </div>
     </div>
   </div>
+
+  <!-- 댓글 삭제 모달 -->
+  <div class="modal fade" id="comment-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+      <div class="modal-content">
+        <div class="modal-header" style="justify-content: center;">
+          <div class="modal-title" id="exampleModalLabel" style="font-weight: bold;">해당 댓글을 삭제할까요?</div>
+        </div>
+        <div class="modal-body">
+          <div class="delete-comment-btn" id="comment-deletion" data-bs-dismiss="modal">삭제</div>
+        </div>
+        <div class="modal-footer" style="justify-content: center;">
+          <div id="profile-editor-cancel" data-bs-dismiss="modal" style="font-size: 14px; cursor: pointer;">취소</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="footer" style="display: none;">
+  <p class="notice-area" style="color: white; padding-left: 2%"></p>
 </div>
 
 <script th:inline="javascript" type="text/javascript">
+
+  //현재 페이지 링크 복사
+  $(document).on('click', '.copy-link', function () {
+    const url = window.location.protocol + "//" + window.location.host + window.location.pathname;
+    navigator.clipboard.writeText(url);
+    $('.notice-area').text('링크를 클립보드에 복사했습니다.');
+    $('#footer').slideDown('slow');
+    setTimeout(function () {
+      $('#footer').slideUp('slow');
+    }, 2000);
+  });
 
   $('.carousel-item').filter(':first').addClass('active');
 
@@ -278,6 +336,7 @@
   let postLikerSize = 6;
   let commentLikerPage = 0;
   let commentLikerSize = 6;
+  let newCommentIdList = [];
 
   /**
    * 댓글 기능 관련 코드
@@ -309,7 +368,7 @@
         return;
       }
 
-      await fetch(`http://localhost:8080/comment/post`, {
+      const res = await fetch(`http://localhost:8080/comment/post`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -322,6 +381,7 @@
       });
 
       document.getElementById('comment-input-area').value = '';
+      return await res.json();
 
     } catch (e) {
       console.log(err);
@@ -335,6 +395,7 @@
       $('.more-comments-btn').remove();
 
       const postId = [[${postInfo.id}]];
+      const loginUserId = [[${session.loginMember.userId}]];
 
       const res = await fetch(`http://localhost:8080/comment/post?postId=${postId}&page=${page}&size=${size}`, {
         method: "GET"
@@ -344,24 +405,45 @@
 
       const {content} = commentSlice;
       for (const comment of content) {
-        const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate} = comment;
+        const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate,
+          createdDateTimeDiff, updatedDateTimeDiff, deletedDateTimeDiff} = comment;
         const {userId, profileImage} = userSimpleInfoDto;
 
-        $('#comments-area').append('<div class="col content-profile-img-box">' +
-                '<img class="profile-img rounded-circle" alt="프로필 이미지" /></div>' +
-                '<div class="col offset-md-1">' +
-                '<a class="user-id post-comment-box comment-user-id"></a>' +
-                '<span class="post-comment-box comment-content" style="word-wrap: break-word; font-size: 14px;"></span>' +
-                '<div style="float: right;">' +
-                '<span class="bi comment-like-btn" style="font-size: 1rem; color: black;" href="#" role="button"></span></div>' +
-                '<div class="comment-tail-area">' +
-                '<span class="comment-date" style="font-size: 10px; color: gray; margin-right: 15px;"></span>' +
-                '<span class="comment-likers" data-bs-toggle="modal" data-bs-target="#comment-liker-list-modal"' +
-                ' style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;"></span> ' +
-                '<span class="nested-comment-input-btn" ' +
-                'style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;">답글 달기</span></div>' +
-                '<span class="post-comment-id" style="display: none;"></span></div>' +
-                '<div class="mb-4"></div>');
+        if (newCommentIdList.includes(id)) {
+          return;
+        }
+
+        $('#comments-area').append(
+          `<div id="comment-id-${id}">
+            <div class="col content-profile-img-box">
+              <img class="profile-img rounded-circle" alt="프로필 이미지" />
+            </div>
+            <div class="col offset-md-1">
+              <a class="user-id post-comment-box comment-user-id"></a>
+              <span class="post-comment-box comment-content" style="word-wrap: break-word; font-size: 14px;"></span>
+              <div style="float: right;">
+                <span class="bi comment-like-btn" style="font-size: 1rem; color: black;" href="#" role="button"></span>
+              </div>
+              <div class="comment-tail-area">
+                <span class="comment-date" style="font-size: 10px; color: gray; margin-right: 15px;"></span>
+                <span class="comment-likers" data-bs-toggle="modal" data-bs-target="#comment-liker-list-modal"
+                 style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;"></span>
+                <span class="nested-comment-input-btn"
+                 style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer; margin-right: 11px;">답글 달기</span>
+              </div>
+              <span class="post-comment-id" style="display: none;"></span>
+            </div>
+            <div class="mb-4"></div>
+          </div>`
+        );
+
+        if (userId === loginUserId) {
+          $('#comments-area .comment-tail-area').last().append(
+            `<span class="bi bi-three-dots comment-three-dots" data-bs-toggle="modal" data-bs-target="#comment-modal"
+               style="margin-right: 10px; font-size: 1rem; color: gray; cursor: pointer; visibility: hidden;">
+             </span>`
+          )
+        }
 
         $('#comments-area .comment-like-btn').last().addClass(`comment-like-btn-${id}`);
         $('#comments-area .post-comment-id').last().text(id);
@@ -393,14 +475,14 @@
           $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
           $('#comments-area .comment-user-id').last().text('');
           $('#comments-area .comment-content').last().text('삭제된 댓글입니다.');
-          $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDate);
+          $('#comments-area .comment-date').last().text(`삭제됨 ·` + deletedDateTimeDiff);
           return;
         }
 
         if (userSimpleInfoDto.profileImage === null) {
           $('#comments-area img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comments-area img').last().attr('src', `/profile/${profileImage}`);
+          $('#comments-area img').last().attr('src', `${profileImage}`);
         }
 
         $('#comments-area .comment-user-id').last().text(userId);
@@ -410,15 +492,11 @@
         $('#comments-area .comment-content').last().text(commentContent);
 
         if (createdDate === updatedDate) {
-          $('#comments-area .comment-date').last().text(createdDate);
+          $('#comments-area .comment-date').last().text(createdDateTimeDiff);
         } else {
-          $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDate);
+          $('#comments-area .comment-date').last().text(`수정됨 ·` + updatedDateTimeDiff);
         }
       }
-      // content.forEach((comment) => {
-      //
-      //
-      // });
 
       const {last} = commentSlice;
       if (!last) {
@@ -435,11 +513,100 @@
     }
   }
 
+  //댓글 단건 조회 및 노출
+  async function getPostComment(postCommentId) {
+    try {
+      const res = await fetch(`http://localhost:8080/comment/post/postComment?postCommentId=${postCommentId}`, {
+        method: "GET"
+      });
+      const comment = await res.json();
+
+      const {userSimpleInfoDto, id, content, createdDate, updatedDate, deletedDate,
+        createdDateTimeDiff, updatedDateTimeDiff, deletedDateTimeDiff} = comment;
+      const {userId, profileImage} = userSimpleInfoDto;
+
+      $('#comments-area').prepend(
+        `<div id="comment-id-${id}">
+          <div class="col content-profile-img-box">
+           <img class="profile-img rounded-circle" alt="프로필 이미지" />
+          </div>
+           <div class="col offset-md-1">
+             <a class="user-id post-comment-box comment-user-id"></a>
+             <span class="post-comment-box comment-content" style="word-wrap: break-word; font-size: 14px;"></span>
+             <div style="float: right;">
+               <span class="bi comment-like-btn" style="font-size: 1rem; color: black;" href="#" role="button"></span>
+             </div>
+             <div class="comment-tail-area">
+               <span class="comment-date" style="font-size: 10px; color: gray; margin-right: 15px;"></span>
+               <span class="comment-likers" data-bs-toggle="modal" data-bs-target="#comment-liker-list-modal"
+                style="font-size: 13px; font-weight: bold; color: gray; cursor: pointer;"></span>
+               <span class="nested-comment-input-btn"
+                style="font-size: 13px; font-weight: bold; color: gray; margin-right: 11px; cursor: pointer;">답글 달기</span>
+               <span class="bi bi-three-dots comment-three-dots" data-bs-toggle="modal" data-bs-target="#comment-modal"
+                 style="margin-right: 10px; font-size: 1rem; color: gray; cursor: pointer;">
+               </span>
+             </div>
+             <span class="post-comment-id" style="display: none;"></span>
+           </div>
+           <div class="mb-4"></div>
+        </div>`
+      );
+
+      $('#comments-area .comment-like-btn').first().addClass(`comment-like-btn-${id}`);
+      $('#comments-area .post-comment-id').first().text(id);
+      $('#comments-area .comment-likers').first().addClass(`comment-likers-${id}`);
+
+      $(`#comments-area .comment-like-btn-${id}`).first().addClass('bi-heart');
+
+      if (deletedDate !== null) {
+        $('#comments-area img').first().attr('src', `/images/home/sample5.jpg`);
+        $('#comments-area .comment-user-id').first().text('');
+        $('#comments-area .comment-content').first().text('삭제된 댓글입니다.');
+        $('#comments-area .comment-date').first().text(`삭제됨 ·` + deletedDateTimeDiff);
+        return;
+      }
+
+      if (userSimpleInfoDto.profileImage === null) {
+        $('#comments-area img').first().attr('src', `/images/home/sample5.jpg`);
+      } else {
+        $('#comments-area img').first().attr('src', `${profileImage}`);
+      }
+
+      $('#comments-area .comment-user-id').first().text(userId);
+      $('#comments-area .comment-user-id').first().attr('href', `/user/${userId}`)
+
+      const commentContent = content.replace(/(\n|\r\n)/g, '<br/>');
+      $('#comments-area .comment-content').first().text(commentContent);
+
+      if (createdDate === updatedDate) {
+        $('#comments-area .comment-date').first().text(createdDateTimeDiff);
+      } else {
+        $('#comments-area .comment-date').first().text(`수정됨 ·` + updatedDateTimeDiff);
+      }
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  async function deleteComment(commentId) {
+    await fetch(`http://localhost:8080/comment/post/deletion/${commentId}`, {
+      method: "POST"
+    });
+  }
+
   //댓글 작성 시 게시 버튼 활성화
   $('#comment-input-area').on('input', activateCommentBtn);
 
   //댓글 게시 버튼 클릭 시 댓글 게시
-  $('.comment-btn').on('click', saveComment);
+  $(document).on('click', '.comment-btn', function () {
+    const promise = saveComment();
+    promise.then((postCommentId) => {
+      newCommentIdList.push(postCommentId);
+      getPostComment(postCommentId);
+    });
+  });
 
   //페이지 로딩 시 댓글 첫 페이지 조회
   $(function () {
@@ -457,6 +624,27 @@
   //말풍선 아이콘 클릭 시 댓글 입력 창으로 커서 이동
   $('.comment-input-btn').click(function () {
     $('#comment-input-area').focus();
+  });
+
+  //three-dots 버튼 클릭 시 해당 댓글 id 값 임시 저장
+  $(document).on('click', '.comment-three-dots', function () {
+    $('#selected-comment-id').val($(this).parent().parents('.offset-md-1').find('span:last').text());
+  });
+
+  //댓글 삭제 버튼 클릭 시 댓글 삭제
+  $(document).on('click', '#comment-deletion', function () {
+    const commentId = $('#selected-comment-id').val();
+    deleteComment(commentId);
+    $(`#comment-id-${commentId}`).remove();
+  });
+
+  //댓글 하단 영역에 마우스 오버 시 댓글 삭제 three-dots 아이콘 노출
+  $(document).on('mouseover', '.comment-tail-area', function () {
+    $(this).children('.comment-three-dots').css('visibility', 'visible');
+  });
+
+  $(document).on('mouseleave', '.comment-tail-area', function () {
+    $(this).children('.comment-three-dots').css('visibility', 'hidden');
   });
 
 
@@ -567,7 +755,7 @@
           if (profileImage === null) {
             $('.likers-area img').last().attr('src', `/images/home/sample5.jpg`);
           } else {
-            $('.likers-area img').last().attr('src', `/profile/${profileImage}`);
+            $('.likers-area img').last().attr('src', `${profileImage}`);
           }
         })
 
@@ -626,7 +814,7 @@
         if (profileImage === null) {
           $('#post-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#post-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#post-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#post-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
@@ -794,7 +982,7 @@
         if (profileImage === null) {
           $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);
@@ -830,7 +1018,7 @@
         if (profileImage === null) {
           $('#comment-liker-list-modal .modal-body img').last().attr('src', `/images/home/sample5.jpg`);
         } else {
-          $('#comment-liker-list-modal .modal-body img').last().attr('src', `/profile/${profileImage}`);
+          $('#comment-liker-list-modal .modal-body img').last().attr('src', `${profileImage}`);
         }
 
         $('#comment-liker-list-modal .modal-body .liker-user-id').last().text(`${userId}`);

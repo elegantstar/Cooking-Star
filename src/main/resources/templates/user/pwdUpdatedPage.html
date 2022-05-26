@@ -76,7 +76,7 @@
       <div id="profile-box mb-5">
         <div class="profile-img-box">
           <div th:if="${not #strings.isEmpty(userInfo.profileImage)}">
-            <img class="profile-img rounded-circle" th:src="|/profile/${userInfo.profileImage}|" alt="프로필 이미지" />
+            <img class="profile-img rounded-circle" th:src="|${userInfo.profileImage}|" alt="프로필 이미지" />
           </div>
           <div th:if="${#strings.isEmpty(userInfo.profileImage)}">
             <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />

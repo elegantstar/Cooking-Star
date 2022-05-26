@@ -7,64 +7,128 @@
   <link th:replace="fragment/bootstrap :: bootstrapCss">
   <script src="http://code.jquery.com/jquery-latest.min.js"></script>
   <style>
-    .img-standard {
-      width: 30%;
-      height: 30%;
-      margin: 10px;
-    }
-    .img-preview {
-      width: 15%;
-      height: 15%;
-      margin: 10px;
-    }
+      .field-error {
+          border-color: #dc3545;
+          color: #dc3545;
+      }
+      .img-standard {
+        width: 100%;
+      }
+      #footer {
+          position:absolute;
+          bottom: 0;
+          width:100%;
+          height: 50px;
+          line-height: 50px;
+          background: #000000;
+      }
   </style>
 
 </head>
-<body>
+<body style="background-color: #f8f9fa;">
 
-<nav class="navbar navbar-expand-lg navbar-light">
-  <div class="container">
-    <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
+<div class="container my-5 justify-content-center" style="float: none; padding-top: 4%;">
+  <div class="row g-2 overflow-hidden">
+    <div class="col-8" style="float: none;">
+      <img th:src="@{images/home/mainPageSample.png}" class="img-standard border bg-light" alt="샘플 이미지1" />
+    </div>
+    <div class="col-4">
+      <ul class="justify-content-center" style="list-style: none;">
+        <li class="p-3 border mb-4" style="background-color: white;">
 
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <div class="mb-3"></div>
+          <div style="text-align: center; font-size: 2.5rem; font-weight: bold;">CookingStar</div>
+          <div style="margin-bottom: 45px;"></div>
 
-      <form class="d-flex col-5">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-<!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
-      </form>
+          <form class="mb-4" action="/" th:action th:object="${loginForm}" method="post">
 
-      <div class="navbar-nav me-auto mb-2 mb-lg-0 col justify-content-end">
-        <div class="d-grid gap-2 d-md-block">
-          <button class="btn btn-outline-dark" type="button"
-                  onclick="location.href='joinForm.html'"
-                  th:onclick="|location.href='@{/member/join}'|"
-                  th:text="#{button.join}">회원가입</button>
-          <button class="btn btn-outline-dark" type="button"
-                  onclick="location.href='loginForm.html'"
-                  th:onclick="|location.href='@{/login}'|"
-                  th:text="#{button.login}">로그인</button>
-        </div>
-      </div>
+            <div th:if="${#fields.hasGlobalErrors()}">
+              <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+            </div>
+
+            <div class="mb-3">
+              <label for="loginId" th:text="#{label.login.loginId}" class="form-label">로그인 ID</label>
+              <input type="text" id="loginId" th:field="*{loginId}"
+                     th:errorclass="field-error" class="form-control" placeholder="아이디를 입력해 주세요.">
+              <div class="field-error" th:errors="*{loginId}">
+                아이디 오류
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" th:text="#{label.login.password}" class="form-label">비밀번호</label>
+              <input type="password" id="password" th:field="*{password}"
+                     th:errorclass="field-error" class="form-control" placeholder="비밀번호를 입력해 주세요.">
+              <div class="field-error" th:errors="*{password}">
+                비밀번호 오류
+              </div>
+            </div>
+
+            <br class="mb-4">
+
+            <div class="row">
+              <div class="col">
+                <button class="w-100 btn btn-primary btn-lg" type="submit" th:text="#{button.login}">로그인</button>
+              </div>
+            </div>
+          </form>
+        </li>
+
+        <li class="p-3 border mb-4" style="background-color: white;">
+          <div class="mb-2"></div>
+          <div style="text-align: center; margin-bottom: 4px; color: gray;">아이디가 없으신가요?</div>
+          <div style="text-align: center; margin-bottom: 4px; color: gray;">지금 가입하고 당신의 요리 실력을 뽐내보세요!</div>
+          <div class="mb-3"></div>
+
+          <div class="mb-1" style="text-align: center">
+            <a th:href="@{/member/join}" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px;">가입하기</a>
+          </div>
+        </li>
+
+        <li class="p-3 border" style="background-color: white;">
+          <div class="mb-2"></div>
+          <div style="text-align: center; margin-bottom: 4px; color: gray;">테스트용 계정을 원하신다면👇🏻</div>
+          <div class="mb-2" style="text-align: center">
+            <a class="test-id" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px; cursor: pointer;">tester</a>
+            <a style="text-decoration: none; font-weight: bold; color: #a1a0a0; font-size: 17px;">/</a>
+            <a class="test-pw" style="text-decoration: none; font-weight: bold; color: #3097fc; font-size: 17px; cursor: pointer;">123TESTpassword!@</a>
+          </div>
+        </li>
+      </ul>
 
     </div>
   </div>
-</nav>
-
-<hr class="my-1">
-
-<div class="container-fluid my-5" style="float: none; margin: 0 auto;">
-  <div class="col-8 mb-4" style="float: none; margin: 0 auto;">
-    <img th:src="@{images/home/sample1.jpg}" class="img-standard" alt="샘플 이미지1" />
-    <img th:src="@{images/home/sample2.jpg}" class="img-standard" alt="샘플 이미지2" />
-    <img th:src="@{images/home/sample3.jpg}" class="img-standard" alt="샘플 이미지3" />
-    <img th:src="@{images/home/sample4.jpg}" class="img-standard" alt="샘플 이미지4" />
-    <img th:src="@{images/home/sample5.jpg}" class="img-standard" alt="샘플 이미지5" />
-    <img th:src="@{images/home/sample6.jpg}" class="img-standard" alt="샘플 이미지6" />
-  </div>
 </div>
+
+<div id="footer" style="display: none;">
+  <p class="text-area" style="color: white; padding-left: 2%"></p>
+</div>
+
+<script>
+  function copyText(text) {
+    navigator.clipboard.writeText(text);
+  }
+
+  $('.test-id').on('click', function () {
+    const text = $(this).text();
+    copyText(text);
+    $('.text-area').text('테스트 아이디를 클립보드에 복사했습니다.');
+    $('#footer').slideDown('slow');
+    setTimeout(function () {
+      $('#footer').slideUp('slow');
+    }, 2000);
+  });
+
+  $('.test-pw').on('click', function () {
+    const text = $(this).text();
+    copyText(text);
+    $('.text-area').text('테스트 비밀번호를 클립보드에 복사했습니다.');
+    $('#footer').slideDown('slow');
+    setTimeout(function () {
+      $('#footer').slideUp('slow');
+    }, 2000);
+  });
+</script>
 
 <script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
 <script th:replace="fragment/nav :: navbarScript"></script>

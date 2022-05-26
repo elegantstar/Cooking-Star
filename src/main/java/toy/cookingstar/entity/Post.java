@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 import toy.cookingstar.service.post.StatusType;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,12 @@ public class Post extends BaseTimeEntity {
     @Column(name = "status")
     private StatusType status;
 
+    @OneToMany(mappedBy = "post")
+    private List<PostLiker> postLikers = new ArrayList<>();
+
+    @OneToMany(mappedBy = "post")
+    private List<PostComment> postComments = new ArrayList<>();
+
     //연관 관계 편의 메서드
     public void addPostImage(PostImage postImage) {
         postImages.add(postImage);
@@ -50,6 +55,10 @@ public class Post extends BaseTimeEntity {
 
     public void updatePost(String content, StatusType status) {
         this.content = content;
+        this.status = status;
+    }
+
+    public void deletePost(StatusType status) {
         this.status = status;
     }
 }
