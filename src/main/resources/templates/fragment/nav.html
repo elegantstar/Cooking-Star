@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+</head>
+
+<body>
+
+<!-- Navigation bar -->
+<nav th:fragment="navbar" class="navbar navbar-expand-lg navbar-light sticky-top"
+     style="padding-top: 0.2rem; padding-bottom: 0.0rem; background: white; box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 5%), inset 0 -1px 0 rgb(0 0 0 / 15%)">
+  <div class="container">
+    <a class="navbar-brand col-3" th:href="@{/}">Cooking Star</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+            data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+      <form class="d-flex col-5 btn-group search-bar-form" style="margin-left: 10%;">
+        <input id="search-bar" class="form-control me-2 dropdown-toggle" data-bs-auto-close="outside" type="search" placeholder="Search"
+               data-bs-toggle="dropdown" aria-expanded="false" aria-label="Search" autocomplete="off">
+        <!--        <button class="btn btn-outline-success" type="submit">Search</button>-->
+        
+        <!-- 검색창 하위 드롭다운(최근 검색 항목 & 유저 검색 결과) -->
+        <div id="search-bar-dropdown" class="dropdown-menu" aria-labelledby="dropdownMenuClickableInside"
+            style="width: 500px; height: 100px; overflow: auto; overflow-x: hidden; margin-left: -14%;">
+        </div>
+      </form>
+
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0 col col justify-content-end">
+        <li class="nav-item">
+          <a class="nav-link active bi bi-house-door" style="font-size: 2rem; color: black;"
+             aria-current="page" th:href="@{/}">
+          </a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link bi bi-images" style="font-size: 2rem; color: black"
+             href="#" id="postingDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" th:href="@{/post/create}" th:text="#{label.nav.posting}">포스팅</a></li>
+            <li>
+              <button id="temporary-storage-btn" class="dropdown-item" data-bs-toggle="modal"
+                      data-bs-target="#staticBackdrop" th:text="#{label.nav.outbox}">임시 보관함
+              </button>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link bi bi-person" style="font-size: 2rem; color: black;"
+             href="#" id="myPageDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          </a>
+          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" th:href="@{/myPage}" th:text="#{label.nav.myPage}">마이 페이지</a></li>
+            <li><a class="dropdown-item" th:href="@{/myPage/edit}" th:text="#{label.nav.changeInfo}">내 정보</a>
+            </li>
+            <li>
+              <hr class="dropdown-divider">
+            </li>
+            <li>
+              <form th:action="@{/logout}" method="post">
+                <button class="dropdown-item" type="submit" th:text="#{label.nav.logout}">로그아웃</button>
+              </form>
+            </li>
+          </ul>
+        </li>
+      </ul>
+
+    </div>
+  </div>
+</nav>
+
+<!-- Modal -->
+<form th:fragment="navbar-temp-storage-modal" method="GET" th:action="|/post/edit|">
+  <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+       aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="staticBackdropLabel" th:text="#{label.nav.outbox}"
+              style="margin-left: 16em;">임시 보관함</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div id="temp-stored-list" class="modal-body">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{button.outbox.cancel}">취소</button>
+          <button id="outbox-submit-btn" type="submit" class="btn btn-primary" th:text="#{button.outbox.load}">불러오기</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<footer th:fragment="navbarScript">
+  <script>
+    
+    /**
+     * 유저 검색 로직 - 최근 검색 기록 조회
+     */
+    async function getRecentSearchHistory() {
+      // 검색 기록 초기화
+      try {
+        $('#search-bar-dropdown').empty();
+        // 최근 검색 항목 타이틀 생성
+        $('#search-bar-dropdown').append('<div id="search-history-title" style="padding-left: 14px;">' +
+                                         '<span style="float: left; font-weight: bold; margin-bottom: 8px; font-size: 17px;">최근 검색 항목</span>' +
+                                         '<a href="#" id="clear-all-btn" style="margin-left: 55%; text-decoration: none;' +
+                                         'color: #279ae3; font-size: 15px; font-weight: bold;">모두 지우기</a></div>')
+        // 최근 검색 항목 사이즈 초기화
+        $('#search-bar-dropdown').css('height', '100px');
+        // 최근 검색 기록 조회
+        const res = await fetch('http://localhost:8080/search/history');
+        const text = await res.text();
+        if (text === '') {
+          return;
+        }
+
+        const recentHistory = JSON.parse(text);
+
+        if (recentHistory.length !== 0) {
+          $('#search-bar-dropdown').css('height', '300px');
+        }
+
+        // 검색 결과 노출
+        recentHistory.forEach((searchedUser) => {
+          const { userId, nickname, profileImage } = searchedUser;
+          $('#search-bar-dropdown').append('<div class="search-history" style="cursor: pointer;">' +
+                                           '<div class="dropdown-item container search-result" style="float: left; width: 90%; cursor: pointer">' +
+                                           '<div class="searched-profile-box">' +
+                                           '<img class="searched-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+                                           '<div><span class="searched-user-id" style="font-weight: bold;"></span></div>' +
+                                           '<div><span class="searched-user-nickname" style="color: gray;"></span></div></div>' +
+                                           '<div class="delete-button-box" style="float: left; padding-top: 3.5%">' +
+                                           '<button id="history-deletion-btn" type="button" class="btn-close"></button></div></div>');
+          if (profileImage === null) {
+            $('#search-bar-dropdown img').last().attr('src', `/images/home/sample5.jpg`);
+          } else {
+            $('#search-bar-dropdown img').last().attr('src', `${profileImage}`);
+          }
+          $('#search-bar-dropdown .searched-user-id').last().text(`${userId}`);
+          $('#search-bar-dropdown .searched-user-nickname').last().text(`${nickname}`);
+
+          $('#search-bar').removeClass('dropdown-toggle show');
+        });
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+    }
+
+    /**
+     * 유저 검색 로직 - 검색 기록 모두 삭제
+     */
+    async function clearSearchHistory() {
+      try {
+        await fetch('http://localhost:8080/search/history/clearAll', {
+          method: "DELETE",
+        });
+        $('#search-bar-dropdown').empty();
+        $('#search-bar-dropdown').append('<div id="search-history-title" style="padding-left: 14px;">' +
+                                         '<span style="float: left; font-weight: bold; margin-bottom: 8px; font-size: 17px;">최근 검색 항목</span>' +
+                                         '<a href="#" id="clear-all-btn" style="margin-left: 55%; text-decoration: none;' +
+                                         'color: #279ae3; font-size: 15px; font-weight: bold;">모두 지우기</a></div>');
+        $('#search-bar-dropdown').css('height', '100px');
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+    }
+
+    /**
+     * 유저 검색 로직 - 검색 기록 개별 삭제
+     */
+     async function deleteSearchHistory() {
+       try {
+         const userId = $(this).parent().prev('.search-result').find('.searched-user-id').text();
+         await fetch(`http://localhost:8080/search/history/delete?userId=${userId}`, {
+           method: "DELETE",
+         });
+         $(this).parent().parent().remove();
+         if ($('.search-history').length === 0) {
+           $('#search-bar-dropdown').css('height', '100px');
+         }
+       } catch (err) {
+         console.log(err);
+         alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+       }
+    }
+
+    /**
+     * 유저 검색 로직 - 유저 검색
+     */
+    async function searchUsers() {
+      try {
+        $('#search-bar-dropdown').empty();
+        $('#search-bar-dropdown').css('height', '100px');
+
+        const keyword = $(this).val();
+        if (keyword === '') {
+          getRecentSearchHistory();
+          return;
+        }
+
+        const res = await fetch(`http://localhost:8080/search/users?keyword=${keyword}`);
+        const text = await res.text();
+        if (text === '') {
+          return;
+        }
+
+        const searchedUsers = JSON.parse(text);
+
+        if (searchedUsers.length !== 0) {
+          $('#search-bar-dropdown').css('height', '300px');
+        }
+
+        // 검색 결과 노출
+        searchedUsers.forEach((searchedUser) => {
+          const { userId, nickname, profileImage } = searchedUser;
+          $('#search-bar-dropdown').append('<div class="dropdown-item container search-result">' +
+                                           '<div class="searched-profile-box">' +
+                                           '<img class="searched-profile-img rounded-circle" alt="유저 프로필" /></div>' +
+                                           '<div><span class="searched-user-id" style="font-weight: bold;"></span></div>' +
+                                           '<div><span class="searched-user-nickname" style="color: gray;"></span></div></div>');
+          if (profileImage === null) {
+            $('#search-bar-dropdown img').last().attr('src', `/images/home/sample5.jpg`);
+          } else {
+            $('#search-bar-dropdown img').last().attr('src', `${profileImage}`);
+          }
+          $('#search-bar-dropdown .searched-user-id').last().text(`${userId}`);
+          $('#search-bar-dropdown .searched-user-nickname').last().text(`${nickname}`);
+        });
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+    }
+
+    /**
+     * 검색 결과 클릭 시 검색 기록 갱신 후 유저 페이지로 이동
+     */
+    async function moveToUserPage() {
+      try {
+        const userId = $(this).find('span:first').text();
+
+        //TODO: 최근 검색 기록 저장
+        await fetch(`http://localhost:8080/search/history/add?userId=${userId}`, {
+          method: "POST",
+        });
+
+        //TODO: 해당 userId의 유저 페이지로 이동
+        location.replace(`/user/${userId}`);
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+    }
+
+
+    $('#search-bar').on('click', getRecentSearchHistory);
+    $(document).on('click', '#clear-all-btn', clearSearchHistory);
+    $('#search-bar').on('input', searchUsers);
+    $(document).on('click', '.search-result', moveToUserPage);
+    $(document).on('click', '#history-deletion-btn', deleteSearchHistory);
+
+    $('html').click(function(e){
+      if($(e.target).parents('.search-bar-form').length < 1 && $(e.target).parent('.search-bar-dropdown').length < 1){
+        $('#search-bar').addClass('dropdown-toggle show');
+        $('#search-bar').removeClass('show');
+        $('#search-bar-dropdown').removeClass('show');
+      }
+    });
+
+
+    // 임시 보관함 로직
+    async function getTempStoredPosts() {
+      try {
+        $('#temp-stored-list').empty();
+        const res = await fetch('http://localhost:8080/post/temporary-storage');
+        const tempStoredPostInfo = await res.json();
+
+        if (tempStoredPostInfo.length === 0) {
+          $('#temp-stored-list').append('<div style="text-align: center">임시 저장한 게시물이 없습니다.</div>');
+          $('#outbox-submit-btn').css('display', 'none');
+        }
+
+        tempStoredPostInfo.forEach((postInfo) => {
+          const {id, content, createdDate, imageUrl} = postInfo;
+
+          $('#temp-stored-list').append('<div class="form-check">' +
+                                        '<input class="form-check-input" type="radio" name="postId" style="margin-top: 3.5em;">' +
+                                        '<a><img class="img-preview" alt="임시보관 이미지" /></a>' +
+                                        '<span class="temp-stored-date" style="margin-right: 1em;"></span>' +
+                                        '<span class="temp-stored-content"></span></div>');
+          $('#temp-stored-list img').last().attr('src', `${imageUrl}`);
+          $('#temp-stored-list input').last().attr('value', `${id}`);
+
+          if (content.length >= 15) {
+            $('#temp-stored-list .temp-stored-content').last().text(`${content.substring(0, 30)}...`);
+          } else {
+            $('#temp-stored-list .temp-stored-content').last().text(`${content}`);
+          }
+
+          $('#temp-stored-list .temp-stored-date').last().text(`${createdDate.substring(0, 10)}`);
+        });
+
+        $('#temp-stored-list input').first().attr('checked', true);
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+
+    }
+
+    $('#temporary-storage-btn').on('click', getTempStoredPosts);
+
+  </script>
+</footer>
+
+</body>
+
+</html>

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <style>
+    .profile-head {
+      margin-bottom: 30px;
+      padding-left: 40px;
+    }
+    .profile-img-box {
+      position: relative;
+      width: 10%;
+      padding-bottom: 10%;
+      margin: 10px 25px 10px 10px;
+      float: left;
+    }
+    .profile-img {
+      position: absolute;
+      width: 90%;
+      height: 90%;
+    }
+    .col-form-label {
+      font-weight: bold;
+    }
+    .information-box {
+      padding-left: 50px;
+    }
+    .form-text {
+      padding-left: 19%;
+    }
+    .field-error {
+      padding-left: 19%;
+      border-color: #dc3545;
+      color: #dc3545;
+    }
+    .img-change-btn {
+      cursor: pointer;
+    }
+    .img-preview {
+      width: 15%;
+      height: 15%;
+      margin: 10px;
+    }
+    .searched-profile-box {
+      position: relative;
+      width: 12%;
+      margin-bottom: 10px;
+      float: left;
+    }
+    .searched-profile-img {
+      width: 90%;
+      height: 90%;
+    }
+    .profile-edit-menu {
+      text-align: center;
+      color: dodgerblue;
+      font-weight: bold;
+      font-size: 14px;
+      margin-top: -1%;
+      margin-bottom: -1%;
+      cursor: pointer;
+    }
+    #profile-editor-cancel {
+      cursor: pointer;
+    }
+    #profile-upload {
+      color: dodgerblue;
+    }
+    #profile-deletion {
+      color: #db0505;
+    }
+    #profile-box {
+      height: 100px;
+      margin-bottom: 5px;
+      padding: 30px 150px 30px 30px;
+    }
+    #content-box {
+      margin-bottom: 5px;
+      padding: 10px 350px 30px 350px;
+    }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
+
+<div class="container" id="content-box">
+
+  <div>
+    <!--  프로필 편집 / 비밀번호 변경 탭 영역  -->
+    <ul class="nav nav-tabs mb-3">
+      <li class="nav-item">
+        <a class="nav-link active" aria-current="page" href="#" th:text="#{label.edit.userInfo}">정보 변경</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" th:href="@{/myPage/password/change}" th:text="#{label.edit.password}">비밀번호 변경</a>
+      </li>
+    </ul>
+
+  </div>
+
+  <div class="profile-head">
+    <!--  프로필 이미지 영역  -->
+    <div id="profile-box mb-5">
+      <div class="profile-img-box">
+        <div th:if="${not #strings.isEmpty(session.loginMember.profileImage)}">
+          <img class="profile-img rounded-circle" th:src="|/profile/${session.loginMember.profileImage}|" alt="프로필 이미지" />
+        </div>
+        <div th:if="${#strings.isEmpty(session.loginMember.profileImage)}">
+          <img class="profile-img rounded-circle" th:src="@{/images/home/sample5.jpg}" alt="기본 이미지" />
+        </div>
+      </div>
+
+      <div class="mt-3 mb-1">
+        <span class="user-id" style="font-size: 25px;" th:text="${session.loginMember.userId}">유저 아이디</span><br/>
+        <div class="img-change-btn" th:text="#{label.edit.profile}" data-bs-toggle="modal" data-bs-target="#edit-profile-modal"
+             style="color: #3097fc; font-weight: bold;">
+          프로필 사진 교체
+        </div>
+      </div>
+
+      <!-- Profile Image Editor Modal -->
+      <div class="modal fade" id="edit-profile-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="width: 400px;">
+          <div class="modal-content">
+            <div class="modal-header" style="justify-content: center;">
+              <h5 class="modal-title" id="exampleModalLabel" style="font-weight: bold;">프로필 사진 변경</h5>
+            </div>
+            <div class="modal-body">
+              <form id="profile-form" method="post" enctype="multipart/form-data" style="margin-top: -1.5%; margin-bottom: -1.5%; text-align: center;">
+                <label for="profileImg-upload" class="profile-edit-menu" id="profile-upload">사진 업로드</label>
+                <input type="file" id="profileImg-upload" name="profileImage" accept="image/jpeg, image/png, image/gif" style="display: none;"/>
+              </form>
+              <hr style="color: #8d8c8c">
+              <div class="profile-edit-menu" id="profile-deletion">현재 사진 삭제</div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+              <div id="profile-editor-cancel" data-bs-dismiss="modal" style="font-size: 14px;">취소</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+   <form class="mb-5" th:action th:object="${userInfo}" method="post" enctype="multipart/form-data">
+    <!--  글로벌 오류 메시지  -->
+    <div th:if="${#fields.hasGlobalErrors()}">
+      <p class="field-error" th:each="err : ${#fields.globalErrors()}" th:text="${err}">글로벌 오류 메시지</p>
+    </div>
+
+    <!--  유저 정보 변경 영역  -->
+    <div class="information-box">
+      <div class="row align-items-center mb-3">
+        <div class="col-2">
+          <label for="nickname" class="col-form-label" th:text="#{label.edit.nickname}">닉네임</label>
+        </div>
+        <div class="col-10">
+          <input type="text" id="nickname" th:field="*{nickname}" th:errorclass="field-error" class="form-control form-control-sm">
+        </div>
+        <div class="field-error" th:errors="*{nickname}">
+          별명 오류
+        </div>
+        <span class="form-text" th:text="#{message.edit.nickname}">
+          별명 설정 안내
+        </span>
+      </div>
+
+      <div class="row align-items-center mb-3">
+        <div class="col-2">
+          <label for="website" class="col-form-label" th:text="#{label.edit.website}">홈페이지</label>
+        </div>
+        <div class="col-10">
+          <input type="text" id="website" th:field="*{website}" th:errorclass="field-error" class="form-control form-control-sm">
+        </div>
+        <div class="field-error" th:errors="*{website}">
+          웹사이트 오류
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-2">
+          <label for="introduction" class="col-form-label" th:text="#{label.edit.introduction}">소개글</label>
+        </div>
+        <div class="col-10">
+          <textarea id="introduction" th:field="*{introduction}" th:errorclass="field-error" class="form-control form-control-sm" rows="3"></textarea>
+        </div>
+        <div class="field-error" th:errors="*{introduction}">
+          소개글 오류
+        </div>
+        <span class="form-text" th:text="#{message.edit.introduction}">
+          소개글 설정 안내
+        </span>
+      </div>
+
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-2">
+          <label for="email" class="col-form-label" th:text="#{label.edit.email}">이메일</label>
+        </div>
+        <div class="col-10">
+          <input type="email" id="email" th:field="*{email}" th:errorclass="field-error" class="form-control form-control-sm">
+        </div>
+        <div class="field-error" th:errors="*{email}">
+          이메일 오류
+        </div>
+      </div>
+
+      <div class="row g-3 align-items-center mb-3">
+        <div class="col-2">
+          <label class="col-form-label" th:text="#{label.edit.gender}">성별</label>
+        </div>
+        <div class="col-10">
+          <!--  성별 선택 라디오 버튼  -->
+          <div th:each="type : ${genderTypes}" class="form-check">
+            <input type="radio" th:field="*{gender}" th:value="${type.name()}" class="form-check-input" name="postId">
+            <label th:for="${#ids.prev('gender')}" th:type="text" th:field="*{gender}"
+                   th:text="${type.description}" class="form-check-label">
+              성별
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-2"></div>
+        <div class="col-auto">
+          <button class="btn btn-primary btn-sm" type="submit" th:text="#{button.edit}">변경 완료</button>
+        </div>
+      </div>
+
+    </div>
+
+  </form>
+
+</div>
+
+<script>
+  async function deleteProfileImg() {
+    try {
+      await fetch("http://localhost:8080/myPage/profile-delete", {
+        method: "POST",
+      });
+      $('.profile-img').attr('src', `/images/home/sample5.jpg`);
+      $('.modal').modal('hide');
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+  }
+
+  async function uploadProfileImg() {
+    const imgFile = $('#profileImg-upload').val();
+    const fileForm = /(.*?)\.(pjp|jpg|pjpeg|jpeg|jfif|png|gif)$/;
+
+    if (!imgFile.match(fileForm)) {
+      alert("이미지 파일만 업로드 가능합니다.");
+      return;
+    }
+
+    const formData = new FormData($('#profile-form')[0]);
+
+    try {
+      const res = await fetch("http://localhost:8080/myPage/profile-upload", {
+        method: "POST",
+        headers: {},
+        body: formData,
+      });
+      const data = await res.json();
+      const { imageUrl } = data;
+      $('.profile-img').attr('src', `${imageUrl}`);
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+
+    $('.modal').modal('hide');
+  }
+
+  $('#profile-deletion').on('click', deleteProfileImg);
+  $('#profileImg-upload').change(uploadProfileImg);
+
+</script>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>

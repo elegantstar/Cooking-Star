@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Cooking Star</title>
+
+  <link th:replace="fragment/bootstrap :: bootstrapCss">
+  <link th:replace="fragment/bootstrap :: bootstrapIcon">
+  <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+
+  <style>
+      .img-upload-box {
+          background: rgba(217, 213, 213, 0.68);
+          width: 45%;
+          padding-bottom: 17%;
+          margin-top: 1.5%;
+          margin-left: 8%;
+          margin-right: 2%;
+          float: left;
+          cursor: pointer;
+      }
+      .img-layer-box {
+          position: relative;
+          width: 49.6%;
+          padding-bottom: 50%;
+          padding-top: 1.5%;
+          float: left;
+          margin-right: 23px;
+      }
+      .img-box {
+          position: absolute;
+          text-align: center;
+          width: 100%;
+          height: 100%;
+      }
+      .content-input-area {
+          text-align: left;
+          width: 460px;
+          border-color: gray;
+          outline: none;
+          resize: none;
+          font-size: medium;
+          letter-spacing: 1px;
+          padding-bottom: 92%;
+      }
+      .img-standard {
+          width: 97%;
+          height: 100%;
+      }
+      .img-preview {
+          width: 15%;
+          height: 15%;
+          margin: 10px;
+      }
+      .searched-profile-box {
+          position: relative;
+          width: 12%;
+          margin-bottom: 10px;
+          float: left;
+      }
+      .searched-profile-img {
+          width: 90%;
+          height: 90%;
+      }
+      #upload-box {
+          height: 800px;
+          margin-bottom: 5px;
+          padding: 30px 150px 30px 30px;
+      }
+  </style>
+
+</head>
+<body>
+
+<nav th:replace="fragment/nav :: navbar"></nav>
+<form th:replace="fragment/nav :: navbar-temp-storage-modal"></form>
+
+<div class="container" id="upload-box">
+
+  <div class="mb-3 img-area">
+    <label class="d-grid img-upload-box" for="postImage-upload">
+      <form id="postImage-form" method="post" enctype="multipart/form-data">
+        <div style="text-align: center; padding-top: 40%">
+          <div class="mb-3 upload-label" style="font-size: 20px;">이미지를 선택해 주세요!</div>
+          <div>이미지 크기 제한 30MB</div>
+          <div class="mb-3">업로드 개수 제한 10개</div>
+          <input type="file" id="postImage-upload" multiple="multiple" name="images" accept="image/jpeg, image/png, image/gif" style="display: none;">
+        </div>
+      </form>
+    </label>
+  </div>
+
+  <!-- 컨텐츠 영역 -->
+  <div>
+    <div class="row g-3">
+      <label class="col">
+        <textarea id="content" class="content-input-area" placeholder="내용을 입력해 주세요!"></textarea>
+      </label>
+    </div>
+  </div>
+
+
+  <div class="d-grid gap-2 d-md-flex justify-content-md-end" style="margin-right: 42px;">
+    <button id="cancel-btn" class="btn" style="background: #4c9ed9; color: white;" th:text="#{button.post.cancel}">취소</button>
+    <button id="temp-store-btn" class="btn" style="background: #0c9bfc; color: white;" th:text="#{button.post.storage}">임시저장</button>
+    <button id="post-btn" class="btn btn-primary" th:text="#{button.post.upload}">등록</button>
+  </div>
+</div>
+
+<script th:inline="javascript" type="text/javascript">
+
+  // 이미지 업로드 후 이미지 Url 배열에 저장
+  let storedImageUrls = [];
+  let storedImageUris = [];
+  let hasError = false;
+
+  // 이미지 업로드
+  async function uploadPostImage() {
+    const fileForm = /(.*?)\.(pjp|jpg|pjpeg|jpeg|jfif|png|gif)$/;
+    const imgFiles = $('#postImage-upload')[0].files;
+    let formData = new FormData();
+
+    for (let i = 0; i < imgFiles.length; i++) {
+      if (!imgFiles[i].name.match(fileForm)) {
+        alert("이미지 파일만 업로드 가능합니다.");
+        hasError = true;
+        break;
+      }
+      formData.append('image', imgFiles[i]);
+    }
+
+    if (!hasError) {
+      try {
+        const res = await fetch("http://localhost:8080/post/image-upload", {
+          method: "POST",
+          headers: {},
+          body: formData
+        });
+
+        const data = await res.json();
+        const { imageUrls } = data;
+        storedImageUrls = imageUrls;
+
+      } catch (err) {
+        console.log(err);
+        alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+      }
+
+      //업로드한 이미지 미리보기 노출
+      $('.img-area').empty();
+      $('.img-area').append(`
+        <div id="carouselExampleInterval" class="carousel slide img-layer-box" data-bs-ride="carousel" data-bs-interval="false">
+          <div class="carousel-inner img-box"></div>
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>`);
+
+      storedImageUrls.forEach((storedImageUrl) => {
+        storedImageUris.push(storedImageUrl.substring(60));
+        $('.carousel-inner').append(`
+          <a class="carousel-item">
+            <img src="${storedImageUrl}" class="img-standard" alt="포스트 이미지"/>
+          </a>`)
+      });
+
+      $('.carousel-item').filter(':first').addClass('active');
+      $('#upload-box').css('padding-left', '107px');
+    } else {
+      hasError = false;
+    }
+  }
+
+  //이미지 업로드 로직
+  $('#postImage-upload').change(uploadPostImage);
+
+  async function posting(status) {
+    const content = $('.content-input-area').val();
+    try {
+      const res = await fetch(`http://localhost:8080/posting`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          content: content,
+          postImageUris: storedImageUris,
+          status: status
+        })
+      });
+
+      return await res.json();
+
+    } catch (err) {
+      console.log(err);
+      alert("작업 도중 문제가 발생하였습니다. 다시 시도해 주세요.");
+    }
+
+  }
+
+  // 등록 버튼 클릭 시 게시글 등록 후 게시물 페이지로 이동
+  $(document).on('click', '#post-btn', function () {
+
+    if (storedImageUrls.length !== 0) {
+      const promise = posting("POSTING");
+      promise.then((postId) => {
+        location.replace(`/post/${postId}`);
+      })
+    } else {
+      alert("게시글 등록을 위해서 이미지는 적어도 한 개 이상 업로드 해야 합니다.");
+    }
+  });
+
+  // 임시저장 버튼 클릭 시 게시글 임시 저장 후 마이페이지로 이동
+  $(document).on('click', '#temp-store-btn', function () {
+    if (storedImageUrls.length !== 0) {
+      posting("TEMPORARY_STORAGE");
+      location.replace('/myPage');
+    } else {
+      alert("이미지는 적어도 한 개 이상 업로드 해야 합니다.");
+    }
+  });
+
+  // 취소 버튼 클릭 시 마이 페이지로 이동
+  $(document).on('click', '#cancel-btn', function () {
+    location.replace('/myPage');
+  });
+
+</script>
+
+<script th:replace="fragment/bootstrap :: bootstrapBundle"></script>
+<script th:replace="fragment/nav :: navbarScript"></script>
+
+</body>
+</html>
