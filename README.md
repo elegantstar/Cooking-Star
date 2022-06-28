@@ -109,8 +109,6 @@
 `AWS CloudFront`는 AWS에서 제공하는 `CDN 서비스(Cloudfront)`입니다. S3의 버킷의 `Region`을 '아시아 태평양(서울) ap-northeast-2'로 생성하였으나, **그 외 지역에서도 준수한 성능을 내기 위해서는 Cloudfront 사용이 필수적이라고 판단**하여 적용했습니다.
 Cloudfront는 S3에 대한 `원본 파일 캐싱`뿐만 아니라 `브라우저 캐시` 설정도 가능합니다. 현재 프로젝트 정책 상 이미지 수정은 허용하지 않기에 Cache의 기간을 충분히 크게 설정하여 응답 속도를 개선하였습니다.
 
-````
-
 <br>
 
 ### Mybatis에서 JPA로 전환
@@ -416,7 +414,7 @@ void deleteAllByPost(@Param("post") Post post);
 @Modifying(clearAutomatically = true, flushAutomatically = true)
 @Query("delete from PostCommentLiker l where l.postComment.id in :commentIds")
 void deleteInCommentIds(@Param("commentIds") List<Long> commentIds);
-````
+```
 
 이와 같은 방법을 통해 각 Entity에 대해 `Bulk Delete`를 구현하였습니다.
 
