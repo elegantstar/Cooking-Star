@@ -3,6 +3,10 @@
 요리 사진을 공유하고 이야기할 수 있는 소셜 미디어 서비스입니다.  
 현재까지는 이미지 기반의 소셜 미디어 서비스이지만, 추후 레시피까지 공유할 수 있는 커뮤니티를 염두에 두고 개발하였습니다.
 
+## 프로젝트 시연 영상
+
+<iframe width="1280" height="702" src="https://www.youtube.com/embed/lYWfSwKUo6s" title="CookingStar 프로젝트 시연 영상" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## 기술 스택
 
 - `Spring-boot` Version 2.6.2
