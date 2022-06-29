@@ -5,7 +5,7 @@
 
 ## 프로젝트 시연 영상
 
-[![CookingStar 시연 영상](https://www.youtube.com/watch?v=lYWfSwKUo6s/0.jpg)](https://www.youtube.com/watch?v=lYWfSwKUo6s/t=0s)
+[![CookingStar 시연 영상](http://img.youtube.com/vi/lYWfSwKUo6s/0.jpg)](https://www.youtube.com/watch?v=lYWfSwKUo6s/t=0s)
 
 ## 기술 스택
 
