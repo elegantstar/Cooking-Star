@@ -40,7 +40,7 @@ public class PostService {
      * 포스트 생성
      */
     @Transactional
-    @CacheEvict(cacheNames = POST_CACHE, key = "#postCreateDto.userId + 12 + #postCreateDto.status + null")
+    @CacheEvict(cacheNames = POST_CACHE, key = "#postCreateDto.userId + #postCreateDto.status + null + true")
     public Long create(PostCreateDto postCreateDto) throws IllegalArgumentException {
 
         Member user = memberRepository.findById(postCreateDto.getMemberId()).orElseThrow(IllegalArgumentException::new);
@@ -126,7 +126,7 @@ public class PostService {
      * 게시물 수정
      */
     @Transactional
-    @CacheEvict(cacheNames = POST_CACHE, key = "#userId + #status + null + true")
+    @CacheEvict(cacheNames = POST_CACHE, key = "#userId + 'POSTING' + null + true")
     public void updatePost(String userId, Long postId, String content, StatusType status) {
         Post foundPost = postRepository.findById(postId).orElseThrow(IllegalArgumentException::new);
         foundPost.updatePost(content, status);

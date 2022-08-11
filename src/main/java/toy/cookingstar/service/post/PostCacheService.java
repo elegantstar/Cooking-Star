@@ -14,7 +14,7 @@ public class PostCacheService {
     private final PostService postService;
 
     @Cacheable(cacheNames = POST_CACHE, key = "#userId + #statusType + #lastReadPostId + #isMyPage",
-            condition = "not #isMyPage or (#lastReadPostId == null and #isMyPage)")
+            condition = "not #isMyPage or (#lastReadPostId == null and #isMyPage) and #statusType == 'POSTING'")
     public CustomSlice<PostAndImageUrlDto> getUserPagePostImageSlice(String userId, Long lastReadPostId,
                                                                      int size, StatusType statusType, boolean isMyPage) {
 

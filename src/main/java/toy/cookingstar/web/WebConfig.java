@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
 //        registry.addResourceHandler("resources/**")
 //                .addResourceLocations("classpath:/static/")
 //                .setCacheControl(cacheControl);
-//    }
+//  }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
